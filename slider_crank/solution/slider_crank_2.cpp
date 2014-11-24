@@ -1,0 +1,373 @@
+// =============================================================================
+// PROJECT CHRONO - http://projectchrono.org
+//
+// Copyright (c) 2014 projectchrono.org
+// All right reserved.
+//
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
+//
+// =============================================================================
+// Author: Radu Serban
+// =============================================================================
+//
+// Slider-crank Chrono tutorial (model 2)
+//
+// This model is a 3-body slider-crank consisting of crank, slider and connecting
+// rod bodies. The crank is connected to ground with a revolute joint and the
+// slider is connected to ground through a prismatic joint.  The connecting rod
+// connects to the crank through a spherical joint and to the slider through a
+// universal joint.
+//
+// The crank body is driven at constant angular speed, under the action of gravity,
+// acting in the negative Z direction.
+//
+// An additional spherical body, constrained to move along the global X axis
+// through a prismatic joint and connected to ground with a translational spring
+// damper, interacts through contact with the slider body.
+//
+// The simulation is animated with Irrlicht.
+//
+// =============================================================================
+
+#include <stdio.h>
+#include <cmath>
+
+#include "physics/ChSystem.h"
+#include "unit_IRRLICHT/ChIrrApp.h"
+
+#include "ChronoTutorial_config.h"
+
+using namespace chrono;
+using namespace irr;
+
+
+int main(int   argc,
+         char* argv[])
+{
+  // 0. Set the path to the Chrono data folder
+
+  SetChronoDataPath(CHRONO_DATA_DIR);
+
+
+  // 1. Create the physical system that will handle all bodies and constraints.
+
+  //    Specify the gravitational acceleration vector, consistent with the
+  //    global reference frame having Z up.
+  ChSystem system;
+  system.Set_G_acc(ChVector<>(0, 0, -9.81));
+
+
+  // 2. Create the rigid bodies of the slider-crank mechanical system.
+  //    For each body, specify:
+  //    - a unique identifier
+  //    - mass and moments of inertia
+  //    - position and orientation of the (centroidal) body frame
+  //    - visualization assets (defined with respect to the body frame)
+
+  // Ground
+  ChSharedBodyPtr ground(new ChBody);
+  system.AddBody(ground);
+  ground->SetIdentifier(-1);
+  ground->SetName("ground");
+  ground->SetBodyFixed(true);
+
+  ChSharedPtr<ChCylinderShape> cyl_g(new ChCylinderShape);
+  cyl_g->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
+  cyl_g->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
+  cyl_g->GetCylinderGeometry().rad = 0.03;
+  ground->AddAsset(cyl_g);
+
+  ChSharedPtr<ChColorAsset> col_g(new ChColorAsset);
+  col_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
+  ground->AddAsset(col_g);
+
+  // Crank
+  ChSharedBodyPtr crank(new ChBody);
+  system.AddBody(crank);
+  crank->SetIdentifier(1);
+  crank->SetName("crank");
+  crank->SetMass(1.0);
+  crank->SetInertiaXX(ChVector<>(0.005, 0.1, 0.1));
+  crank->SetPos(ChVector<>(-1, 0, 0));
+  crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
+
+  ChSharedPtr<ChBoxShape> box_c(new ChBoxShape);
+  box_c->GetBoxGeometry().Size = ChVector<>(0.95, 0.05, 0.05);
+  crank->AddAsset(box_c);
+
+  ChSharedPtr<ChCylinderShape> cyl_c(new ChCylinderShape);
+  cyl_c->GetCylinderGeometry().p1 = ChVector<>(-1, 0.1, 0);
+  cyl_c->GetCylinderGeometry().p2 = ChVector<>(-1, -0.1, 0);
+  cyl_c->GetCylinderGeometry().rad = 0.05;
+  crank->AddAsset(cyl_c);
+
+  ChSharedPtr<ChSphereShape> sph_c(new ChSphereShape);
+  sph_c->GetSphereGeometry().center = ChVector<>(1, 0, 0);
+  sph_c->GetSphereGeometry().rad = 0.05;
+  crank->AddAsset(sph_c);
+
+  ChSharedPtr<ChColorAsset> col_c(new ChColorAsset);
+  col_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
+  crank->AddAsset(col_c);
+
+  // Slider
+  ChSharedBodyPtr slider(new ChBody);
+  system.AddBody(slider);
+  slider->SetIdentifier(2);
+  slider->SetName("slider");
+  slider->SetMass(1.0);
+  slider->SetInertiaXX(ChVector<>(0.05, 0.05, 0.05));
+  slider->SetPos(ChVector<>(2, 0, 0));
+  slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
+
+  ChSharedPtr<ChBoxShape> box_s(new ChBoxShape);
+  box_s->GetBoxGeometry().Size = ChVector<>(0.2, 0.1, 0.1);
+  slider->AddAsset(box_s);
+
+  ChSharedPtr<ChCylinderShape> cyl_s(new ChCylinderShape);
+  cyl_s->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
+  cyl_s->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
+  cyl_s->GetCylinderGeometry().rad = 0.03;
+  slider->AddAsset(cyl_s);
+
+  ChSharedPtr<ChColorAsset> col_s(new ChColorAsset);
+  col_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
+  slider->AddAsset(col_s);
+
+  //// -------------------------------------------------------------------------
+  //// EXERCISE 2
+  //// Enable contact on the slider body and specify contact geometry
+  //// The contact shape attached to the slider body should be a box with the
+  //// same dimensions as the visualization asset, centered at the body origin.
+  //// Use a coefficient of friction of 0.4.
+  //// -------------------------------------------------------------------------
+
+  slider->SetCollide(true);
+  slider->SetFriction(0.4f);
+
+  slider->GetCollisionModel()->ClearModel();
+  slider->GetCollisionModel()->AddBox(0.2, 0.1, 0.1, VNULL, QUNIT);
+  slider->GetCollisionModel()->BuildModel();
+
+  //// -------------------------------------------------------------------------
+  //// EXERCISE 1
+  //// Create a connecting rod body to replace the distance constraint.
+  //// This body should have:
+  ////    mass: 0.5
+  ////    moments of inertia:  I_xx = 0.005, I_yy = 0.1, I_zz = 0.1
+  ////    visualization: a green box with width and height 0.1
+  //// -------------------------------------------------------------------------
+
+  // Connecting rod
+  ChSharedBodyPtr rod(new ChBody);
+  system.AddBody(rod);
+  rod->SetIdentifier(3);
+  rod->SetName("rod");
+  rod->SetMass(0.5);
+  rod->SetInertiaXX(ChVector<>(0.005, 0.1, 0.1));
+  rod->SetPos(ChVector<>(0, 0, 0));
+  rod->SetRot(ChQuaternion<>(1, 0, 0, 0));
+
+  ChSharedPtr<ChBoxShape> box_r(new ChBoxShape);
+  box_r->GetBoxGeometry().Size = ChVector<>(2, 0.05, 0.05);
+  rod->AddAsset(box_r);
+
+  ChSharedPtr<ChCylinderShape> cyl_r(new ChCylinderShape);
+  cyl_r->GetCylinderGeometry().p1 = ChVector<>(2, 0, 0.2);
+  cyl_r->GetCylinderGeometry().p2 = ChVector<>(2, 0, -0.2);
+  cyl_r->GetCylinderGeometry().rad = 0.03;
+  rod->AddAsset(cyl_r);
+
+  ChSharedPtr<ChColorAsset> col_r(new ChColorAsset);
+  col_r->SetColor(ChColor(0.2f, 0.6f, 0.2f));
+  rod->AddAsset(col_r);
+
+  //// -------------------------------------------------------------------------
+  //// EXERCISE 2
+  //// Create a new body, with a spherical shape (radius 0.2), used both as
+  //// visualization asset and contact shape (mu = 0.4). This body should have:
+  ////    mass: 1
+  ////    moments of inertia: I_xx = I_yy = I_zz = 0.02
+  ////    initial location: (5.5, 0, 0)
+  //// -------------------------------------------------------------------------
+
+  ChSharedBodyPtr ball(new ChBody);
+  system.AddBody(ball);
+  ball->SetIdentifier(4);
+  ball->SetName("ball");
+  ball->SetMass(1);
+  ball->SetInertiaXX(ChVector<>(0.02, 0.02, 0.02));
+  ball->SetPos(ChVector<>(5.5, 0, 0));
+  ball->SetRot(ChQuaternion<>(1, 0, 0, 0));
+
+  ball->SetCollide(true);
+  ball->GetCollisionModel()->ClearModel();
+  ball->GetCollisionModel()->AddSphere(0.2, ChVector<>(0, 0, 0));
+  ball->GetCollisionModel()->BuildModel();
+
+  ChSharedPtr<ChSphereShape> sphere_b(new ChSphereShape);
+  sphere_b->GetSphereGeometry().center = ChVector<>(0, 0, 0);
+  sphere_b->GetSphereGeometry().rad = 0.2;
+  ball->AddAsset(sphere_b);
+
+  ChSharedPtr<ChColorAsset> col_b(new ChColorAsset);
+  col_b->SetColor(ChColor(0.6f, 0.6f, 0.6f));
+  ball->AddAsset(col_b);
+
+
+  // 3. Create joint constraints.
+  //    All joint frames are specified in the global frame.
+
+  // Define two quaternions representing:
+  // - a rotation of -90 degrees around x (z2y)
+  // - a rotation of +90 degrees around y (z2x)
+  ChQuaternion<> z2y;
+  ChQuaternion<> z2x;
+  z2y.Q_from_AngAxis(-CH_C_PI / 2, ChVector<>(1, 0, 0));
+  z2x.Q_from_AngAxis(CH_C_PI / 2, ChVector<>(0, 1, 0));
+
+  //// -------------------------------------------------------------------------
+  //// EXERCISE 1
+  //// Replace the revolute joint between ground and crank with a ChLinkEngine
+  //// element (a rotational driver) and enforce constant angular speed of
+  //// 90 degrees/s.
+  //// -------------------------------------------------------------------------
+
+  // Engine between ground and crank.
+  // Note that this also acts as a revolute joint (i.e. it enforces the same
+  // kinematic constraints as a revolute joint).  As before, we apply the 'z2y'
+  // rotation to align the rotation axis with the Y axis of the global frame.
+  ChSharedPtr<ChLinkEngine> engine_ground_crank(new ChLinkEngine);
+  engine_ground_crank->SetName("engine_ground_crank");
+  engine_ground_crank->Initialize(ground, crank, ChCoordsys<>(ChVector<>(0, 0, 0), z2y));
+  engine_ground_crank->Set_eng_mode(ChLinkEngine::ENG_MODE_SPEED);
+  if (ChSharedPtr<ChFunction_Const> mfun = engine_ground_crank->Get_spe_funct().DynamicCastTo<ChFunction_Const>())
+    mfun->Set_yconst(CH_C_PI);
+  system.AddLink(engine_ground_crank);
+
+  // Prismatic joint between ground and slider.
+  // The translational axis of a prismatic joint is along the Z axis of the
+  // specified joint coordinate system.  Here, we apply the 'z2x' rotation to
+  // align it with the X axis of the global reference frame.
+  ChSharedPtr<ChLinkLockPrismatic> prismatic_ground_slider(new ChLinkLockPrismatic);
+  prismatic_ground_slider->SetName("prismatic_ground_slider");
+  prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector<>(2, 0, 0), z2x));
+  system.AddLink(prismatic_ground_slider);
+
+  //// -------------------------------------------------------------------------
+  //// EXERCISE 1
+  //// Replace the distance constraint with joints connecting the rod to the
+  //// crank (use ChLinkLockSpherical) and to the slider (ChLinkUniversal). The
+  //// universal joint's cross should be aligned with the Z and Y global axes.
+  //// -------------------------------------------------------------------------
+
+  // Spherical joint between crank and rod
+  ChSharedPtr<ChLinkLockSpherical> spherical_crank_rod(new ChLinkLockSpherical);
+  spherical_crank_rod->SetName("spherical_crank_rod");
+  spherical_crank_rod->Initialize(crank, rod, ChCoordsys<>(ChVector<>(-2, 0, 0), QUNIT));
+  system.AddLink(spherical_crank_rod);
+
+  // Universal joint between rod and slider.
+  // The "cross" of a universal joint is defined using the X and Y axes of the
+  // specified joint coordinate frame. Here, we apply the 'z2x' rotation so that
+  // the cross is aligned with the Z and Y axes of the global reference frame.
+  ChSharedPtr<ChLinkUniversal> universal_rod_slider(new ChLinkUniversal);
+  universal_rod_slider->SetName("universal_rod_slider");
+  universal_rod_slider->Initialize(rod, slider, ChFrame<>(ChVector<>(2, 0, 0), z2x));
+  system.AddLink(universal_rod_slider);
+
+  //// -------------------------------------------------------------------------
+  //// EXERCISE 2
+  //// Add a prismatic joint between ground and ball to constrain the ball's
+  //// motion to the global X axis.
+  //// -------------------------------------------------------------------------
+
+  ChSharedPtr<ChLinkLockPrismatic> prismatic_ground_ball(new ChLinkLockPrismatic);
+  prismatic_ground_ball->SetName("prismatic_ground_ball");
+  prismatic_ground_ball->Initialize(ground, ball, ChCoordsys<>(ChVector<>(5.5, 0, 0), z2x));
+  system.AddLink(prismatic_ground_ball);
+
+
+  //// -------------------------------------------------------------------------
+  //// EXERCISE 2
+  //// Add a spring-damper (ChLinkspring) between ground and the ball.
+  //// This element should connect the center of the ball with the global point
+  //// (6.5, 0, 0).  Set a spring constant of 50 and a spring free length of 1.
+  //// Set a damping coefficient of 5.
+  //// -------------------------------------------------------------------------
+
+  ChSharedPtr<ChLinkSpring> tsda_ground_ball(new ChLinkSpring);
+  tsda_ground_ball->SetName("tsda_ground_ball");
+  tsda_ground_ball->Initialize(ground, ball, false, ChVector<>(6.5, 0, 0), ChVector<>(5.5, 0, 0));
+  tsda_ground_ball->Set_SpringK(50.0);
+  tsda_ground_ball->Set_SpringR(5.0);
+  tsda_ground_ball->Set_SpringRestLength(1.0);
+  system.AddLink(tsda_ground_ball);
+
+
+  // 4. Write the system hierarchy to the console (default log output destination)
+  system.ShowHierarchy(GetLog());
+
+
+  // 5. Prepare visualization with Irrlicht
+  //    Note that Irrlicht uses left-handed frames with Y up.
+
+  // Create the Irrlicht application and set-up the camera.
+  ChIrrApp * application = new ChIrrApp(
+    &system,                               // pointer to the mechanical system
+    L"Slider-Crank Demo 2",                // title of the Irrlicht window
+    core::dimension2d<u32>(800, 600),      // window dimension (width x height)
+    false,                                 // use full screen?
+    true);                                 // enable shadows?
+  application->AddTypicalLogo();
+  application->AddTypicalSky();
+  application->AddTypicalLights();
+  application->AddTypicalCamera(
+    core::vector3df(2, 5, -3),             // camera location
+    core::vector3df(2, 0, 0));             // "look at" location
+
+  // Let the Irrlicht application convert the visualization assets.
+  application->AssetBindAll();
+  application->AssetUpdateAll();
+
+
+  // 6. Perform the simulation.
+
+  // Specify the step-size.
+  application->SetTimestep(0.01);
+  application->SetTryRealtime(true);
+
+  while (application->GetDevice()->run())
+  {
+    // Initialize the graphical scene.
+    application->BeginScene();
+    
+    // Render all visualization objects.
+    application->DrawAll();
+
+    // Render the spring
+    ChIrrTools::drawSpring(
+      application->GetVideoDriver(), 0.05,
+      tsda_ground_ball->GetEndPoint1Abs(),
+      tsda_ground_ball->GetEndPoint2Abs(),
+      video::SColor(255, 150, 20, 20), 80, 15, true);
+
+    // Draw an XZ grid at the global origin to add in visualization.
+    ChIrrTools::drawGrid(
+      application->GetVideoDriver(), 1, 1, 20, 20,
+      ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
+      video::SColor(255, 80, 100, 100), true);
+
+    // Advance simulation by one step.
+    application->DoStep();
+
+    // Finalize the graphical scene.
+    application->EndScene();
+  }
+
+  return 0;
+}
+
+
