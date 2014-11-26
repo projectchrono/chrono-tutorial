@@ -184,6 +184,10 @@ int main(int   argc,
   //// 90 degrees/s.
   //// -------------------------------------------------------------------------
 
+  // Create a ChFunction object that always returns the constant value PI/2.
+  ChSharedPtr<ChFunction_Const> fun(new ChFunction_Const);
+  fun->Set_yconst(CH_C_PI);
+
   // Engine between ground and crank.
   // Note that this also acts as a revolute joint (i.e. it enforces the same
   // kinematic constraints as a revolute joint).  As before, we apply the 'z2y'
@@ -192,8 +196,7 @@ int main(int   argc,
   engine_ground_crank->SetName("engine_ground_crank");
   engine_ground_crank->Initialize(ground, crank, ChCoordsys<>(ChVector<>(0, 0, 0), z2y));
   engine_ground_crank->Set_eng_mode(ChLinkEngine::ENG_MODE_SPEED);
-  if (ChSharedPtr<ChFunction_Const> mfun = engine_ground_crank->Get_spe_funct().DynamicCastTo<ChFunction_Const>())
-    mfun->Set_yconst(CH_C_PI);
+  engine_ground_crank->Set_spe_funct(fun);
   system.AddLink(engine_ground_crank);
 
   // Prismatic joint between ground and slider.
