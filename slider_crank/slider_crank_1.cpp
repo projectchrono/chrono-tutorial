@@ -94,13 +94,13 @@ int main(int   argc,
   crank->AddAsset(box_c);
 
   ChSharedPtr<ChCylinderShape> cyl_c(new ChCylinderShape);
-  cyl_c->GetCylinderGeometry().p1 = ChVector<>(-1, 0.1, 0);
-  cyl_c->GetCylinderGeometry().p2 = ChVector<>(-1, -0.1, 0);
+  cyl_c->GetCylinderGeometry().p1 = ChVector<>(1, 0.1, 0);
+  cyl_c->GetCylinderGeometry().p2 = ChVector<>(1, -0.1, 0);
   cyl_c->GetCylinderGeometry().rad = 0.05;
   crank->AddAsset(cyl_c);
 
   ChSharedPtr<ChSphereShape> sph_c(new ChSphereShape);
-  sph_c->GetSphereGeometry().center = ChVector<>(1, 0, 0);
+  sph_c->GetSphereGeometry().center = ChVector<>(-1, 0, 0);
   sph_c->GetSphereGeometry().rad = 0.05;
   crank->AddAsset(sph_c);
 
