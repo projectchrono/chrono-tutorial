@@ -62,7 +62,7 @@ int main(int   argc,
   //    - visualization assets (defined with respect to the body frame)
 
   // Ground
-  ChSharedBodyPtr ground(new ChBody);
+  ChSharedPtr<ChBody> ground(new ChBody);
   system.AddBody(ground);
   ground->SetIdentifier(-1);
   ground->SetName("ground");
@@ -79,7 +79,7 @@ int main(int   argc,
   ground->AddAsset(col_g);
 
   // Crank
-  ChSharedBodyPtr crank(new ChBody);
+  ChSharedPtr<ChBody> crank(new ChBody);
   system.AddBody(crank);
   crank->SetIdentifier(1);
   crank->SetName("crank");
@@ -108,7 +108,7 @@ int main(int   argc,
   crank->AddAsset(col_c);
 
   // Slider
-  ChSharedBodyPtr slider(new ChBody);
+  ChSharedPtr<ChBody> slider(new ChBody);
   system.AddBody(slider);
   slider->SetIdentifier(2);
   slider->SetName("slider");
