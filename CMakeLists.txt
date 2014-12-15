@@ -28,14 +28,14 @@ ENDIF()
 #       support.  This will require making unit_IRRLICHT a separate DLL.  
 #       For now, we assume we know what we're asking for.
 #       Later on, if Irrlicht is requested, but unit_IRRLICHT is not available,
-#       we will warn the user and disable Irrlicht support in chrono-T
+#       we will warn the user and disable Irrlicht support in chrono-tutorials
 
 OPTION(ENABLE_IRRLICHT "Enable Irrlicht support" ON)
 
 IF(ENABLE_IRRLICHT)
-    FIND_PACKAGE(ChronoEngine COMPONENTS unit_POSTPROCESS unit_IRRLICHT)
+    FIND_PACKAGE(ChronoEngine COMPONENTS unit_IRRLICHT)
 ELSE()
-    FIND_PACKAGE(ChronoEngine COMPONENTS unit_POSTPROCESS)
+    FIND_PACKAGE(ChronoEngine COMPONENTS)
 ENDIF()
 
 
@@ -94,9 +94,6 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CH_BINDIR}/$<CONFIGURATION>/ChronoEngine.dll"
             "${CMAKE_BINARY_DIR}/bin/$<CONFIGURATION>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CH_BINDIR}/$<CONFIGURATION>/ChronoEngine_POSTPROCESS.dll"
-            "${CMAKE_BINARY_DIR}/bin/$<CONFIGURATION>"
     )
 
     IF(ENABLE_IRRLICHT)
@@ -123,13 +120,13 @@ ENDIF()
 # Copy the data folder to the bin directory
 # ------------------------------------------------------------------------------
 
-IF(MSVC)
-  FILE( COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/bin/data/)
-ELSEIF(XCODE_VERSION)
-  FILE( COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/bin/data/)
-ELSE()
-  FILE( COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/data/)
-ENDIF()
+#IF(MSVC)
+#  FILE( COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/bin/data/)
+#ELSEIF(XCODE_VERSION)
+#  FILE( COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/bin/data/)
+#ELSE()
+#  FILE( COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/data/)
+#ENDIF()
 
 
 # ------------------------------------------------------------------------------
