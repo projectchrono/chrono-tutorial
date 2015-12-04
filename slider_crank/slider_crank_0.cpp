@@ -29,10 +29,8 @@
 #include <stdio.h>
 #include <cmath>
 
-#include "physics/ChSystem.h"
-#include "unit_IRRLICHT/ChIrrApp.h"
-
-#include "ChronoTutorial_config.h"
+#include "chrono/physics/ChSystem.h"
+#include "chrono_irrlicht/ChIrrApp.h"
 
 using namespace chrono;
 using namespace irr;
