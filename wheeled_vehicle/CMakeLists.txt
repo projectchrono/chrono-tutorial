@@ -1,8 +1,6 @@
 
 SET(MODELS
-  slider_crank_0
-  slider_crank_1
-  slider_crank_2
+  wheeled_vehicle
   )
 
 #--------------------------------------------------------------
@@ -12,14 +10,14 @@ SET(MODELS
 # Invoke find_package in CONFIG mode
 
 find_package(Chrono
-             COMPONENTS Irrlicht
+             COMPONENTS Vehicle Irrlicht
              CONFIG
 )
 
 # If Chrono and/or the required component(s) were not found, return now.
 
 if(NOT Chrono_FOUND)
-  message("Could not find requirements for Chrono tutorials")
+  message("Could not find requirements for Chrono::Vehicle tutorials")
   return()
 endif()
 
