@@ -12,44 +12,33 @@
 // Authors: Radu Serban
 // =============================================================================
 //
-// Main driver function for a vehicle specified through JSON files.
-//
-// If using the Irrlicht interface, driver inputs are obtained from the keyboard.
+// Main driver function for a wheeled vehicle specified through JSON files.
 //
 // The vehicle reference frame has Z up, X towards the front of the vehicle, and
 // Y pointing to the left.
 //
 // =============================================================================
 
-#include <vector>
-
-#include "chrono/core/ChFileutils.h"
-#include "chrono/core/ChStream.h"
+#include "chrono/ChConfig.h"
 #include "chrono/core/ChRealtimeStep.h"
 #include "chrono/physics/ChSystem.h"
-#include "chrono/physics/ChLinkDistance.h"
-#include "chrono/utils/ChUtilsInputOutput.h"
+#include "chrono/physics/ChBodyEasy.h"
 
-#include "chrono_vehicle/ChConfigVehicle.h"
 #include "chrono_vehicle/ChVehicleModelData.h"
 
 #include "chrono_vehicle/powertrain/SimplePowertrain.h"
-#include "chrono_vehicle/driver/ChDataDriver.h"
 #include "chrono_vehicle/terrain/RigidTerrain.h"
+#include "chrono_vehicle/driver/ChIrrGuiDriver.h"
+
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
 #include "chrono_vehicle/wheeled_vehicle/tire/RigidTire.h"
-
-#include "chrono_vehicle/driver/ChIrrGuiDriver.h"
 #include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
 
 using namespace chrono;
-using namespace chrono::vehicle;
 
 // =============================================================================
 
-std::string data_path("C:/Users/Radu/Documents/Repositories/chrono-tutorial/wheeled_vehicle/data/");
-
-std::string vehicle_file("vehicle/Vehicle.json");
+std::string vehicle_file("vehicle/WheeledVehicle.json");
 std::string rigidtire_file("vehicle/RigidTire.json");
 std::string simplepowertrain_file("vehicle/SimplePowertrain.json");
 
@@ -60,7 +49,7 @@ ChVector<> initLoc(0, 0, 1.0);
 ChQuaternion<> initRot(1, 0, 0, 0);
 
 // Simulation step size
-double step_size = 3e-4;
+double step_size = 1e-3;
 
 // Time interval between two render frames
 double render_step_size = 1.0 / 50;  // FPS = 50
@@ -70,41 +59,53 @@ ChVector<> trackPoint(0.0, 0.0, 1.75);
 
 // =============================================================================
 
-int main(int argc, char* argv[]) {
+void AddMovingObstacles(ChSystem* system);
+void AddFixedObstacles(ChSystem* system);
 
+// =============================================================================
+
+
+int main(int argc, char* argv[]) {
+    // ----------------------
     // Set path to data files
+    // ----------------------
+
+    // Path to Chrono data files (textures, etc.)
     SetChronoDataPath(CHRONO_DATA_DIR);
-    vehicle::SetDataPath(data_path);
+
+    // Path to the data files for this vehicle (JSON specification files)
+    vehicle::SetDataPath(std::string(SOURCE_DIR) + "/data/");
 
     // --------------------------
     // Create the various modules
     // --------------------------
 
-    // Create the vehicle system
-    WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file));
+    // Create and initialize the vehicle system
+    vehicle::WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file));
     vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
-    ////vehicle.GetChassis()->SetBodyFixed(true);
 
-    // Create the ground
-    RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(rigidterrain_file));
+    // Create the terrain
+    vehicle::RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(rigidterrain_file));
+    AddFixedObstacles(vehicle.GetSystem());
+    AddMovingObstacles(vehicle.GetSystem());
 
     // Create and initialize the powertrain system
-    SimplePowertrain powertrain(vehicle::GetDataFile(simplepowertrain_file));
+    vehicle::SimplePowertrain powertrain(vehicle::GetDataFile(simplepowertrain_file));
     powertrain.Initialize();
 
     // Create and initialize the tires
     int num_axles = vehicle.GetNumberAxles();
     int num_wheels = 2 * num_axles;
-    std::vector<ChSharedPtr<RigidTire> > tires(num_wheels);
+    std::vector<ChSharedPtr<vehicle::RigidTire>> tires(num_wheels);
 
     for (int i = 0; i < num_wheels; i++) {
         std::cout << "tire " << i << std::endl;
-        tires[i] = ChSharedPtr<RigidTire>(new RigidTire(vehicle::GetDataFile(rigidtire_file)));
+        tires[i] = ChSharedPtr<vehicle::RigidTire>(new vehicle::RigidTire(vehicle::GetDataFile(rigidtire_file)));
         tires[i]->Initialize(vehicle.GetWheelBody(i));
     }
 
-
-    ChVehicleIrrApp app(&vehicle, &powertrain, L"Vehicle Demo");
+    // Create the Irrlicht vehicle application
+    vehicle::ChVehicleIrrApp app(&vehicle, &powertrain, L"Vehicle Demo");
 
     app.SetSkyBox();
     app.AddTypicalLights(irr::core::vector3df(30.f, -30.f, 100.f), irr::core::vector3df(30.f, 50.f, 100.f), 250, 130);
@@ -115,27 +116,8 @@ int main(int argc, char* argv[]) {
     app.AssetBindAll();
     app.AssetUpdateAll();
 
-    /*
-    bool do_shadows = false; // shadow map is experimental
-    irr::scene::ILightSceneNode* mlight = 0;
-
-    if (do_shadows) {
-      mlight = application.AddLightWithShadow(
-        irr::core::vector3df(10.f, 30.f, 60.f),
-        irr::core::vector3df(0.f, 0.f, 0.f),
-        150, 60, 80, 15, 512, irr::video::SColorf(1, 1, 1), false, false);
-    } else {
-      application.AddTypicalLights(
-        irr::core::vector3df(30.f, -30.f, 100.f),
-        irr::core::vector3df(30.f, 50.f, 100.f),
-        250, 130);
-    }
-
-    if (do_shadows)
-        application.AddShadowAll();
-    */
-
-    ChIrrGuiDriver driver(app);
+    // Create the driver system (interactive)
+    vehicle::ChIrrGuiDriver driver(app);
 
     // Set the time response for steering and throttle keyboard inputs.
     // NOTE: this is not exact, since we do not render quite at the specified FPS.
@@ -146,14 +128,13 @@ int main(int argc, char* argv[]) {
     driver.SetThrottleDelta(render_step_size / throttle_time);
     driver.SetBrakingDelta(render_step_size / braking_time);
 
-
     // ---------------
     // Simulation loop
     // ---------------
 
     // Inter-module communication data
-    TireForces tire_forces(num_wheels);
-    WheelStates wheel_states(num_wheels);
+    vehicle::TireForces tire_forces(num_wheels);
+    vehicle::WheelStates wheel_states(num_wheels);
     double driveshaft_speed;
     double powertrain_torque;
     double throttle_input;
@@ -172,18 +153,6 @@ int main(int argc, char* argv[]) {
     while (app.GetDevice()->run()) {
         // Render scene
         if (step_number % render_steps == 0) {
-            // Update the position of the shadow mapping so that it follows the car
-            ////if (do_shadows) {
-            ////  ChVector<> lightaim = vehicle.GetChassisPos();
-            ////  ChVector<> lightpos = vehicle.GetChassisPos() + ChVector<>(10, 30, 60);
-            ////  irr::core::vector3df mlightpos((irr::f32)lightpos.x, (irr::f32)lightpos.y, (irr::f32)lightpos.z);
-            ////  irr::core::vector3df mlightaim((irr::f32)lightaim.x, (irr::f32)lightaim.y, (irr::f32)lightaim.z);
-            ////  application.GetEffects()->getShadowLight(0).setPosition(mlightpos);
-            ////  application.GetEffects()->getShadowLight(0).setTarget(mlightaim);
-            ////  mlight->setPosition(mlightpos);
-            ////}
-
-            // Draw all scene elements
             app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
             app.DrawAll();
             app.EndScene();
@@ -224,6 +193,48 @@ int main(int argc, char* argv[]) {
         step_number++;
     }
 
-
     return 0;
+}
+
+void AddMovingObstacles(ChSystem* system) {
+    double sizeX = 300;
+    double sizeY = 300;
+    double height = 0;
+    int numObstacles = 10;
+
+    for (int i = 0; i < numObstacles; i++) {
+        double o_sizeX = 1.0 + 3.0 * ChRandom();
+        double o_sizeY = 0.3 + 0.2 * ChRandom();
+        double o_sizeZ = 0.05 + 0.1 * ChRandom();
+        ChSharedPtr<ChBodyEasyBox> obstacle(new ChBodyEasyBox(o_sizeX, o_sizeY, o_sizeZ, 2000.0, true, true));
+
+        double o_posX = (ChRandom() - 0.5) * 0.4 * sizeX;
+        double o_posY = (ChRandom() - 0.5) * 0.4 * sizeY;
+        double o_posZ = height + 4;
+        ChQuaternion<> rot(ChRandom(), ChRandom(), ChRandom(), ChRandom());
+        rot.Normalize();
+        obstacle->SetPos(ChVector<>(o_posX, o_posY, o_posZ));
+        obstacle->SetRot(rot);
+
+        system->AddBody(obstacle);
+    }
+}
+
+void AddFixedObstacles(ChSystem* system) {
+    double radius = 3;
+    double length = 10;
+    ChSharedPtr<ChBodyEasyCylinder> obstacle(new ChBodyEasyCylinder(radius, length, 2000, true, true));
+
+    obstacle->SetPos(ChVector<>(-20, 0, -2.7));
+    obstacle->SetBodyFixed(true);
+
+    system->AddBody(obstacle);
+
+    for (int i = 0; i < 8; ++i) {
+        ChSharedPtr<ChBodyEasyBox> stoneslab(new ChBodyEasyBox(0.5, 1.5, 0.2, 2000, true, true));
+        stoneslab->SetPos(ChVector<>(-1.2 * i + 22, -1, -0.05));
+        stoneslab->SetRot(Q_from_AngAxis(15 * CH_C_DEG_TO_RAD, VECT_Y));
+        stoneslab->SetBodyFixed(true);
+        system->AddBody(stoneslab);
+    }
 }
