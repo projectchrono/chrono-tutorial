@@ -1,7 +1,7 @@
 {
-  "Name":                       "Brake Rear",
+  "Name":                       "Brake Front",
   "Type":                       "Brake",
   "Template":                   "BrakeSimple",
 
-  "Maximum Torque":             4000
+  "Maximum Torque":             8000
 }

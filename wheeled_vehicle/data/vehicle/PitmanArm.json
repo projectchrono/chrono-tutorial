@@ -1,5 +1,5 @@
 {
-  "Name":                       "Pitman Arm Steering",
+  "Name":                       "Generic Pitman Arm Steering",
   "Type":                       "Steering",
   "Template":                   "PitmanArm",
 
