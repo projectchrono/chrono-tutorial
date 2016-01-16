@@ -38,6 +38,7 @@
 #include "chrono_irrlicht/ChIrrApp.h"
 
 using namespace chrono;
+using namespace chrono::irrlicht;
 using namespace irr;
 
 
