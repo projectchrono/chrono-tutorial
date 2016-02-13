@@ -62,24 +62,24 @@ int main(int   argc,
   //    - visualization assets (defined with respect to the body frame)
 
   // Ground
-  ChSharedPtr<ChBody> ground(new ChBody);
+  auto ground = std::make_shared<ChBody>();
   system.AddBody(ground);
   ground->SetIdentifier(-1);
   ground->SetName("ground");
   ground->SetBodyFixed(true);
 
-  ChSharedPtr<ChCylinderShape> cyl_g(new ChCylinderShape);
+  auto cyl_g = std::make_shared<ChCylinderShape>();
   cyl_g->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
   cyl_g->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
   cyl_g->GetCylinderGeometry().rad = 0.03;
   ground->AddAsset(cyl_g);
 
-  ChSharedPtr<ChColorAsset> col_g(new ChColorAsset);
+  auto col_g = std::make_shared<ChColorAsset>();
   col_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
   ground->AddAsset(col_g);
 
   // Crank
-  ChSharedPtr<ChBody> crank(new ChBody);
+  auto crank = std::make_shared<ChBody>();
   system.AddBody(crank);
   crank->SetIdentifier(1);
   crank->SetName("crank");
@@ -88,27 +88,27 @@ int main(int   argc,
   crank->SetPos(ChVector<>(-1, 0, 0));
   crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-  ChSharedPtr<ChBoxShape> box_c(new ChBoxShape);
+  auto box_c = std::make_shared<ChBoxShape>();
   box_c->GetBoxGeometry().Size = ChVector<>(0.95, 0.05, 0.05);
   crank->AddAsset(box_c);
 
-  ChSharedPtr<ChCylinderShape> cyl_c(new ChCylinderShape);
+  auto cyl_c = std::make_shared<ChCylinderShape>();
   cyl_c->GetCylinderGeometry().p1 = ChVector<>(1, 0.1, 0);
   cyl_c->GetCylinderGeometry().p2 = ChVector<>(1, -0.1, 0);
   cyl_c->GetCylinderGeometry().rad = 0.05;
   crank->AddAsset(cyl_c);
 
-  ChSharedPtr<ChSphereShape> sph_c(new ChSphereShape);
+  auto sph_c = std::make_shared<ChSphereShape>();
   sph_c->GetSphereGeometry().center = ChVector<>(-1, 0, 0);
   sph_c->GetSphereGeometry().rad = 0.05;
   crank->AddAsset(sph_c);
 
-  ChSharedPtr<ChColorAsset> col_c(new ChColorAsset);
+  auto col_c = std::make_shared<ChColorAsset>();
   col_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
   crank->AddAsset(col_c);
 
   // Slider
-  ChSharedPtr<ChBody> slider(new ChBody);
+  auto slider = std::make_shared<ChBody>();
   system.AddBody(slider);
   slider->SetIdentifier(2);
   slider->SetName("slider");
@@ -117,11 +117,11 @@ int main(int   argc,
   slider->SetPos(ChVector<>(2, 0, 0));
   slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-  ChSharedPtr<ChBoxShape> box_s(new ChBoxShape);
+  auto box_s = std::make_shared<ChBoxShape>();
   box_s->GetBoxGeometry().Size = ChVector<>(0.2, 0.1, 0.1);
   slider->AddAsset(box_s);
 
-  ChSharedPtr<ChColorAsset> col_s(new ChColorAsset);
+  auto col_s = std::make_shared<ChColorAsset>();
   col_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
   slider->AddAsset(col_s);
 
@@ -162,7 +162,7 @@ int main(int   argc,
   // The translational axis of a prismatic joint is along the Z axis of the
   // specified joint coordinate system.  Here, we apply the 'z2x' rotation to
   // align it with the X axis of the global reference frame.
-  ChSharedPtr<ChLinkLockPrismatic> prismatic_ground_slider(new ChLinkLockPrismatic);
+  auto prismatic_ground_slider = std::make_shared<ChLinkLockPrismatic>();
   prismatic_ground_slider->SetName("prismatic_ground_slider");
   prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector<>(2, 0, 0), z2x));
   system.AddLink(prismatic_ground_slider);

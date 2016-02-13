@@ -66,24 +66,24 @@ int main(int   argc,
   //    - visualization assets (defined with respect to the body frame)
 
   // Ground
-  ChSharedPtr<ChBody> ground(new ChBody);
+  auto ground = std::make_shared<ChBody>();
   system.AddBody(ground);
   ground->SetIdentifier(-1);
   ground->SetName("ground");
   ground->SetBodyFixed(true);
 
-  ChSharedPtr<ChCylinderShape> cyl_g(new ChCylinderShape);
+  auto cyl_g = std::make_shared<ChCylinderShape>();
   cyl_g->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
   cyl_g->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
   cyl_g->GetCylinderGeometry().rad = 0.03;
   ground->AddAsset(cyl_g);
 
-  ChSharedPtr<ChColorAsset> col_g(new ChColorAsset);
+  auto col_g = std::make_shared<ChColorAsset>();
   col_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
   ground->AddAsset(col_g);
 
   // Crank
-  ChSharedPtr<ChBody> crank(new ChBody);
+  auto crank = std::make_shared<ChBody>();
   system.AddBody(crank);
   crank->SetIdentifier(1);
   crank->SetName("crank");
@@ -92,27 +92,27 @@ int main(int   argc,
   crank->SetPos(ChVector<>(-1, 0, 0));
   crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-  ChSharedPtr<ChBoxShape> box_c(new ChBoxShape);
+  auto box_c = std::make_shared<ChBoxShape>();
   box_c->GetBoxGeometry().Size = ChVector<>(0.95, 0.05, 0.05);
   crank->AddAsset(box_c);
 
-  ChSharedPtr<ChCylinderShape> cyl_c(new ChCylinderShape);
+  auto cyl_c = std::make_shared<ChCylinderShape>();
   cyl_c->GetCylinderGeometry().p1 = ChVector<>(1, 0.1, 0);
   cyl_c->GetCylinderGeometry().p2 = ChVector<>(1, -0.1, 0);
   cyl_c->GetCylinderGeometry().rad = 0.05;
   crank->AddAsset(cyl_c);
 
-  ChSharedPtr<ChSphereShape> sph_c(new ChSphereShape);
+  auto sph_c = std::make_shared<ChSphereShape>();
   sph_c->GetSphereGeometry().center = ChVector<>(-1, 0, 0);
   sph_c->GetSphereGeometry().rad = 0.05;
   crank->AddAsset(sph_c);
 
-  ChSharedPtr<ChColorAsset> col_c(new ChColorAsset);
+  auto col_c = std::make_shared<ChColorAsset>();
   col_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
   crank->AddAsset(col_c);
 
   // Slider
-  ChSharedPtr<ChBody> slider(new ChBody);
+  auto slider = std::make_shared<ChBody>();
   system.AddBody(slider);
   slider->SetIdentifier(2);
   slider->SetName("slider");
@@ -121,17 +121,17 @@ int main(int   argc,
   slider->SetPos(ChVector<>(2, 0, 0));
   slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-  ChSharedPtr<ChBoxShape> box_s(new ChBoxShape);
+  auto box_s = std::make_shared<ChBoxShape>();
   box_s->GetBoxGeometry().Size = ChVector<>(0.2, 0.1, 0.1);
   slider->AddAsset(box_s);
 
-  ChSharedPtr<ChCylinderShape> cyl_s(new ChCylinderShape);
+  auto cyl_s = std::make_shared<ChCylinderShape>();
   cyl_s->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
   cyl_s->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
   cyl_s->GetCylinderGeometry().rad = 0.03;
   slider->AddAsset(cyl_s);
 
-  ChSharedPtr<ChColorAsset> col_s(new ChColorAsset);
+  auto col_s = std::make_shared<ChColorAsset>();
   col_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
   slider->AddAsset(col_s);
 
@@ -155,7 +155,7 @@ int main(int   argc,
   //// -------------------------------------------------------------------------
 
   // Connecting rod
-  ChSharedPtr<ChBody> rod(new ChBody);
+  auto rod = std::make_shared<ChBody>();
   system.AddBody(rod);
   rod->SetIdentifier(3);
   rod->SetName("rod");
@@ -164,17 +164,17 @@ int main(int   argc,
   rod->SetPos(ChVector<>(0, 0, 0));
   rod->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-  ChSharedPtr<ChBoxShape> box_r(new ChBoxShape);
+  auto box_r = std::make_shared<ChBoxShape>();
   box_r->GetBoxGeometry().Size = ChVector<>(2, 0.05, 0.05);
   rod->AddAsset(box_r);
 
-  ChSharedPtr<ChCylinderShape> cyl_r(new ChCylinderShape);
+  auto cyl_r = std::make_shared<ChCylinderShape>();
   cyl_r->GetCylinderGeometry().p1 = ChVector<>(2, 0, 0.2);
   cyl_r->GetCylinderGeometry().p2 = ChVector<>(2, 0, -0.2);
   cyl_r->GetCylinderGeometry().rad = 0.03;
   rod->AddAsset(cyl_r);
 
-  ChSharedPtr<ChColorAsset> col_r(new ChColorAsset);
+  auto col_r = std::make_shared<ChColorAsset>();
   col_r->SetColor(ChColor(0.2f, 0.6f, 0.2f));
   rod->AddAsset(col_r);
 
@@ -209,14 +209,14 @@ int main(int   argc,
   //// -------------------------------------------------------------------------
 
   // Create a ChFunction object that always returns the constant value PI/2.
-  ChSharedPtr<ChFunction_Const> fun(new ChFunction_Const);
+  auto fun = std::make_shared<ChFunction_Const>();
   fun->Set_yconst(CH_C_PI);
 
   // Engine between ground and crank.
   // Note that this also acts as a revolute joint (i.e. it enforces the same
   // kinematic constraints as a revolute joint).  As before, we apply the 'z2y'
   // rotation to align the rotation axis with the Y axis of the global frame.
-  ChSharedPtr<ChLinkEngine> engine_ground_crank(new ChLinkEngine);
+  auto engine_ground_crank = std::make_shared<ChLinkEngine>();
   engine_ground_crank->SetName("engine_ground_crank");
   engine_ground_crank->Initialize(ground, crank, ChCoordsys<>(ChVector<>(0, 0, 0), z2y));
   engine_ground_crank->Set_eng_mode(ChLinkEngine::ENG_MODE_SPEED);
@@ -227,7 +227,7 @@ int main(int   argc,
   // The translational axis of a prismatic joint is along the Z axis of the
   // specified joint coordinate system.  Here, we apply the 'z2x' rotation to
   // align it with the X axis of the global reference frame.
-  ChSharedPtr<ChLinkLockPrismatic> prismatic_ground_slider(new ChLinkLockPrismatic);
+  auto prismatic_ground_slider = std::make_shared<ChLinkLockPrismatic>();
   prismatic_ground_slider->SetName("prismatic_ground_slider");
   prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector<>(2, 0, 0), z2x));
   system.AddLink(prismatic_ground_slider);
@@ -240,7 +240,7 @@ int main(int   argc,
   //// -------------------------------------------------------------------------
 
   // Spherical joint between crank and rod
-  ChSharedPtr<ChLinkLockSpherical> spherical_crank_rod(new ChLinkLockSpherical);
+  auto spherical_crank_rod = std::make_shared<ChLinkLockSpherical>();
   spherical_crank_rod->SetName("spherical_crank_rod");
   spherical_crank_rod->Initialize(crank, rod, ChCoordsys<>(ChVector<>(-2, 0, 0), QUNIT));
   system.AddLink(spherical_crank_rod);
@@ -249,7 +249,7 @@ int main(int   argc,
   // The "cross" of a universal joint is defined using the X and Y axes of the
   // specified joint coordinate frame. Here, we apply the 'z2x' rotation so that
   // the cross is aligned with the Z and Y axes of the global reference frame.
-  ChSharedPtr<ChLinkUniversal> universal_rod_slider(new ChLinkUniversal);
+  auto universal_rod_slider = std::make_shared<ChLinkUniversal>();
   universal_rod_slider->SetName("universal_rod_slider");
   universal_rod_slider->Initialize(rod, slider, ChFrame<>(ChVector<>(2, 0, 0), z2x));
   system.AddLink(universal_rod_slider);
