@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
 
     // Create and initialize the powertrain system
     vehicle::SimplePowertrain powertrain(vehicle::GetDataFile(simplepowertrain_file));
-    powertrain.Initialize();
+    powertrain.Initialize(vehicle.GetChassis(), vehicle.GetDriveshaft());
 
     // Create and initialize the tires
     int num_axles = vehicle.GetNumberAxles();
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < num_wheels; i++) {
         std::cout << "tire " << i << std::endl;
         tires[i] = std::make_shared<vehicle::RigidTire>(vehicle::GetDataFile(rigidtire_file));
-        tires[i]->Initialize(vehicle.GetWheelBody(i));
+        tires[i]->Initialize(vehicle.GetWheelBody(i), vehicle::VehicleSide(i % 2));
     }
 
     // Create the Irrlicht vehicle application
