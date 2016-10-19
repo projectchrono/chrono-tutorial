@@ -62,6 +62,7 @@ endif()
 # Options for configuring/building individual sets of programs
 option(ENABLE_CHRONO_PROGRAMS "Build the Chrono tutorial programs" ON)
 option(ENABLE_VEHICLE_PROGRAMS "Build the Chrono::Vehicle tutorial programs" ON)
+option(ENABLE_FEA_PROGRAMS "Build the Chrono::FEA tutorial programs" ON)
 
 # Keep track of all DLLs. Each submodule should append to this list.
 list(APPEND ALL_DLLS "")
@@ -74,6 +75,10 @@ endif()
 if(ENABLE_VEHICLE_PROGRAMS)
   message(STATUS "==== Chrono::Vehicle programs ====")
   add_subdirectory(wheeled_vehicle)
+endif()
+if(ENABLE_FEA_PROGRAMS)
+  message(STATUS "==== Chrono::FEA programs ====")
+  add_subdirectory(FEA_cable_collide)
 endif()
 
 #--------------------------------------------------------------
