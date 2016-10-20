@@ -1,6 +1,9 @@
 
 SET(MODELS
   FEA_cable_collide_0
+  FEA_cable_collide_1
+  FEA_cable_collide_0_solution
+  FEA_cable_collide_1_solution
   )
 
 #--------------------------------------------------------------

@@ -154,26 +154,28 @@ int main(int argc, char* argv[]) {
     auto constraint_pos = std::make_shared<ChLinkPointFrame>();
     constraint_pos->Initialize(beam_nodes[0], truss);
     system.Add(constraint_pos);
+    
 
+    // ADD ALSO A CYLINDER CONNECTED TO THE END OF THE CABLE
+    
+    // create the cylinder
+    auto cylinder = std::make_shared<ChBodyEasyCylinder>(
+                0.02,  // radius
+                0.1,   // height
+                1000,  // density (used to auto-set inertia, mass)
+                true,  // do collide 
+                true); // do visualize
+    
+    // move cylinder to end of beam
+    cylinder->SetPos( beam_nodes.back()->GetPos() + ChVector<>(0, -0.05, 0) );
 
-    //// -------------------------------------------------------------------------
-    //// EXERCISE 1
-    ////
-    //// Add also a cylinder attached to the free end of the cable.
-    //// Suggested size: 0.02 radius, 0.1 height, density:1000.
-    //// Hint: use the ChBodyEasyCylinder to make the cylinder, pass size as 
-    //// parameters in construction.
-    //// Hint: use the ChLinkPointFrame to connect the cylinder and the end node.
-    //// 
-    //// -------------------------------------------------------------------------
+    // add it to the system
+    system.Add(cylinder);
 
-
-    // TO DO ...
-
-
-
-
-
+    // lock an end of the wire to the cylinder
+    auto constraint_cyl = std::make_shared<ChLinkPointFrame>();
+    constraint_cyl->Initialize(beam_nodes.back(), cylinder);
+    system.Add(constraint_cyl);
 
 
     // 7. Make the finite elements visible in the 3D view
@@ -197,7 +199,8 @@ int main(int argc, char* argv[]) {
     mesh->AddAsset(mvisualizebeamA);
 
     auto mvisualizebeamC = std::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
-    mvisualizebeamC->SetFEMglyphType(ChVisualizationFEAmesh::E_GLYPH_NODE_DOT_POS);  // E_GLYPH_NODE_CSYS for ChNodeFEAxyzrot
+    mvisualizebeamC->SetFEMglyphType(
+        ChVisualizationFEAmesh::E_GLYPH_NODE_DOT_POS);  // E_GLYPH_NODE_CSYS for ChNodeFEAxyzrot
     mvisualizebeamC->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_NONE);
     mvisualizebeamC->SetSymbolsThickness(0.006);
     mvisualizebeamC->SetSymbolsScale(0.005);

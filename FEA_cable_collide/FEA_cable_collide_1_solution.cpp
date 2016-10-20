@@ -12,11 +12,11 @@
 // Author: Alessandro Tasora
 // =============================================================================
 //
-// Create a falling cable using FEA module (model 0)
+// Create a falling cable using FEA module (model 1)
 //
-// This cable is made with N beam elements of ChElementANCFcable type. They are
-// added to a ChMesh and then the first node is connected to the absolute
-// reference using a constraint.
+// This model is made with N elements of ChElementBeamEuler type. They are
+// added to a ChMesh and then the first cable is connected to the absolute
+// reference using a joint.
 //
 // The cable falls under the action of gravity alone, acting in the negative
 // Y (up) direction.
@@ -28,15 +28,17 @@
 #include <stdio.h>
 #include <cmath>
 
-#include "chrono/physics/ChSystem.h"
+#include "chrono/physics/ChSystemDEM.h"
+#include "chrono/physics/ChLinkMate.h"
 #include "chrono/physics/ChBodyEasy.h"
 #include "chrono_irrlicht/ChIrrApp.h"
 
-#include "chrono_fea/ChElementCableANCF.h"
+#include "chrono_fea/ChElementBeamEuler.h"
 #include "chrono_fea/ChBuilderBeam.h"
 #include "chrono_fea/ChMesh.h"
 #include "chrono_fea/ChVisualizationFEAmesh.h"
-#include "chrono_fea/ChLinkPointFrame.h"
+#include "chrono_fea/ChContactSurfaceMesh.h"
+#include "chrono_fea/ChContactSurfaceNodeCloud.h"
 
 using namespace chrono;
 using namespace chrono::irrlicht;
@@ -51,9 +53,9 @@ int main(int argc, char* argv[]) {
 
     // 1. Create the physical system that will handle all finite elements and constraints.
 
-    //    Specify the gravitational acceleration vector, consistent with the
-    //    global reference frame having Y up (ISO system).
-    ChSystem system;
+    //    NOTE that we need contact in FEA, so we use the ChSystemDEM, that uses DEM 
+    //    penalty in contacts
+    ChSystemDEM system;
     system.Set_G_acc(ChVector<>(0, -9.81, 0));
 
 
@@ -67,27 +69,24 @@ int main(int argc, char* argv[]) {
     // 3. Create a material for the beam finite elements.
 
     //    Note that each FEA element type requires some corresponding
-    //    type of material. Here we will use ChElementCableANCF elements:
-    //    they use a material of type ChBeamSectionCable, so let's do
+    //    type of material. ChElemetBeamEuler require a ChBeamSectionAdvanced material.
 
-    auto beam_material = std::make_shared<ChBeamSectionCable>();
-    beam_material->SetDiameter(0.01);
-    beam_material->SetYoungModulus(0.01e9);
-    beam_material->SetBeamRaleyghDamping(0.01);
+    auto beam_material = std::make_shared<ChBeamSectionAdvanced>();
+	beam_material->SetAsRectangularSection(0.012, 0.025);
+	beam_material->SetYoungModulus (0.01e9);
+	beam_material->SetGshearModulus(0.01e9 * 0.3);
+	beam_material->SetBeamRaleyghDamping(0.01);
 
 
     // 4. Create the nodes
 
     //    - We use a simple for() loop to create nodes along the cable.
-    //    - Nodes for ChElementCableANCF must be of ChNodeFEAxyzD class;
-    //      i.e. each node has 6 coordinates: {position, direction}, where
-    //      direction is the tangent to the cable.
-    //    - Each node must be added to the mesh, ex.  mesh.Add(my_node)
-    //    - To make things easier in the following, we store node pointers
-    //      into an optional 'beam_nodes' array, i.e. a std::vector<>, later we
-    //      can use such array for easy creation of elements between the nodes.
+    //    - Nodes for ChElemetBeamEuler must be of ChNodeFEAxyzrot class;
+    //      i.e. each node has coordinates of type: {position, rotation},
+    //      where X axis of rotated system is the direction of the beam, 
+    //      Y and Z are the section plane.
 
-    std::vector<std::shared_ptr<ChNodeFEAxyzD> > beam_nodes;
+    std::vector<std::shared_ptr<ChNodeFEAxyzrot> > beam_nodes;
 
     double length = 1.2;  // beam length, in meters;
     int N_nodes = 16;
@@ -97,11 +96,8 @@ int main(int argc, char* argv[]) {
                             0.5,                                  // node position, y
                             0);                                   // node position, z
 
-        // i-th node direction
-        ChVector<> direction(1.0, 0, 0);
-
         // create the node
-        auto node = std::make_shared<ChNodeFEAxyzD>(position, direction);
+        auto node = std::make_shared<ChNodeFEAxyzrot>( ChFrame<>(position) );
 
         // add it to mesh
         mesh->AddNode(node);
@@ -113,15 +109,9 @@ int main(int argc, char* argv[]) {
 
     // 5. Create the elements
 
-    //    - We use a simple for() loop to create elements between the
-    //      nodes that we already created.
-    //    - Each element must be set with the ChBeamSectionCable material
-    //      that we already created
-    //    - Each element must be added to the mesh, ex.  mesh.Add(my_element)
-
     for (int ie = 0; ie < N_nodes - 1; ++ie) {
         // create the element
-        auto element = std::make_shared<ChElementCableANCF>();
+        auto element = std::make_shared<ChElementBeamEuler>();
 
         // set the connected nodes (pick two consecutive nodes in our beam_nodes container)
         element->SetNodes(beam_nodes[ie], beam_nodes[ie + 1]);
@@ -137,46 +127,73 @@ int main(int argc, char* argv[]) {
     // 6. Add constraints
 
     //    - Constraints can be applied to FEA nodes
-    //    - For the ChNodeFEAxyzD there are specific constraints that
-    //      can be used to connect them to a ChBody, namely
-    //      ChLinkPointFrame and ChLinkDirFrame
-    //    - To attach one end of the beam to the ground, we need a
-    //      'truss' ChBody that is fixed.
-    //    - Note. An alternative, only when the node must be fixed 
-    //      to absolute reference, is not using constraints, and just
-    //      use: beam_nodes[0]->SetFixed(true);  (but would fix also dir)
+    //    - For the ChNodeFEAxyzrot one can use all constraints
+    //      of the ChMate class
 
     auto truss = std::make_shared<ChBody>();
     truss->SetBodyFixed(true);
     system.Add(truss);
 
     // lock an end of the wire to the truss
-    auto constraint_pos = std::make_shared<ChLinkPointFrame>();
-    constraint_pos->Initialize(beam_nodes[0], truss);
+    auto constraint_pos = std::make_shared<ChLinkMateSpherical>();
+    constraint_pos->Initialize(
+        beam_nodes[0],  // node to constraint
+        truss,          // body to constraint
+        false,          // false: next 2 pos are in absolute coords, true: in relative coords
+        beam_nodes[0]->GetPos(), // sphere ball pos 
+        beam_nodes[0]->GetPos()  // sphere cavity pos
+        );
     system.Add(constraint_pos);
 
 
-    //// -------------------------------------------------------------------------
-    //// EXERCISE 1
-    ////
-    //// Add also a cylinder attached to the free end of the cable.
-    //// Suggested size: 0.02 radius, 0.1 height, density:1000.
-    //// Hint: use the ChBodyEasyCylinder to make the cylinder, pass size as 
-    //// parameters in construction.
-    //// Hint: use the ChLinkPointFrame to connect the cylinder and the end node.
-    //// 
-    //// -------------------------------------------------------------------------
+    // 7. Add a collision mesh to the skin of the finite element mesh
+
+    //    - Create a ChMaterialSurfaceDEM , it must be assigned to FEA 
+    //      meshes and rigid bodies. The ChSystemDEM requires it!
+    //    - Create a ChContactSurfaceNodeCloud and add to the FEA mesh.
+    //      This is the easiest representation of a FEA contact surface: it
+    //      simply creates contact spheres per each node. So, no edge-edge cases
+    //      can be detected between elements though, but it is enough for
+    //      dense finite elements meshes that collide with large objects.
+
+    // Create a surface material to be shared with some objects
+    auto mysurfmaterial = std::make_shared<ChMaterialSurfaceDEM>();
+    mysurfmaterial->SetYoungModulus(6e4);
+    mysurfmaterial->SetFriction(0.3f);
+    mysurfmaterial->SetRestitution(0.2f);
+    mysurfmaterial->SetAdhesion(0); 
+
+    // Create the contact surface and add to the mesh
+    auto mcontactcloud = std::make_shared<ChContactSurfaceNodeCloud>();
+    mesh->AddContactSurface(mcontactcloud);
+    
+    // Must use this to 'populate' the contact surface use larger point size to match beam section radius
+    mcontactcloud->AddAllNodes(0.01); 
+
+    // Use our DEM surface material properties 
+    mcontactcloud->SetMaterialSurface(mysurfmaterial);
 
 
-    // TO DO ...
+    // 8. Create a collision plane, as a huge box
+
+    auto floor = std::make_shared<ChBodyEasyBox>(
+          4, 0.2, 4,  // x,y,z size
+          1000,       // density
+          true,       // visible
+          true        // collide
+        );
+
+    system.Add(floor);
+
+    floor->SetBodyFixed(true);
+    floor->SetPos( ChVector<>(0,-0.1,0) );
+
+    // Use our DEM surface material properties 
+    floor->SetMaterialSurface(mysurfmaterial);
 
 
 
-
-
-
-
-    // 7. Make the finite elements visible in the 3D view
+    // 9. Make the finite elements visible in the 3D view
 
     //   - FEA fisualization can be managed via an easy
     //     ChVisualizationFEAmesh helper class.
@@ -197,7 +214,7 @@ int main(int argc, char* argv[]) {
     mesh->AddAsset(mvisualizebeamA);
 
     auto mvisualizebeamC = std::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
-    mvisualizebeamC->SetFEMglyphType(ChVisualizationFEAmesh::E_GLYPH_NODE_DOT_POS);  // E_GLYPH_NODE_CSYS for ChNodeFEAxyzrot
+    mvisualizebeamC->SetFEMglyphType(ChVisualizationFEAmesh::E_GLYPH_NODE_CSYS); 
     mvisualizebeamC->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_NONE);
     mvisualizebeamC->SetSymbolsThickness(0.006);
     mvisualizebeamC->SetSymbolsScale(0.005);
@@ -205,7 +222,7 @@ int main(int argc, char* argv[]) {
     mesh->AddAsset(mvisualizebeamC);
 
 
-    // 8. Configure the solver and timestepper
+    // 10. Configure the solver and timestepper
 
     //    - the default SOLVER_SOR of Chrono is not able to manage stiffness matrices
     //      as required by FEA! we must switch to a different solver.
@@ -220,11 +237,11 @@ int main(int argc, char* argv[]) {
     system.SetTolForce(1e-10);
 
     // Change integrator:
-    system.SetIntegrationType(chrono::ChSystem::INT_EULER_IMPLICIT_LINEARIZED);  // default: fast, 1st order
+    // system.SetIntegrationType(chrono::ChSystem::INT_EULER_IMPLICIT_LINEARIZED);  // default: fast, 1st order
     // system.SetIntegrationType(chrono::ChSystem::INT_HHT);  // precise, slower, might iterate each step
 
 
-    // 9. Prepare visualization with Irrlicht
+    // 11. Prepare visualization with Irrlicht
     //    Note that Irrlicht uses left-handed frames with Y up.
 
     // Create the Irrlicht application and set-up the camera.
@@ -241,16 +258,20 @@ int main(int argc, char* argv[]) {
     application->AddTypicalCamera(core::vector3df(0.1, 0.2, -2),  // camera location
                                   core::vector3df(0, 0, 0));      // "look at" location
 
+    // Enable drawing of contacts
+    application->SetContactsDrawMode(ChIrrTools::CONTACT_FORCES);
+    application->SetSymbolscale(0.1);
+
     // Let the Irrlicht application convert the visualization assets.
     application->AssetBindAll();
     application->AssetUpdateAll();
 
 
-    // 10. Perform the simulation.
+    // 12. Perform the simulation.
 
     // Specify the step-size.
-    application->SetTimestep(0.01);
-    application->SetTryRealtime(true);
+    application->SetTimestep(0.001);
+    application->SetTryRealtime(false);
 
     // Mark completion of system construction
     system.SetupInitial();
