@@ -12,7 +12,7 @@
 // Author: Alessandro Tasora
 // =============================================================================
 //
-// Create a falling cable using FEA module (model 0)
+// Create a falling cable using FEA module (FEA tutorial n.1)
 //
 // This cable is made with N beam elements of ChElementANCFcable type. They are
 // added to a ChMesh and then the first node is connected to the absolute
@@ -238,7 +238,7 @@ int main(int argc, char* argv[]) {
     application->AddTypicalLogo();
     application->AddTypicalSky();
     application->AddTypicalLights();
-    application->AddTypicalCamera(core::vector3df(0.1, 0.2, -2),  // camera location
+    application->AddTypicalCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
                                   core::vector3df(0, 0, 0));      // "look at" location
 
     // Let the Irrlicht application convert the visualization assets.

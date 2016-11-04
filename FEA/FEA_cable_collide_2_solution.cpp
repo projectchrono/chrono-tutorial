@@ -12,11 +12,14 @@
 // Author: Alessandro Tasora
 // =============================================================================
 //
-// Create a falling cable using FEA module (model 1)
+// Create a falling and colliding cable using FEA module (FEA tutorial n.2)
 //
 // This model is made with N elements of ChElementBeamEuler type. They are
 // added to a ChMesh and then the first cable is connected to the absolute
 // reference using a joint.
+//
+// A simple ChContactSurfaceNodeCloud is used to provide collision against
+// the floor.
 //
 // The cable falls under the action of gravity alone, acting in the negative
 // Y (up) direction.
@@ -255,7 +258,7 @@ int main(int argc, char* argv[]) {
     application->AddTypicalLogo();
     application->AddTypicalSky();
     application->AddTypicalLights();
-    application->AddTypicalCamera(core::vector3df(0.1, 0.2, -2),  // camera location
+    application->AddTypicalCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
                                   core::vector3df(0, 0, 0));      // "look at" location
 
     // Enable drawing of contacts

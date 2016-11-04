@@ -78,7 +78,7 @@ if(ENABLE_VEHICLE_PROGRAMS)
 endif()
 if(ENABLE_FEA_PROGRAMS)
   message(STATUS "==== Chrono::FEA programs ====")
-  add_subdirectory(FEA_cable_collide)
+  add_subdirectory(FEA)
 endif()
 
 #--------------------------------------------------------------

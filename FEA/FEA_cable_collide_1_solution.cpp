@@ -12,7 +12,7 @@
 // Author: Alessandro Tasora
 // =============================================================================
 //
-// Create a falling cable using FEA module (model 0)
+// Create a falling cable using FEA module (FEA tutorial n.1)
 //
 // This cable is made with N beam elements of ChElementANCFcable type. They are
 // added to a ChMesh and then the first node is connected to the absolute
