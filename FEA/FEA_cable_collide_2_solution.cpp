@@ -161,7 +161,7 @@ int main(int argc, char* argv[]) {
 
     // Create a surface material to be shared with some objects
     auto mysurfmaterial = std::make_shared<ChMaterialSurfaceDEM>();
-    mysurfmaterial->SetYoungModulus(6e4);
+    mysurfmaterial->SetYoungModulus(2e4);
     mysurfmaterial->SetFriction(0.3f);
     mysurfmaterial->SetRestitution(0.2f);
     mysurfmaterial->SetAdhesion(0); 
