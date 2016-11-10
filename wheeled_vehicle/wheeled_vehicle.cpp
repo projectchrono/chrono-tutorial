@@ -21,6 +21,7 @@
 
 #include "chrono/ChConfig.h"
 #include "chrono/core/ChRealtimeStep.h"
+#include "chrono/physics/ChSystemDEM.h"
 #include "chrono/physics/ChSystem.h"
 #include "chrono/physics/ChBodyEasy.h"
 
@@ -49,7 +50,7 @@ ChVector<> initLoc(0, 0, 1.0);
 ChQuaternion<> initRot(1, 0, 0, 0);
 
 // Simulation step size
-double step_size = 1e-3;
+double step_size = 2e-3;
 
 // Time interval between two render frames
 double render_step_size = 1.0 / 50;  // FPS = 50
@@ -63,6 +64,7 @@ void AddMovingObstacles(ChSystem* system);
 void AddFixedObstacles(ChSystem* system);
 
 // =============================================================================
+auto DVI_DEM = ChMaterialSurfaceBase::DEM;
 
 int main(int argc, char* argv[]) {
     // ----------------------
@@ -78,9 +80,14 @@ int main(int argc, char* argv[]) {
     // --------------------------
     // Create the various modules
     // --------------------------
-
+    
     // Create and initialize the vehicle system
-    vehicle::WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file));
+    vehicle::WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file), DVI_DEM);
+
+    if (dynamic_cast<ChSystemDEM*>(vehicle.GetSystem())){
+        dynamic_cast<ChSystemDEM*>(vehicle.GetSystem())->SetContactForceModel(ChSystemDEM::ContactForceModel::PlainCoulomb);
+    }
+
     vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
 
     vehicle.SetSuspensionVisualizationType(vehicle::VisualizationType::PRIMITIVES);
@@ -210,7 +217,7 @@ void AddMovingObstacles(ChSystem* system) {
         double o_sizeX = 1.0 + 3.0 * ChRandom();
         double o_sizeY = 0.3 + 0.2 * ChRandom();
         double o_sizeZ = 0.05 + 0.1 * ChRandom();
-        auto obstacle = std::make_shared<ChBodyEasyBox>(o_sizeX, o_sizeY, o_sizeZ, 2000.0, true, true);
+        auto obstacle = std::make_shared<ChBodyEasyBox>(o_sizeX, o_sizeY, o_sizeZ, 2000.0, true, true, DVI_DEM);
 
         double o_posX = (ChRandom() - 0.5) * 0.4 * sizeX;
         double o_posY = (ChRandom() - 0.5) * 0.4 * sizeY;
@@ -227,7 +234,7 @@ void AddMovingObstacles(ChSystem* system) {
 void AddFixedObstacles(ChSystem* system) {
     double radius = 3;
     double length = 10;
-    auto obstacle = std::make_shared<ChBodyEasyCylinder>(radius, length, 2000, true, true);
+    auto obstacle = std::make_shared<ChBodyEasyCylinder>(radius, length, 2000, true, true, DVI_DEM);
 
     obstacle->SetPos(ChVector<>(-20, 0, -2.7));
     obstacle->SetBodyFixed(true);
@@ -235,8 +242,8 @@ void AddFixedObstacles(ChSystem* system) {
     system->AddBody(obstacle);
 
     for (int i = 0; i < 8; ++i) {
-        auto stoneslab = std::make_shared<ChBodyEasyBox>(0.5, 1.5, 0.2, 2000, true, true);
-        stoneslab->SetPos(ChVector<>(-1.2 * i + 22, -1, -0.05));
+        auto stoneslab = std::make_shared<ChBodyEasyBox>(0.5, 2.5, 0.25, 2000, true, true, DVI_DEM);
+        stoneslab->SetPos(ChVector<>(-1.2 * i + 22, -1.5, -0.05));
         stoneslab->SetRot(Q_from_AngAxis(15 * CH_C_DEG_TO_RAD, VECT_Y));
         stoneslab->SetBodyFixed(true);
         system->AddBody(stoneslab);
