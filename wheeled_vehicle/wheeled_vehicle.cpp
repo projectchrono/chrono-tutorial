@@ -64,7 +64,6 @@ void AddFixedObstacles(ChSystem* system);
 
 // =============================================================================
 
-
 int main(int argc, char* argv[]) {
     // ----------------------
     // Set path to data files
@@ -84,6 +83,10 @@ int main(int argc, char* argv[]) {
     vehicle::WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file));
     vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
 
+    vehicle.SetSuspensionVisualizationType(vehicle::VisualizationType::PRIMITIVES);
+    vehicle.SetSteeringVisualizationType(vehicle::VisualizationType::PRIMITIVES);
+    vehicle.SetWheelVisualizationType(vehicle::VisualizationType::NONE);
+
     // Create the terrain
     vehicle::RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(rigidterrain_file));
     AddFixedObstacles(vehicle.GetSystem());
@@ -102,6 +105,7 @@ int main(int argc, char* argv[]) {
         std::cout << "tire " << i << std::endl;
         tires[i] = std::make_shared<vehicle::RigidTire>(vehicle::GetDataFile(rigidtire_file));
         tires[i]->Initialize(vehicle.GetWheelBody(i), vehicle::VehicleSide(i % 2));
+        tires[i]->SetVisualizationType(vehicle::VisualizationType::MESH);
     }
 
     // Create the Irrlicht vehicle application
