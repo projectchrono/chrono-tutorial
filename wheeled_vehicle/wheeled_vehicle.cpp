@@ -58,13 +58,15 @@ double render_step_size = 1.0 / 50;  // FPS = 50
 // Point on chassis tracked by the camera
 ChVector<> trackPoint(0.0, 0.0, 1.75);
 
+// Contact method
+auto DVI_DEM = ChMaterialSurfaceBase::DEM;
+
 // =============================================================================
 
 void AddMovingObstacles(ChSystem* system);
 void AddFixedObstacles(ChSystem* system);
 
 // =============================================================================
-auto DVI_DEM = ChMaterialSurfaceBase::DEM;
 
 int main(int argc, char* argv[]) {
     // ----------------------
@@ -83,10 +85,6 @@ int main(int argc, char* argv[]) {
     
     // Create and initialize the vehicle system
     vehicle::WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file), DVI_DEM);
-
-    if (dynamic_cast<ChSystemDEM*>(vehicle.GetSystem())){
-        dynamic_cast<ChSystemDEM*>(vehicle.GetSystem())->SetContactForceModel(ChSystemDEM::ContactForceModel::PlainCoulomb);
-    }
 
     vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
 
