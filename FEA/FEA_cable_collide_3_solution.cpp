@@ -30,7 +30,7 @@
 //
 // =============================================================================
 
-#include <stdio.h>
+#include <cstdio>
 #include <cmath>
 
 #include "chrono/physics/ChSystemDEM.h"
