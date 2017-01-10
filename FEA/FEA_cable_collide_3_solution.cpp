@@ -284,7 +284,7 @@ int main(int argc, char* argv[]) {
 
 
 
-    // 9. Make the finite elements visible in the 3D view
+    // 10. Make the finite elements visible in the 3D view
 
     //   - FEA fisualization can be managed via an easy
     //     ChVisualizationFEAmesh helper class.
