@@ -31,7 +31,7 @@
 //
 // =============================================================================
 
-#include <stdio.h>
+#include <cstdio>
 #include <cmath>
 
 #include "chrono_irrlicht/ChIrrApp.h"

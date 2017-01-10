@@ -25,6 +25,9 @@
 #include "chrono/physics/ChSystem.h"
 #include "chrono/physics/ChBodyEasy.h"
 
+#include "chrono/core/ChFileutils.h"
+#include "chrono/utils/ChUtilsInputOutput.h"
+
 #include "chrono_vehicle/ChVehicleModelData.h"
 
 #include "chrono_vehicle/powertrain/SimplePowertrain.h"
@@ -60,6 +63,10 @@ ChVector<> trackPoint(0.0, 0.0, 1.75);
 
 // Contact method
 auto DVI_DEM = ChMaterialSurfaceBase::DEM;
+
+// Output directories
+const std::string out_dir = "../WHEELED_VEHICLE";
+const std::string pov_dir = out_dir + "/POVRAY";
 
 // =============================================================================
 
@@ -137,6 +144,19 @@ int main(int argc, char* argv[]) {
     driver.SetThrottleDelta(render_step_size / throttle_time);
     driver.SetBrakingDelta(render_step_size / braking_time);
 
+    // -----------------
+    // Initialize output
+    // -----------------
+
+    if (ChFileutils::MakeDirectory(out_dir.c_str()) < 0) {
+        std::cout << "Error creating directory " << out_dir << std::endl;
+        return 1;
+    }
+    if (ChFileutils::MakeDirectory(pov_dir.c_str()) < 0) {
+        std::cout << "Error creating directory " << pov_dir << std::endl;
+        return 1;
+    }
+
     // ---------------
     // Simulation loop
     // ---------------
@@ -155,6 +175,7 @@ int main(int argc, char* argv[]) {
 
     // Initialize simulation frame counter and simulation time
     int step_number = 0;
+    int frame_number = 0;
     double time = 0;
 
     ChRealtimeStepTimer realtime_timer;
@@ -165,6 +186,12 @@ int main(int argc, char* argv[]) {
             app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
             app.DrawAll();
             app.EndScene();
+
+            char filename[100];
+            sprintf(filename, "%s/data_%03d.dat", pov_dir.c_str(), frame_number + 1);
+            utils::WriteShapesPovray(vehicle.GetSystem(), filename);
+
+            frame_number++;
         }
 
         // Collect output data from modules (for inter-module communication)
