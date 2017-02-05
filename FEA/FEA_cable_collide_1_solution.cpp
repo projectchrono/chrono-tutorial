@@ -216,15 +216,15 @@ int main(int argc, char* argv[]) {
     //    - Note that if you build the MKL module, you could use the more precise MKL solver.
 
     // Change solver
-    system.SetSolverType(ChSystem::SOLVER_MINRES);
+    system.SetSolverType(ChSolver::MINRES);
     system.SetSolverWarmStarting(true);  // this helps a lot to speedup convergence in this class of problems
     system.SetMaxItersSolverSpeed(200);
     system.SetMaxItersSolverStab(200);
     system.SetTolForce(1e-10);
 
     // Change integrator:
-    system.SetIntegrationType(chrono::ChSystem::INT_EULER_IMPLICIT_LINEARIZED);  // default: fast, 1st order
-    // system.SetIntegrationType(chrono::ChSystem::INT_HHT);  // precise, slower, might iterate each step
+    system.SetTimestepperType(ChTimestepper::EULER_IMPLICIT_LINEARIZED);  // default: fast, 1st order
+    // system.SetTimestepperType(ChTimestepper::HHT);  // precise, slower, might iterate each step
 
 
     // 9. Prepare visualization with Irrlicht
