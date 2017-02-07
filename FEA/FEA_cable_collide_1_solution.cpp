@@ -216,15 +216,15 @@ int main(int argc, char* argv[]) {
     //    - Note that if you build the MKL module, you could use the more precise MKL solver.
 
     // Change solver
-    system.SetSolverType(ChSolver::MINRES);
+    system.SetSolverType(ChSolver::Type::MINRES);
     system.SetSolverWarmStarting(true);  // this helps a lot to speedup convergence in this class of problems
     system.SetMaxItersSolverSpeed(200);
     system.SetMaxItersSolverStab(200);
     system.SetTolForce(1e-10);
 
     // Change integrator:
-    system.SetTimestepperType(ChTimestepper::EULER_IMPLICIT_LINEARIZED);  // default: fast, 1st order
-    // system.SetTimestepperType(ChTimestepper::HHT);  // precise, slower, might iterate each step
+    system.SetTimestepperType(ChTimestepper::Type::EULER_IMPLICIT_LINEARIZED);  // default: fast, 1st order
+    // system.SetTimestepperType(ChTimestepper::Type::HHT);  // precise, slower, might iterate each step
 
 
     // 9. Prepare visualization with Irrlicht
@@ -241,8 +241,8 @@ int main(int argc, char* argv[]) {
     application->AddTypicalLogo();
     application->AddTypicalSky();
     application->AddTypicalLights();
-    application->AddTypicalCamera(core::vector3df(0.1, 0.2, -2),  // camera location
-                                  core::vector3df(0, 0, 0));      // "look at" location
+    application->AddTypicalCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
+                                  core::vector3df(0.0f, 0.0f, 0.0f));  // "look at" location
 
     // Let the Irrlicht application convert the visualization assets.
     application->AssetBindAll();
