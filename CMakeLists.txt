@@ -63,6 +63,7 @@ endif()
 option(ENABLE_CHRONO_PROGRAMS "Build the Chrono tutorial programs" ON)
 option(ENABLE_VEHICLE_PROGRAMS "Build the Chrono::Vehicle tutorial programs" ON)
 option(ENABLE_FEA_PROGRAMS "Build the Chrono::FEA tutorial programs" ON)
+option(ENABLE_PARALLEL_PROGRAMS "Build the Chrono::Parallel tutorial programs" ON)
 
 # Keep track of all DLLs. Each submodule should append to this list.
 list(APPEND ALL_DLLS "")
@@ -79,6 +80,10 @@ endif()
 if(ENABLE_FEA_PROGRAMS)
   message(STATUS "==== Chrono::FEA programs ====")
   add_subdirectory(FEA)
+endif()
+if(ENABLE_PARALLEL_PROGRAMS)
+  message(STATUS "==== Chrono::Parallel programs ====")
+  add_subdirectory(parallel)
 endif()
 
 #--------------------------------------------------------------
