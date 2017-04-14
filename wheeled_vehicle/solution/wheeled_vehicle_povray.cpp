@@ -53,7 +53,7 @@ ChVector<> initLoc(0, 0, 1.0);
 ChQuaternion<> initRot(1, 0, 0, 0);
 
 // Simulation step size
-double step_size = 2e-3;
+double step_size = 2e-4;
 
 // Time interval between two render frames
 double render_step_size = 1.0 / 50;  // FPS = 50
