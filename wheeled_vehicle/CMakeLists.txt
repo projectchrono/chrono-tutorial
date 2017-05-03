@@ -1,6 +1,7 @@
 
 SET(MODELS
   wheeled_vehicle
+  wheeled_vehicle_solution
   )
 
 #--------------------------------------------------------------

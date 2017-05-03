@@ -30,8 +30,8 @@
 #include <cstdio>
 #include <cmath>
 
+#include "chrono/physics/ChSystemNSC.h"
 #include "chrono_irrlicht/ChIrrApp.h"
-#include "physics/ChSystem.h"
 
 using namespace chrono;
 using namespace chrono::irrlicht;
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 
     //    Specify the gravitational acceleration vector, consistent with the
     //    global reference frame having Z up.
-    ChSystem system;
+    ChSystemNSC system;
     system.Set_G_acc(ChVector<>(0, 0, -9.81));
 
     // 2. Create the rigid bodies of the slider-crank mechanical system.

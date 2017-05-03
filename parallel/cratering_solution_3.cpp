@@ -15,11 +15,11 @@
 // Chrono::Parallel tutorial.
 //
 // The model simulated here consists of a spherical projectile dropped in a
-// bed of granular material, using either penalty or complementarity method for
-// frictional contact.
+// bed of granular material, using either smooth (penalty) or non-smooth
+// (complementarity) method for frictional contact.
 //
 // SOLUTION for EXERCISE 3:
-//   - combine code for using either COMPLEMENTARITY or PENALTY method,
+//   - combine code for using either NON-SMOOTH or SMOOTH method,
 //     selected through a flag
 //   - use ChSystem::NewBody
 //
@@ -48,8 +48,8 @@ using namespace chrono::collision;
 // Problem definitions
 // -----------------------------------------------------------------------------
 
-// Contact method (DVI: complementarity or DEM: penalty)
-ChMaterialSurfaceBase::ContactMethod method = ChMaterialSurfaceBase::DVI;
+// Contact method (NSC: non-smooth, complementarity or SMC: smooth, penalty)
+ChMaterialSurface::ContactMethod method = ChMaterialSurface::NSC;
 
 // Desired number of OpenMP threads (will be clamped to maximum available)
 int threads = 4;
@@ -98,17 +98,17 @@ double initial_velocity = 0;
 // -----------------------------------------------------------------------------
 void CreateContainer(ChSystemParallel* system) {
     // Create a material for the container
-    std::shared_ptr<chrono::ChMaterialSurfaceBase> material_c;
+    std::shared_ptr<chrono::ChMaterialSurface> material_c;
 
     switch (system->GetContactMethod()) {
-        case ChMaterialSurfaceBase::DVI: {
-            auto mat_c = std::make_shared<ChMaterialSurface>();
+        case ChMaterialSurface::NSC: {
+            auto mat_c = std::make_shared<ChMaterialSurfaceNSC>();
             mat_c->SetFriction(mu_c);
             material_c = mat_c;
             break;
         }
-        case ChMaterialSurfaceBase::DEM: {
-            auto mat_c = std::make_shared<ChMaterialSurfaceDEM>();
+        case ChMaterialSurface::SMC: {
+            auto mat_c = std::make_shared<ChMaterialSurfaceSMC>();
             mat_c->SetYoungModulus(Y_c);
             mat_c->SetFriction(mu_c);
             mat_c->SetRestitution(cr_c);
@@ -128,17 +128,17 @@ void CreateContainer(ChSystemParallel* system) {
 // -----------------------------------------------------------------------------
 std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
     // Create a contact material for the falling ball
-    std::shared_ptr<chrono::ChMaterialSurfaceBase> material_b;
+    std::shared_ptr<chrono::ChMaterialSurface> material_b;
 
     switch (system->GetContactMethod()) {
-        case ChMaterialSurfaceBase::DVI: {
-            auto mat_b = std::make_shared<ChMaterialSurface>();
+        case ChMaterialSurface::NSC: {
+            auto mat_b = std::make_shared<ChMaterialSurfaceNSC>();
             mat_b->SetFriction(mu_b);
             material_b = mat_b;
             break;
         }
-        case ChMaterialSurfaceBase::DEM: {
-            auto mat_b = std::make_shared<ChMaterialSurfaceDEM>();
+        case ChMaterialSurface::SMC: {
+            auto mat_b = std::make_shared<ChMaterialSurfaceSMC>();
             mat_b->SetYoungModulus(Y_b);
             mat_b->SetFriction(mu_b);
             mat_b->SetRestitution(cr_b);
@@ -179,17 +179,17 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
 // -----------------------------------------------------------------------------
 void CreateObjects(ChSystemParallel* system) {
     // Create a contact material for granular bodies
-    std::shared_ptr<chrono::ChMaterialSurfaceBase> material_g;
+    std::shared_ptr<chrono::ChMaterialSurface> material_g;
 
     switch (system->GetContactMethod()) {
-        case ChMaterialSurfaceBase::DVI: {
-            auto mat_g = std::make_shared<ChMaterialSurface>();
+        case ChMaterialSurface::NSC: {
+            auto mat_g = std::make_shared<ChMaterialSurfaceNSC>();
             mat_g->SetFriction(mu_g);
             material_g = mat_g;
             break;
         }
-        case ChMaterialSurfaceBase::DEM: {
-            auto mat_g = std::make_shared<ChMaterialSurfaceDEM>();
+        case ChMaterialSurface::SMC: {
+            auto mat_g = std::make_shared<ChMaterialSurfaceSMC>();
             mat_g->SetYoungModulus(Y_g);
             mat_g->SetFriction(mu_g);
             mat_g->SetRestitution(cr_g);
@@ -228,9 +228,9 @@ int main(int argc, char* argv[]) {
     ChSystemParallel* system;
     double time_step;
     switch (method) {
-        case ChMaterialSurfaceBase::DVI: {
-            std::cout << "Create DVI (complementarity) system" << std::endl;
-            ChSystemParallelDVI* sys = new ChSystemParallelDVI;
+        case ChMaterialSurface::NSC: {
+            std::cout << "Create NSC (non-smooth, complementarity) system" << std::endl;
+            ChSystemParallelNSC* sys = new ChSystemParallelNSC;
             sys->GetSettings()->solver.solver_type = SolverType::BB;
             sys->GetSettings()->solver.solver_mode = SolverMode::SLIDING;
             sys->GetSettings()->solver.max_iteration_normal = 0;
@@ -242,11 +242,11 @@ int main(int argc, char* argv[]) {
             time_step = 1e-3;
             break;
         }
-        case ChMaterialSurfaceBase::DEM: {
-            std::cout << "Create DEM (penalty) system" << std::endl;
-            ChSystemParallelDEM* sys = new ChSystemParallelDEM;
-            sys->GetSettings()->solver.contact_force_model = ChSystemDEM::Hooke;
-            sys->GetSettings()->solver.tangential_displ_mode = ChSystemDEM::TangentialDisplacementModel::OneStep;
+        case ChMaterialSurface::SMC: {
+            std::cout << "Create SMC (smooth, penalty) system" << std::endl;
+            ChSystemParallelSMC* sys = new ChSystemParallelSMC;
+            sys->GetSettings()->solver.contact_force_model = ChSystemSMC::Hooke;
+            sys->GetSettings()->solver.tangential_displ_mode = ChSystemSMC::TangentialDisplacementModel::OneStep;
             sys->GetSettings()->solver.use_material_properties = true;
             system = sys;
             time_step = 1e-4;

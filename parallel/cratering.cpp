@@ -90,7 +90,7 @@ double initial_velocity = 0;
 // -----------------------------------------------------------------------------
 void CreateContainer(ChSystemParallel* system) {
     // Create a material for the container
-    auto material_c = std::make_shared<ChMaterialSurface>();
+    auto material_c = std::make_shared<ChMaterialSurfaceNSC>();
     material_c->SetFriction(mu_c);
 
     // Create the container. This utility function creates the container body (fixed to "ground")
@@ -104,11 +104,11 @@ void CreateContainer(ChSystemParallel* system) {
 // -----------------------------------------------------------------------------
 std::shared_ptr<ChBody> CreateFallingBall(ChSystemParallel* system) {
     // Create a contact material for the falling ball
-    auto material_b = std::make_shared<ChMaterialSurface>();
+    auto material_b = std::make_shared<ChMaterialSurfaceNSC>();
     material_b->SetFriction(mu_b);
 
     // Create the falling ball body
-    auto ball = std::make_shared<ChBody>(std::make_shared<ChCollisionModelParallel>(), ChMaterialSurfaceBase::DVI);
+    auto ball = std::make_shared<ChBody>(std::make_shared<ChCollisionModelParallel>(), ChMaterialSurface::NSC);
 
     ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
@@ -139,7 +139,7 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemParallel* system) {
 // -----------------------------------------------------------------------------
 void CreateObjects(ChSystemParallel* system) {
     // Create a contact material for granular bodies
-    auto material_g = std::make_shared<ChMaterialSurface>();
+    auto material_g = std::make_shared<ChMaterialSurfaceNSC>();
     material_g->SetFriction(mu_g);
 
     //// ********************************************************************************
@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
     SetChronoDataPath(CHRONO_DATA_DIR);
 
     // Create the (parallel) system and set method-specific solver settings.
-    ChSystemParallel* system = new ChSystemParallelDVI;
+    ChSystemParallel* system = new ChSystemParallelNSC;
     system->GetSettings()->solver.solver_type = SolverType::BB;
     system->GetSettings()->solver.solver_mode = SolverMode::SLIDING;
     system->GetSettings()->solver.max_iteration_normal = 0;

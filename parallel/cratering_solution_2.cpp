@@ -95,7 +95,7 @@ double initial_velocity = 0;
 // -----------------------------------------------------------------------------
 void CreateContainer(ChSystemParallel* system) {
     // Create a material for the container
-    auto material_c = std::make_shared<ChMaterialSurfaceDEM>();
+    auto material_c = std::make_shared<ChMaterialSurfaceSMC>();
     material_c->SetYoungModulus(Y_c);
     material_c->SetFriction(mu_c);
     material_c->SetRestitution(cr_c);
@@ -111,13 +111,13 @@ void CreateContainer(ChSystemParallel* system) {
 // -----------------------------------------------------------------------------
 std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
     // Create a contact material for the falling ball
-    auto material_b = std::make_shared<ChMaterialSurfaceDEM>();
+    auto material_b = std::make_shared<ChMaterialSurfaceSMC>();
     material_b->SetYoungModulus(Y_b);
     material_b->SetFriction(mu_b);
     material_b->SetRestitution(cr_b);
 
     // Create the falling ball body
-    auto ball = std::make_shared<ChBody>(std::make_shared<ChCollisionModelParallel>(), ChMaterialSurfaceBase::DEM);
+    auto ball = std::make_shared<ChBody>(std::make_shared<ChCollisionModelParallel>(), ChMaterialSurface::SMC);
 
     ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
@@ -148,7 +148,7 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
 // -----------------------------------------------------------------------------
 void CreateObjects(ChSystemParallel* system) {
     // Create a contact material for granular bodies
-    auto material_g = std::make_shared<ChMaterialSurfaceDEM>();
+    auto material_g = std::make_shared<ChMaterialSurfaceSMC>();
     material_g->SetYoungModulus(Y_g);
     material_g->SetFriction(mu_g);
     material_g->SetRestitution(cr_g);
@@ -180,9 +180,9 @@ int main(int argc, char* argv[]) {
     SetChronoDataPath(CHRONO_DATA_DIR);
 
     // Create the (parallel) system and set method-specific solver settings.
-    ChSystemParallelDEM* system = new ChSystemParallelDEM;
-    system->GetSettings()->solver.contact_force_model = ChSystemDEM::Hooke;
-    system->GetSettings()->solver.tangential_displ_mode = ChSystemDEM::TangentialDisplacementModel::OneStep;
+    ChSystemParallelSMC* system = new ChSystemParallelSMC;
+    system->GetSettings()->solver.contact_force_model = ChSystemSMC::Hooke;
+    system->GetSettings()->solver.tangential_displ_mode = ChSystemSMC::TangentialDisplacementModel::OneStep;
     system->GetSettings()->solver.use_material_properties = true;
 
     double time_step = 1e-4;

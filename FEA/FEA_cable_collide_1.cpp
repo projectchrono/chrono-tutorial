@@ -28,7 +28,7 @@
 #include <cstdio>
 #include <cmath>
 
-#include "chrono/physics/ChSystem.h"
+#include "chrono/physics/ChSystemNSC.h"
 #include "chrono/physics/ChBodyEasy.h"
 #include "chrono_irrlicht/ChIrrApp.h"
 
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 
     //    Specify the gravitational acceleration vector, consistent with the
     //    global reference frame having Y up (ISO system).
-    ChSystem system;
+    ChSystemNSC system;
     system.Set_G_acc(ChVector<>(0, -9.81, 0));
 
 

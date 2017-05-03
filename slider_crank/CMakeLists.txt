@@ -3,6 +3,8 @@ SET(MODELS
   slider_crank_0
   slider_crank_1
   slider_crank_2
+  slider_crank_1_solution
+  slider_crank_2_solution
   )
 
 #--------------------------------------------------------------

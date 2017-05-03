@@ -31,7 +31,7 @@
 #include <cstdio>
 #include <cmath>
 
-#include "chrono/physics/ChSystemDEM.h"
+#include "chrono/physics/ChSystemSMC.h"
 #include "chrono/physics/ChLinkMate.h"
 #include "chrono/physics/ChBodyEasy.h"
 #include "chrono_irrlicht/ChIrrApp.h"
@@ -56,9 +56,8 @@ int main(int argc, char* argv[]) {
 
     // 1. Create the physical system that will handle all finite elements and constraints.
 
-    //    NOTE that we need contact in FEA, so we use the ChSystemDEM, that uses DEM 
-    //    penalty in contacts
-    ChSystemDEM system;
+    //    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC penalty in contacts
+    ChSystemSMC system;
     system.Set_G_acc(ChVector<>(0, -9.81, 0));
 
 
@@ -151,8 +150,8 @@ int main(int argc, char* argv[]) {
 
     // 7. Add a collision mesh to the skin of the finite element mesh
 
-    //    - Create a ChMaterialSurfaceDEM , it must be assigned to FEA 
-    //      meshes and rigid bodies. The ChSystemDEM requires it!
+    //    - Create a ChMaterialSurfaceSMC , it must be assigned to FEA 
+    //      meshes and rigid bodies. The ChSystemSMC requires it!
     //    - Create a ChContactSurfaceNodeCloud and add to the FEA mesh.
     //      This is the easiest representation of a FEA contact surface: it
     //      simply creates contact spheres per each node. So, no edge-edge cases
@@ -160,7 +159,7 @@ int main(int argc, char* argv[]) {
     //      dense finite elements meshes that collide with large objects.
 
     // Create a surface material to be shared with some objects
-    auto mysurfmaterial = std::make_shared<ChMaterialSurfaceDEM>();
+    auto mysurfmaterial = std::make_shared<ChMaterialSurfaceSMC>();
     mysurfmaterial->SetYoungModulus(2e4);
     mysurfmaterial->SetFriction(0.3f);
     mysurfmaterial->SetRestitution(0.2f);
@@ -173,7 +172,7 @@ int main(int argc, char* argv[]) {
     // Must use this to 'populate' the contact surface use larger point size to match beam section radius
     mcontactcloud->AddAllNodes(0.01); 
 
-    // Use our DEM surface material properties 
+    // Use our SMC surface material properties 
     mcontactcloud->SetMaterialSurface(mysurfmaterial);
 
 
@@ -191,7 +190,7 @@ int main(int argc, char* argv[]) {
     floor->SetBodyFixed(true);
     floor->SetPos( ChVector<>(0,-0.1,0) );
 
-    // Use our DEM surface material properties 
+    // Use our SMC surface material properties 
     floor->SetMaterialSurface(mysurfmaterial);
 
 

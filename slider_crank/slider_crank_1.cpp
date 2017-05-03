@@ -30,7 +30,7 @@
 #include <cstdio>
 #include <cmath>
 
-#include "chrono/physics/ChSystem.h"
+#include "chrono/physics/ChSystemNSC.h"
 #include "chrono_irrlicht/ChIrrApp.h"
 
 using namespace chrono;
@@ -50,7 +50,7 @@ int main(int   argc,
 
   //    Specify the gravitational acceleration vector, consistent with the
   //    global reference frame having Z up.
-  ChSystem system;
+  ChSystemNSC system;
   system.Set_G_acc(ChVector<>(0, 0, -9.81));
 
 
