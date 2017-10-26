@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
     // ---------------
 
     // Inter-module communication data
-    vehicle::TireForces tire_forces(num_wheels);
+    vehicle::TerrainForces tire_forces(num_wheels);
     vehicle::WheelStates wheel_states(num_wheels);
     double driveshaft_speed;
     double powertrain_torque;
