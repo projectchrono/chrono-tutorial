@@ -11,7 +11,7 @@
   "Axles":
   [
     {
-      "Suspension Input File":   "vehicle/DoubleWishbone.json",
+      "Suspension Input File":   "vehicle/DoubleWishboneReduced.json",
       "Suspension Location":     [1.25, 0, -0.21],
       "Steering Index":          0,
       "Left Wheel Input File":   "vehicle/Wheel.json",
@@ -21,7 +21,7 @@
     },
 
     {
-      "Suspension Input File":   "vehicle/DoubleWishbone.json",
+      "Suspension Input File":   "vehicle/SolidAxle.json",
       "Suspension Location":     [-1.25, 0, -0.21],
       "Left Wheel Input File":   "vehicle/Wheel.json",
       "Right Wheel Input File":  "vehicle/Wheel.json",

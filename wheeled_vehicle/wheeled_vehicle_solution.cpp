@@ -42,7 +42,7 @@ using namespace chrono;
 
 // =============================================================================
 
-std::string vehicle_file("vehicle/WheeledVehicle.json");
+std::string vehicle_file("vehicle/WheeledVehicle_mod.json");
 std::string rigidtire_file("vehicle/RigidTire.json");
 std::string simplepowertrain_file("vehicle/SimplePowertrain.json");
 
