@@ -50,7 +50,7 @@ ChVector<> initLoc(0, 0, 1.0);
 ChQuaternion<> initRot(1, 0, 0, 0);
 
 // Simulation step size
-double step_size = 2e-4;
+double step_size = 2e-3;
 
 // Time interval between two render frames
 double render_step_size = 1.0 / 50;  // FPS = 50
@@ -59,7 +59,7 @@ double render_step_size = 1.0 / 50;  // FPS = 50
 ChVector<> trackPoint(0.0, 0.0, 1.75);
 
 // Contact method
-auto NSC_SMC = ChMaterialSurface::SMC;
+auto NSC_SMC = ChMaterialSurface::NSC;
 
 // =============================================================================
 
@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
     // Create and initialize the vehicle system
     vehicle::WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file), NSC_SMC);
 
+    vehicle.SetStepsize(step_size);
     vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
 
     vehicle.SetSuspensionVisualizationType(vehicle::VisualizationType::PRIMITIVES);
@@ -150,9 +151,6 @@ int main(int argc, char* argv[]) {
     double steering_input;
     double braking_input;
 
-    // Number of simulation steps between two 3D view render frames
-    int render_steps = (int)std::ceil(render_step_size / step_size);
-
     // Initialize simulation frame counter and simulation time
     int step_number = 0;
     double time = 0;
@@ -161,11 +159,9 @@ int main(int argc, char* argv[]) {
 
     while (app.GetDevice()->run()) {
         // Render scene
-        if (step_number % render_steps == 0) {
-            app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
-            app.DrawAll();
-            app.EndScene();
-        }
+        app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
+        app.DrawAll();
+        app.EndScene();
 
         // Collect output data from modules (for inter-module communication)
         throttle_input = driver.GetThrottle();
