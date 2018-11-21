@@ -15,7 +15,7 @@ SET(MODELS
 # Invoke find_package in CONFIG mode
 
 find_package(Chrono
-             COMPONENTS Irrlicht FEA
+             COMPONENTS Irrlicht
              CONFIG
 )
 

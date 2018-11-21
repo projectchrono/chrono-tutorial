@@ -38,14 +38,14 @@
 #include "chrono/physics/ChBodyEasy.h"
 #include "chrono_irrlicht/ChIrrApp.h"
 
-#include "chrono_fea/ChElementBeamEuler.h"
-#include "chrono_fea/ChBuilderBeam.h"
-#include "chrono_fea/ChMesh.h"
-#include "chrono_fea/ChVisualizationFEAmesh.h"
-#include "chrono_fea/ChContactSurfaceMesh.h"
-#include "chrono_fea/ChContactSurfaceNodeCloud.h"
+#include "chrono/fea/ChElementBeamEuler.h"
+#include "chrono/fea/ChBuilderBeam.h"
+#include "chrono/fea/ChMesh.h"
+#include "chrono/fea/ChVisualizationFEAmesh.h"
+#include "chrono/fea/ChContactSurfaceMesh.h"
+#include "chrono/fea/ChContactSurfaceNodeCloud.h"
 #include "chrono/physics/ChLoadContainer.h"
-#include "chrono_fea/ChLoadsBeam.h"
+#include "chrono/fea/ChLoadsBeam.h"
 
 using namespace chrono;
 using namespace chrono::irrlicht;
