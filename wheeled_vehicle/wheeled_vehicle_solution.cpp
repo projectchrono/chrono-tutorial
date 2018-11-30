@@ -25,7 +25,6 @@
 #include "chrono/physics/ChSystem.h"
 #include "chrono/physics/ChBodyEasy.h"
 
-#include "chrono/core/ChFileutils.h"
 #include "chrono/utils/ChUtilsInputOutput.h"
 
 #include "chrono_vehicle/ChVehicleModelData.h"
@@ -37,6 +36,8 @@
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
 #include "chrono_vehicle/wheeled_vehicle/tire/RigidTire.h"
 #include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
+
+#include "chrono_thirdparty/filesystem/path.h"
 
 using namespace chrono;
 
@@ -148,11 +149,11 @@ int main(int argc, char* argv[]) {
     // Initialize output
     // -----------------
 
-    if (ChFileutils::MakeDirectory(out_dir.c_str()) < 0) {
+    if (!filesystem::create_directory(filesystem::path(out_dir))) {
         std::cout << "Error creating directory " << out_dir << std::endl;
         return 1;
     }
-    if (ChFileutils::MakeDirectory(pov_dir.c_str()) < 0) {
+    if (!filesystem::create_directory(filesystem::path(pov_dir))) {
         std::cout << "Error creating directory " << pov_dir << std::endl;
         return 1;
     }
