@@ -151,10 +151,12 @@ int main(int   argc,
 
   //// -------------------------------------------------------------------------
   //// EXERCISE 1
-  //// Replace the revolute joint between ground and crank with a ChLinkEngine
-  //// element (a rotational driver) and enforce constant angular speed of
+  //// Replace the revolute joint between ground and crank with a
+  //// ChLinkMotorRotationSpeed element and enforce constant angular speed of
   //// 90 degrees/s.
   //// -------------------------------------------------------------------------
+
+
 
 
 

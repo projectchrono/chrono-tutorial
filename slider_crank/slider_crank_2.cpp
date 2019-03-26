@@ -34,6 +34,7 @@
 #include <cstdio>
 #include <cmath>
 
+#include "chrono/physics/ChLinkMotorRotationSpeed.h"
 #include "chrono/physics/ChSystemNSC.h"
 #include "chrono_irrlicht/ChIrrApp.h"
 
@@ -203,8 +204,8 @@ int main(int   argc,
 
   //// -------------------------------------------------------------------------
   //// EXERCISE 1
-  //// Replace the revolute joint between ground and crank with a ChLinkEngine
-  //// element (a rotational driver) and enforce constant angular speed of
+  //// Replace the revolute joint between ground and crank with a
+  //// ChLinkMotorRotationSpeed element and enforce constant angular speed of
   //// 90 degrees/s.
   //// -------------------------------------------------------------------------
 
@@ -212,15 +213,14 @@ int main(int   argc,
   auto fun = std::make_shared<ChFunction_Const>();
   fun->Set_yconst(CH_C_PI);
 
-  // Engine between ground and crank.
+  // Motor between ground and crank.
   // Note that this also acts as a revolute joint (i.e. it enforces the same
   // kinematic constraints as a revolute joint).  As before, we apply the 'z2y'
   // rotation to align the rotation axis with the Y axis of the global frame.
-  auto engine_ground_crank = std::make_shared<ChLinkEngine>();
+  auto engine_ground_crank = std::make_shared<ChLinkMotorRotationSpeed>();
   engine_ground_crank->SetName("engine_ground_crank");
-  engine_ground_crank->Initialize(ground, crank, ChCoordsys<>(ChVector<>(0, 0, 0), z2y));
-  engine_ground_crank->Set_eng_mode(ChLinkEngine::ENG_MODE_SPEED);
-  engine_ground_crank->Set_spe_funct(fun);
+  engine_ground_crank->Initialize(ground, crank, ChFrame<>(ChVector<>(0, 0, 0), z2y));
+  engine_ground_crank->SetSpeedFunction(fun);
   system.AddLink(engine_ground_crank);
 
   // Prismatic joint between ground and slider.
