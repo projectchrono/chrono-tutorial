@@ -136,25 +136,6 @@ int main(int   argc,
   col_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
   slider->AddAsset(col_s);
 
-  //// -------------------------------------------------------------------------
-  //// EXERCISE 2
-  //// Enable contact on the slider body and specify contact geometry
-  //// The contact shape attached to the slider body should be a box with the
-  //// same dimensions as the visualization asset, centered at the body origin.
-  //// Use a coefficient of friction of 0.4.
-  //// -------------------------------------------------------------------------
-
-
-
-  //// -------------------------------------------------------------------------
-  //// EXERCISE 1
-  //// Create a connecting rod body to replace the distance constraint.
-  //// This body should have:
-  ////    mass: 0.5
-  ////    moments of inertia:  I_xx = 0.005, I_yy = 0.1, I_zz = 0.1
-  ////    visualization: a green box with width and height 0.1
-  //// -------------------------------------------------------------------------
-
   // Connecting rod
   auto rod = std::make_shared<ChBody>();
   system.AddBody(rod);
@@ -180,7 +161,17 @@ int main(int   argc,
   rod->AddAsset(col_r);
 
   //// -------------------------------------------------------------------------
-  //// EXERCISE 2
+  //// EXERCISE 2.1
+  //// Enable contact on the slider body and specify contact geometry
+  //// The contact shape attached to the slider body should be a box with the
+  //// same dimensions as the visualization asset, centered at the body origin.
+  //// Use a coefficient of friction of 0.4.
+  //// -------------------------------------------------------------------------
+  
+  // TO DO
+
+  //// -------------------------------------------------------------------------
+  //// EXERCISE 2.2
   //// Create a new body, with a spherical shape (radius 0.2), used both as
   //// visualization asset and contact shape (mu = 0.4). This body should have:
   ////    mass: 1
@@ -188,7 +179,7 @@ int main(int   argc,
   ////    initial location: (5.5, 0, 0)
   //// -------------------------------------------------------------------------
 
-
+  // TO DO
 
 
   // 3. Create joint constraints.
@@ -201,13 +192,6 @@ int main(int   argc,
   ChQuaternion<> z2x;
   z2y.Q_from_AngAxis(-CH_C_PI / 2, ChVector<>(1, 0, 0));
   z2x.Q_from_AngAxis(CH_C_PI / 2, ChVector<>(0, 1, 0));
-
-  //// -------------------------------------------------------------------------
-  //// EXERCISE 1
-  //// Replace the revolute joint between ground and crank with a
-  //// ChLinkMotorRotationSpeed element and enforce constant angular speed of
-  //// 90 degrees/s.
-  //// -------------------------------------------------------------------------
 
   // Create a ChFunction object that always returns the constant value PI/2.
   auto fun = std::make_shared<ChFunction_Const>();
@@ -232,13 +216,6 @@ int main(int   argc,
   prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector<>(2, 0, 0), z2x));
   system.AddLink(prismatic_ground_slider);
 
-  //// -------------------------------------------------------------------------
-  //// EXERCISE 1
-  //// Replace the distance constraint with joints connecting the rod to the
-  //// crank (use ChLinkLockSpherical) and to the slider (ChLinkUniversal). The
-  //// universal joint's cross should be aligned with the Z and Y global axes.
-  //// -------------------------------------------------------------------------
-
   // Spherical joint between crank and rod
   auto spherical_crank_rod = std::make_shared<ChLinkLockSpherical>();
   spherical_crank_rod->SetName("spherical_crank_rod");
@@ -255,7 +232,7 @@ int main(int   argc,
   system.AddLink(universal_rod_slider);
 
   //// -------------------------------------------------------------------------
-  //// EXERCISE 2
+  //// EXERCISE 2.3
   //// Add a prismatic joint between ground and ball to constrain the ball's
   //// motion to the global X axis.
   //// -------------------------------------------------------------------------
@@ -263,7 +240,7 @@ int main(int   argc,
 
 
   //// -------------------------------------------------------------------------
-  //// EXERCISE 2
+  //// EXERCISE 2.4
   //// Add a spring-damper (ChLinkspring) between ground and the ball.
   //// This element should connect the center of the ball with the global point
   //// (6.5, 0, 0).  Set a spring constant of 50 and a spring free length of 1.

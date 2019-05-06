@@ -64,8 +64,28 @@ int main(int argc, char* argv[]) {
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
     auto mesh = std::make_shared<ChMesh>();
-
     system.Add(mesh);
+
+    //// -------------------------------------------------------------------------
+    //// EXERCISE 1
+    ////
+    //// Use Euler-Bernoulli beams to make a hanging cable, exactly as in
+    //// the FEA_cable_collide_0.cpp, but with ChElementBeamEuler elements
+    //// instead of ChElementCableANCF.
+    //// The ChElementBeamEuler beams are more sophisticated as they can also
+    //// simulate torsion and shear, and off-center shear effects.
+    //// Just use the same for() loops of the previous demo, but use these hints:
+    //// Hint: when creating the section material, in 3., remember that 
+    ////       ChElementBeamEuler needs a ChBeamSectionAdvanced material.
+    //// Hint: when creating the nodes, in 4., the nodes
+    ////       for ChElementBeamEuler must be of ChNodeFEAxyzrot class;
+    ////       i.e. each node has coordinates of type: {position, rotation},
+    ////       where X axis of rotated system is the direction of the beam, 
+    ////       Y and Z are the section plane.
+    //// Hint: when creating the elements, in 5., use ChElemetBeamEuler
+    //// Hint: when creating the truss-node constraint, in 6., use ChLinkMateSpherical
+    ////
+    //// -------------------------------------------------------------------------
 
 
     // 3. Create a material for the beam finite elements.

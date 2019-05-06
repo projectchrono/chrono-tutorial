@@ -222,15 +222,35 @@ int main(int argc, char* argv[]) {
     loadcontainer->Add(mwrench);  // do not forget to add the load to the load container.
 
 
-    /// EXERCISE 1 
+    //// -------------------------------------------------------------------------
+    //// EXERCISE 1
+    ////
+    //// Use a distributed vertical load, instead of a point load, applied
+    //// as a constant value along the last element.
+    //// Hint: it is not much different than the example few rows above
+    //// Hint: use the ChLoadBeamWrenchDistributed class
+    ////
+    //// -------------------------------------------------------------------------
 
-    /// Add a distributed load along the beam element:
+    //// Add a distributed load along the beam element:
     auto mwrenchdis = std::make_shared<ChLoadBeamWrenchDistributed>(beam_elements.back());
     mwrenchdis->loader.SetForcePerUnit(ChVector<>(0,-0.1,0)); // load per unit length
     loadcontainer->Add(mwrenchdis);
 
 
+    //// -------------------------------------------------------------------------
     //// EXERCISE 2
+    ////
+    //// a) instead of a sine wave, try using a square wave
+    //// b) instead of a custom distributed load, use a custom point load (atomic load)
+    ////
+    //// Hint: it is not much different than the example few rows above.
+    //// Hint: Instead of inheriting from ChLoaderUdistributed, inherit 
+    ////       from ChLoaderUatomic class.
+    //// Hint: to compute a square wave, look at the sign of a sine wave.
+    //// Hint: use a small value for the amplitude of the square wave, ex 0.8 Newtons,
+    ////       otherwise the beam might wobble too much
+    //// -------------------------------------------------------------------------
 
     // Create a custom atomic (point) load: a horizontal load changing in time as a square wave.
     // One has to implement the ComputeF() function to return the load in F. Remember the load on the beam is a 

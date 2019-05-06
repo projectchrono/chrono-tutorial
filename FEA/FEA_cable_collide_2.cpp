@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
     //// EXERCISE 1
     ////
     //// Use Euler-Bernoulli beams to make a hanging cable, exactly as in
-    //// the FEA_cable_collide_0.cpp, but with ChElementBeamEuler elements
+    //// the FEA_cable_collide_1.cpp, but with ChElementBeamEuler elements
     //// instead of ChElementCableANCF.
     //// The ChElementBeamEuler beams are more sophisticated as they can also
     //// simulate torsion and shear, and off-center shear effects.

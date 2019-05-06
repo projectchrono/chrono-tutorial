@@ -157,13 +157,12 @@ int main(int argc, char* argv[]) {
 
 
     //// -------------------------------------------------------------------------
-    //// EXERCISE 1
+    //// EXERCISE 1a
     ////
-    //// Add also a cylinder attached to the free end of the cable.
+    //// Add a cylinder.
     //// Suggested size: 0.02 radius, 0.1 height, density:1000.
     //// Hint: use the ChBodyEasyCylinder to make the cylinder, pass size as 
     //// parameters in construction.
-    //// Hint: use the ChLinkPointFrame to connect the cylinder and the end node.
     //// 
     //// -------------------------------------------------------------------------
 
@@ -171,9 +170,15 @@ int main(int argc, char* argv[]) {
     // TO DO ...
 
 
+    //// -------------------------------------------------------------------------
+    //// EXERCISE 1b
+    ////
+    //// Attach the cylinder to the free end of the cable.
+    //// Hint: use the ChLinkPointFrame to connect the cylinder and the end node.
+    //// 
+    //// -------------------------------------------------------------------------
 
-
-
+    // TO DO ...
 
 
     // 7. Make the finite elements visible in the 3D view

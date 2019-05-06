@@ -126,7 +126,7 @@ int main(int   argc,
   slider->AddAsset(col_s);
 
   //// -------------------------------------------------------------------------
-  //// EXERCISE 1
+  //// EXERCISE 1.1
   //// Create a connecting rod body to replace the distance constraint.
   //// This body should have:
   ////    mass: 0.5
@@ -150,7 +150,7 @@ int main(int   argc,
   z2x.Q_from_AngAxis(CH_C_PI / 2, ChVector<>(0, 1, 0));
 
   //// -------------------------------------------------------------------------
-  //// EXERCISE 1
+  //// EXERCISE 1.2
   //// Replace the revolute joint between ground and crank with a
   //// ChLinkMotorRotationSpeed element and enforce constant angular speed of
   //// 90 degrees/s.
@@ -170,7 +170,7 @@ int main(int   argc,
   system.AddLink(prismatic_ground_slider);
 
   //// -------------------------------------------------------------------------
-  //// EXERCISE 1
+  //// EXERCISE 1.3
   //// Replace the distance constraint with joints connecting the rod to the
   //// crank (use ChLinkLockSpherical) and to the slider (ChLinkUniversal). The
   //// universal joint's cross should be aligned with the Z and Y global axes.
