@@ -140,9 +140,9 @@ int main(int   argc,
   // The rotational axis of a revolute joint is along the Z axis of the
   // specified joint coordinate frame.  Here, we apply the 'z2y' rotation to
   // align it with the Y axis of the global reference frame.
-  auto revolute_ground_crank = std::make_shared<ChLinkRevolute>();
+  auto revolute_ground_crank = std::make_shared<ChLinkLockRevolute>();
   revolute_ground_crank->SetName("revolute_ground_crank");
-  revolute_ground_crank->Initialize(ground, crank, ChFrame<>(ChVector<>(0, 0, 0), z2y));
+  revolute_ground_crank->Initialize(ground, crank, ChCoordsys<>(ChVector<>(0, 0, 0), z2y));
   system.AddLink(revolute_ground_crank);
 
   // Prismatic joint between ground and slider.
