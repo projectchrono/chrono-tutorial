@@ -275,12 +275,10 @@ int main(int argc, char* argv[]) {
     // The ChLoad is a 'manager' for your ChLoader.
     // It is created using templates, that is instancing a ChLoad<my_loader_class>()
 
-    std::shared_ptr< ChLoad<MyLoaderHorizontalSquarewave> > mloadsine (new ChLoad<MyLoaderHorizontalSquarewave>(beam_elements.back()) );
-    mloadsine->loader.auxsystem = &system; // initialize auxiliary data of the loader, if needed
-    loadcontainer->Add(mloadsine);  // do not forget to add the load to the load container.
-
-
-
+    std::shared_ptr<ChLoad<MyLoaderHorizontalSquarewave> > mloadsine(new ChLoad<MyLoaderHorizontalSquarewave>(beam_elements.back()));
+    mloadsine->loader.auxsystem = &system;  // initialize auxiliary data of the loader, if needed
+    mloadsine->loader.SetApplication(0.0);  // specify application point
+    loadcontainer->Add(mloadsine);          // do not forget to add the load to the load container.
 
 
     // 10. Make the finite elements visible in the 3D view
