@@ -285,48 +285,48 @@ int main(int argc, char* argv[]) {
     //    Note that Irrlicht uses left-handed frames with Y up.
 
     // Create the Irrlicht application and set-up the camera.
-    ChIrrApp* application = new ChIrrApp(&system,                           // pointer to the mechanical system
+    ChIrrApp application(&system,                           // pointer to the mechanical system
                                          L"Slider-Crank Demo 2",            // title of the Irrlicht window
                                          core::dimension2d<u32>(800, 600),  // window dimension (width x height)
                                          false,                             // use full screen?
                                          true);                             // enable shadows?
-    application->AddTypicalLogo();
-    application->AddTypicalSky();
-    application->AddTypicalLights();
-    application->AddTypicalCamera(core::vector3df(2, 5, -3),  // camera location
+    application.AddTypicalLogo();
+    application.AddTypicalSky();
+    application.AddTypicalLights();
+    application.AddTypicalCamera(core::vector3df(2, 5, -3),  // camera location
                                   core::vector3df(2, 0, 0));  // "look at" location
 
     // Let the Irrlicht application convert the visualization assets.
-    application->AssetBindAll();
-    application->AssetUpdateAll();
+    application.AssetBindAll();
+    application.AssetUpdateAll();
 
     // 6. Perform the simulation.
 
     // Specify the step-size.
-    application->SetTimestep(0.01);
-    application->SetTryRealtime(true);
+    application.SetTimestep(0.01);
+    application.SetTryRealtime(true);
 
-    while (application->GetDevice()->run()) {
+    while (application.GetDevice()->run()) {
         // Initialize the graphical scene.
-        application->BeginScene();
+        application.BeginScene();
 
         // Render all visualization objects.
-        application->DrawAll();
+        application.DrawAll();
 
         // Render the spring
-        ChIrrTools::drawSpring(application->GetVideoDriver(), 0.05, tsda_ground_ball->GetEndPoint1Abs(),
+        ChIrrTools::drawSpring(application.GetVideoDriver(), 0.05, tsda_ground_ball->GetEndPoint1Abs(),
                                tsda_ground_ball->GetEndPoint2Abs(), video::SColor(255, 150, 20, 20), 80, 15, true);
 
         // Draw an XZ grid at the global origin to add in visualization.
-        ChIrrTools::drawGrid(application->GetVideoDriver(), 1, 1, 20, 20,
+        ChIrrTools::drawGrid(application.GetVideoDriver(), 1, 1, 20, 20,
                              ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
                              video::SColor(255, 80, 100, 100), true);
 
         // Advance simulation by one step.
-        application->DoStep();
+        application.DoStep();
 
         // Finalize the graphical scene.
-        application->EndScene();
+        application.EndScene();
     }
 
     return 0;

@@ -215,54 +215,54 @@ int main(int argc, char* argv[]) {
     //    Note that Irrlicht uses left-handed frames with Y up.
 
     // Create the Irrlicht application and set-up the camera.
-    ChIrrApp* application = new ChIrrApp(&system,                            // pointer to the mechanical system
+    ChIrrApp application(&system,                            // pointer to the mechanical system
                                          L"FEA cable collide demo",          // title of the Irrlicht window
                                          core::dimension2d<u32>(1024, 768),  // window dimension (width x height)
                                          false,                              // use full screen?
                                          true,                               // enable stencil shadows?
                                          true);                              // enable antialiasing?
 
-    application->AddTypicalLogo();
-    application->AddTypicalSky();
-    application->AddTypicalLights();
-    application->AddTypicalCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
+    application.AddTypicalLogo();
+    application.AddTypicalSky();
+    application.AddTypicalLights();
+    application.AddTypicalCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
                                   core::vector3df(0.0f, 0.0f, 0.0f));  // "look at" location
 
     // Enable drawing of contacts
-    application->SetContactsDrawMode(ChIrrTools::CONTACT_FORCES);
-    application->SetSymbolscale(0.1);
+    application.SetContactsDrawMode(ChIrrTools::CONTACT_FORCES);
+    application.SetSymbolscale(0.1);
 
     // Let the Irrlicht application convert the visualization assets.
-    application->AssetBindAll();
-    application->AssetUpdateAll();
+    application.AssetBindAll();
+    application.AssetUpdateAll();
 
 
     // 12. Perform the simulation.
 
     // Specify the step-size.
-    application->SetTimestep(0.001);
-    application->SetTryRealtime(false);
+    application.SetTimestep(0.001);
+    application.SetTryRealtime(false);
 
     // Mark completion of system construction
     system.SetupInitial();
 
-    while (application->GetDevice()->run()) {
+    while (application.GetDevice()->run()) {
         // Initialize the graphical scene.
-        application->BeginScene();
+        application.BeginScene();
 
         // Render all visualization objects.
-        application->DrawAll();
+        application.DrawAll();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        ChIrrTools::drawGrid(application->GetVideoDriver(), 0.1, 0.1, 20, 20,
+        ChIrrTools::drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
                              ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
                              video::SColor(255, 80, 100, 100), true);
 
         // Advance simulation by one step.
-        application->DoStep();
+        application.DoStep();
 
         // Finalize the graphical scene.
-        application->EndScene();
+        application.EndScene();
     }
 
     return 0;
