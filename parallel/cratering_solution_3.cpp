@@ -102,13 +102,13 @@ void CreateContainer(ChSystemParallel* system) {
 
     switch (system->GetContactMethod()) {
         case ChMaterialSurface::NSC: {
-            auto mat_c = std::make_shared<ChMaterialSurfaceNSC>();
+            auto mat_c = chrono_types::make_shared<ChMaterialSurfaceNSC>();
             mat_c->SetFriction(mu_c);
             material_c = mat_c;
             break;
         }
         case ChMaterialSurface::SMC: {
-            auto mat_c = std::make_shared<ChMaterialSurfaceSMC>();
+            auto mat_c = chrono_types::make_shared<ChMaterialSurfaceSMC>();
             mat_c->SetYoungModulus(Y_c);
             mat_c->SetFriction(mu_c);
             mat_c->SetRestitution(cr_c);
@@ -132,13 +132,13 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
 
     switch (system->GetContactMethod()) {
         case ChMaterialSurface::NSC: {
-            auto mat_b = std::make_shared<ChMaterialSurfaceNSC>();
+            auto mat_b = chrono_types::make_shared<ChMaterialSurfaceNSC>();
             mat_b->SetFriction(mu_b);
             material_b = mat_b;
             break;
         }
         case ChMaterialSurface::SMC: {
-            auto mat_b = std::make_shared<ChMaterialSurfaceSMC>();
+            auto mat_b = chrono_types::make_shared<ChMaterialSurfaceSMC>();
             mat_b->SetYoungModulus(Y_b);
             mat_b->SetFriction(mu_b);
             mat_b->SetRestitution(cr_b);
@@ -183,13 +183,13 @@ void CreateObjects(ChSystemParallel* system) {
 
     switch (system->GetContactMethod()) {
         case ChMaterialSurface::NSC: {
-            auto mat_g = std::make_shared<ChMaterialSurfaceNSC>();
+            auto mat_g = chrono_types::make_shared<ChMaterialSurfaceNSC>();
             mat_g->SetFriction(mu_g);
             material_g = mat_g;
             break;
         }
         case ChMaterialSurface::SMC: {
-            auto mat_g = std::make_shared<ChMaterialSurfaceSMC>();
+            auto mat_g = chrono_types::make_shared<ChMaterialSurfaceSMC>();
             mat_g->SetYoungModulus(Y_g);
             mat_g->SetFriction(mu_g);
             mat_g->SetRestitution(cr_g);

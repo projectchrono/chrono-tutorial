@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < num_wheels; i++) {
         std::cout << "tire " << i << std::endl;
-        tires[i] = std::make_shared<vehicle::RigidTire>(vehicle::GetDataFile(rigidtire_file));
+        tires[i] = chrono_types::make_shared<vehicle::RigidTire>(vehicle::GetDataFile(rigidtire_file));
         tires[i]->Initialize(vehicle.GetWheelBody(i), vehicle::VehicleSide(i % 2));
         tires[i]->SetVisualizationType(vehicle::VisualizationType::MESH);
     }
@@ -211,7 +211,7 @@ void AddMovingObstacles(ChSystem* system) {
         double o_sizeX = 1.0 + 3.0 * ChRandom();
         double o_sizeY = 0.3 + 0.2 * ChRandom();
         double o_sizeZ = 0.05 + 0.1 * ChRandom();
-        auto obstacle = std::make_shared<ChBodyEasyBox>(o_sizeX, o_sizeY, o_sizeZ, 2000.0, true, true, NSC_SMC);
+        auto obstacle = chrono_types::make_shared<ChBodyEasyBox>(o_sizeX, o_sizeY, o_sizeZ, 2000.0, true, true, NSC_SMC);
 
         double o_posX = (ChRandom() - 0.5) * 0.4 * sizeX;
         double o_posY = (ChRandom() - 0.5) * 0.4 * sizeY;
@@ -228,7 +228,7 @@ void AddMovingObstacles(ChSystem* system) {
 void AddFixedObstacles(ChSystem* system) {
     double radius = 3;
     double length = 10;
-    auto obstacle = std::make_shared<ChBodyEasyCylinder>(radius, length, 2000, true, true, NSC_SMC);
+    auto obstacle = chrono_types::make_shared<ChBodyEasyCylinder>(radius, length, 2000, true, true, NSC_SMC);
 
     obstacle->SetPos(ChVector<>(-20, 0, -2.7));
     obstacle->SetBodyFixed(true);
@@ -236,7 +236,7 @@ void AddFixedObstacles(ChSystem* system) {
     system->AddBody(obstacle);
 
     for (int i = 0; i < 8; ++i) {
-        auto stoneslab = std::make_shared<ChBodyEasyBox>(0.5, 2.5, 0.25, 2000, true, true, NSC_SMC);
+        auto stoneslab = chrono_types::make_shared<ChBodyEasyBox>(0.5, 2.5, 0.25, 2000, true, true, NSC_SMC);
         stoneslab->SetPos(ChVector<>(-1.2 * i + 22, -1.5, -0.05));
         stoneslab->SetRot(Q_from_AngAxis(15 * CH_C_DEG_TO_RAD, VECT_Y));
         stoneslab->SetBodyFixed(true);

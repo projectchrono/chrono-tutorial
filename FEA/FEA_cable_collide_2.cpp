@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
 
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
-    auto mesh = std::make_shared<ChMesh>();
+    auto mesh = chrono_types::make_shared<ChMesh>();
 
     system.Add(mesh);
 
@@ -126,14 +126,14 @@ int main(int argc, char* argv[]) {
     //      dense finite elements meshes that collide with large objects.
 
     // Create a surface material to be shared with some objects
-    auto mysurfmaterial = std::make_shared<ChMaterialSurfaceSMC>();
+    auto mysurfmaterial = chrono_types::make_shared<ChMaterialSurfaceSMC>();
     mysurfmaterial->SetYoungModulus(6e4);
     mysurfmaterial->SetFriction(0.3f);
     mysurfmaterial->SetRestitution(0.2f);
     mysurfmaterial->SetAdhesion(0); 
 
     // Create the contact surface and add to the mesh
-    auto mcontactcloud = std::make_shared<ChContactSurfaceNodeCloud>();
+    auto mcontactcloud = chrono_types::make_shared<ChContactSurfaceNodeCloud>();
     mesh->AddContactSurface(mcontactcloud);
     
     // Must use this to 'populate' the contact surface use larger point size to match beam section radius
@@ -145,7 +145,7 @@ int main(int argc, char* argv[]) {
 
     // 8. Create a collision plane, as a huge box
 
-    auto floor = std::make_shared<ChBodyEasyBox>(
+    auto floor = chrono_types::make_shared<ChBodyEasyBox>(
           4, 0.2, 4,  // x,y,z size
           1000,       // density
           true,       // visible
@@ -176,14 +176,14 @@ int main(int argc, char* argv[]) {
     //     postprocessor that can handle a coloured ChTriangleMeshShape).
     //   - Do not forget AddAsset() at the end!
 
-    auto mvisualizebeamA = std::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
+    auto mvisualizebeamA = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
     mvisualizebeamA->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_ANCF_BEAM_AX);
     mvisualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
     mvisualizebeamA->SetSmoothFaces(true);
     mvisualizebeamA->SetWireframe(false);
     mesh->AddAsset(mvisualizebeamA);
 
-    auto mvisualizebeamC = std::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
+    auto mvisualizebeamC = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
     mvisualizebeamC->SetFEMglyphType(ChVisualizationFEAmesh::E_GLYPH_NODE_CSYS); 
     mvisualizebeamC->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_NONE);
     mvisualizebeamC->SetSymbolsThickness(0.006);

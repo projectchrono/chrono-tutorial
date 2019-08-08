@@ -62,24 +62,24 @@ int main(int argc, char* argv[]) {
     //    - visualization assets (defined with respect to the body frame)
 
     // Ground
-    auto ground = std::make_shared<ChBody>();
+    auto ground = chrono_types::make_shared<ChBody>();
     system.AddBody(ground);
     ground->SetIdentifier(-1);
     ground->SetName("ground");
     ground->SetBodyFixed(true);
 
-    auto cyl_g = std::make_shared<ChCylinderShape>();
+    auto cyl_g = chrono_types::make_shared<ChCylinderShape>();
     cyl_g->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
     cyl_g->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
     cyl_g->GetCylinderGeometry().rad = 0.03;
     ground->AddAsset(cyl_g);
 
-    auto col_g = std::make_shared<ChColorAsset>();
+    auto col_g = chrono_types::make_shared<ChColorAsset>();
     col_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
     ground->AddAsset(col_g);
 
     // Crank
-    auto crank = std::make_shared<ChBody>();
+    auto crank = chrono_types::make_shared<ChBody>();
     system.AddBody(crank);
     crank->SetIdentifier(1);
     crank->SetName("crank");
@@ -88,27 +88,27 @@ int main(int argc, char* argv[]) {
     crank->SetPos(ChVector<>(-1, 0, 0));
     crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    auto box_c = std::make_shared<ChBoxShape>();
+    auto box_c = chrono_types::make_shared<ChBoxShape>();
     box_c->GetBoxGeometry().Size = ChVector<>(0.95, 0.05, 0.05);
     crank->AddAsset(box_c);
 
-    auto cyl_c = std::make_shared<ChCylinderShape>();
+    auto cyl_c = chrono_types::make_shared<ChCylinderShape>();
     cyl_c->GetCylinderGeometry().p1 = ChVector<>(1, 0.1, 0);
     cyl_c->GetCylinderGeometry().p2 = ChVector<>(1, -0.1, 0);
     cyl_c->GetCylinderGeometry().rad = 0.05;
     crank->AddAsset(cyl_c);
 
-    auto sph_c = std::make_shared<ChSphereShape>();
+    auto sph_c = chrono_types::make_shared<ChSphereShape>();
     sph_c->GetSphereGeometry().center = ChVector<>(-1, 0, 0);
     sph_c->GetSphereGeometry().rad = 0.05;
     crank->AddAsset(sph_c);
 
-    auto col_c = std::make_shared<ChColorAsset>();
+    auto col_c = chrono_types::make_shared<ChColorAsset>();
     col_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
     crank->AddAsset(col_c);
 
     // Slider
-    auto slider = std::make_shared<ChBody>();
+    auto slider = chrono_types::make_shared<ChBody>();
     system.AddBody(slider);
     slider->SetIdentifier(2);
     slider->SetName("slider");
@@ -117,22 +117,22 @@ int main(int argc, char* argv[]) {
     slider->SetPos(ChVector<>(2, 0, 0));
     slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    auto box_s = std::make_shared<ChBoxShape>();
+    auto box_s = chrono_types::make_shared<ChBoxShape>();
     box_s->GetBoxGeometry().Size = ChVector<>(0.2, 0.1, 0.1);
     slider->AddAsset(box_s);
 
-    auto cyl_s = std::make_shared<ChCylinderShape>();
+    auto cyl_s = chrono_types::make_shared<ChCylinderShape>();
     cyl_s->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
     cyl_s->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
     cyl_s->GetCylinderGeometry().rad = 0.03;
     slider->AddAsset(cyl_s);
 
-    auto col_s = std::make_shared<ChColorAsset>();
+    auto col_s = chrono_types::make_shared<ChColorAsset>();
     col_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
     slider->AddAsset(col_s);
 
     // Connecting rod
-    auto rod = std::make_shared<ChBody>();
+    auto rod = chrono_types::make_shared<ChBody>();
     system.AddBody(rod);
     rod->SetIdentifier(3);
     rod->SetName("rod");
@@ -141,17 +141,17 @@ int main(int argc, char* argv[]) {
     rod->SetPos(ChVector<>(0, 0, 0));
     rod->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    auto box_r = std::make_shared<ChBoxShape>();
+    auto box_r = chrono_types::make_shared<ChBoxShape>();
     box_r->GetBoxGeometry().Size = ChVector<>(2, 0.05, 0.05);
     rod->AddAsset(box_r);
 
-    auto cyl_r = std::make_shared<ChCylinderShape>();
+    auto cyl_r = chrono_types::make_shared<ChCylinderShape>();
     cyl_r->GetCylinderGeometry().p1 = ChVector<>(2, 0, 0.2);
     cyl_r->GetCylinderGeometry().p2 = ChVector<>(2, 0, -0.2);
     cyl_r->GetCylinderGeometry().rad = 0.03;
     rod->AddAsset(cyl_r);
 
-    auto col_r = std::make_shared<ChColorAsset>();
+    auto col_r = chrono_types::make_shared<ChColorAsset>();
     col_r->SetColor(ChColor(0.2f, 0.6f, 0.2f));
     rod->AddAsset(col_r);
 
@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
     ////    initial location: (5.5, 0, 0)
     //// -------------------------------------------------------------------------
 
-    auto ball = std::make_shared<ChBody>();
+    auto ball = chrono_types::make_shared<ChBody>();
     system.AddBody(ball);
     ball->SetIdentifier(4);
     ball->SetName("ball");
@@ -193,12 +193,12 @@ int main(int argc, char* argv[]) {
     ball->GetCollisionModel()->AddSphere(0.2, ChVector<>(0, 0, 0));
     ball->GetCollisionModel()->BuildModel();
 
-    auto sphere_b = std::make_shared<ChSphereShape>();
+    auto sphere_b = chrono_types::make_shared<ChSphereShape>();
     sphere_b->GetSphereGeometry().center = ChVector<>(0, 0, 0);
     sphere_b->GetSphereGeometry().rad = 0.2;
     ball->AddAsset(sphere_b);
 
-    auto col_b = std::make_shared<ChColorAsset>();
+    auto col_b = chrono_types::make_shared<ChColorAsset>();
     col_b->SetColor(ChColor(0.6f, 0.6f, 0.6f));
     ball->AddAsset(col_b);
 
@@ -214,14 +214,14 @@ int main(int argc, char* argv[]) {
     z2x.Q_from_AngAxis(CH_C_PI / 2, ChVector<>(0, 1, 0));
 
     // Create a ChFunction object that always returns the constant value PI/2.
-    auto fun = std::make_shared<ChFunction_Const>();
+    auto fun = chrono_types::make_shared<ChFunction_Const>();
     fun->Set_yconst(CH_C_PI);
 
     // Motor between ground and crank.
     // Note that this also acts as a revolute joint (i.e. it enforces the same
     // kinematic constraints as a revolute joint).  As before, we apply the 'z2y'
     // rotation to align the rotation axis with the Y axis of the global frame.
-    auto engine_ground_crank = std::make_shared<ChLinkMotorRotationSpeed>();
+    auto engine_ground_crank = chrono_types::make_shared<ChLinkMotorRotationSpeed>();
     engine_ground_crank->SetName("engine_ground_crank");
     engine_ground_crank->Initialize(ground, crank, ChFrame<>(ChVector<>(0, 0, 0), z2y));
     engine_ground_crank->SetSpeedFunction(fun);
@@ -231,13 +231,13 @@ int main(int argc, char* argv[]) {
     // The translational axis of a prismatic joint is along the Z axis of the
     // specified joint coordinate system.  Here, we apply the 'z2x' rotation to
     // align it with the X axis of the global reference frame.
-    auto prismatic_ground_slider = std::make_shared<ChLinkLockPrismatic>();
+    auto prismatic_ground_slider = chrono_types::make_shared<ChLinkLockPrismatic>();
     prismatic_ground_slider->SetName("prismatic_ground_slider");
     prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector<>(2, 0, 0), z2x));
     system.AddLink(prismatic_ground_slider);
 
     // Spherical joint between crank and rod
-    auto spherical_crank_rod = std::make_shared<ChLinkLockSpherical>();
+    auto spherical_crank_rod = chrono_types::make_shared<ChLinkLockSpherical>();
     spherical_crank_rod->SetName("spherical_crank_rod");
     spherical_crank_rod->Initialize(crank, rod, ChCoordsys<>(ChVector<>(-2, 0, 0), QUNIT));
     system.AddLink(spherical_crank_rod);
@@ -246,7 +246,7 @@ int main(int argc, char* argv[]) {
     // The "cross" of a universal joint is defined using the X and Y axes of the
     // specified joint coordinate frame. Here, we apply the 'z2x' rotation so that
     // the cross is aligned with the Z and Y axes of the global reference frame.
-    auto universal_rod_slider = std::make_shared<ChLinkUniversal>();
+    auto universal_rod_slider = chrono_types::make_shared<ChLinkUniversal>();
     universal_rod_slider->SetName("universal_rod_slider");
     universal_rod_slider->Initialize(rod, slider, ChFrame<>(ChVector<>(2, 0, 0), z2x));
     system.AddLink(universal_rod_slider);
@@ -257,7 +257,7 @@ int main(int argc, char* argv[]) {
     //// motion to the global X axis.
     //// -------------------------------------------------------------------------
 
-    auto prismatic_ground_ball = std::make_shared<ChLinkLockPrismatic>();
+    auto prismatic_ground_ball = chrono_types::make_shared<ChLinkLockPrismatic>();
     prismatic_ground_ball->SetName("prismatic_ground_ball");
     prismatic_ground_ball->Initialize(ground, ball, ChCoordsys<>(ChVector<>(5.5, 0, 0), z2x));
     system.AddLink(prismatic_ground_ball);
@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
     //// Set a damping coefficient of 5.
     //// -------------------------------------------------------------------------
 
-    auto tsda_ground_ball = std::make_shared<ChLinkSpring>();
+    auto tsda_ground_ball = chrono_types::make_shared<ChLinkSpring>();
     tsda_ground_ball->SetName("tsda_ground_ball");
     tsda_ground_ball->Initialize(ground, ball, false, ChVector<>(6.5, 0, 0), ChVector<>(5.5, 0, 0));
     tsda_ground_ball->Set_SpringK(50.0);

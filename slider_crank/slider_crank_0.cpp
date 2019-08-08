@@ -61,24 +61,24 @@ int main(int   argc,
   //    - visualization assets (defined with respect to the body frame)
 
   // Ground
-  auto ground = std::make_shared<ChBody>();
+  auto ground = chrono_types::make_shared<ChBody>();
   system.AddBody(ground);
   ground->SetIdentifier(-1);
   ground->SetName("ground");
   ground->SetBodyFixed(true);
 
-  auto cyl_g = std::make_shared<ChCylinderShape>();
+  auto cyl_g = chrono_types::make_shared<ChCylinderShape>();
   cyl_g->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
   cyl_g->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
   cyl_g->GetCylinderGeometry().rad = 0.03;
   ground->AddAsset(cyl_g);
 
-  auto col_g = std::make_shared<ChColorAsset>();
+  auto col_g = chrono_types::make_shared<ChColorAsset>();
   col_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
   ground->AddAsset(col_g);
 
   // Crank
-  auto crank = std::make_shared<ChBody>();
+  auto crank = chrono_types::make_shared<ChBody>();
   system.AddBody(crank);
   crank->SetIdentifier(1);
   crank->SetName("crank");
@@ -87,27 +87,27 @@ int main(int   argc,
   crank->SetPos(ChVector<>(-1, 0, 0));
   crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-  auto box_c = std::make_shared<ChBoxShape>();
+  auto box_c = chrono_types::make_shared<ChBoxShape>();
   box_c->GetBoxGeometry().Size = ChVector<>(0.95, 0.05, 0.05);
   crank->AddAsset(box_c);
 
-  auto cyl_c = std::make_shared<ChCylinderShape>();
+  auto cyl_c = chrono_types::make_shared<ChCylinderShape>();
   cyl_c->GetCylinderGeometry().p1 = ChVector<>(1, 0.1, 0);
   cyl_c->GetCylinderGeometry().p2 = ChVector<>(1, -0.1, 0);
   cyl_c->GetCylinderGeometry().rad = 0.05;
   crank->AddAsset(cyl_c);
 
-  auto sph_c = std::make_shared<ChSphereShape>();
+  auto sph_c = chrono_types::make_shared<ChSphereShape>();
   sph_c->GetSphereGeometry().center = ChVector<>(-1, 0, 0);
   sph_c->GetSphereGeometry().rad = 0.05;
   crank->AddAsset(sph_c);
 
-  auto col_c = std::make_shared<ChColorAsset>();
+  auto col_c = chrono_types::make_shared<ChColorAsset>();
   col_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
   crank->AddAsset(col_c);
 
   // Slider
-  auto slider = std::make_shared<ChBody>();
+  auto slider = chrono_types::make_shared<ChBody>();
   system.AddBody(slider);
   slider->SetIdentifier(2);
   slider->SetName("slider");
@@ -116,11 +116,11 @@ int main(int   argc,
   slider->SetPos(ChVector<>(2, 0, 0));
   slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-  auto box_s = std::make_shared<ChBoxShape>();
+  auto box_s = chrono_types::make_shared<ChBoxShape>();
   box_s->GetBoxGeometry().Size = ChVector<>(0.2, 0.1, 0.1);
   slider->AddAsset(box_s);
 
-  auto col_s = std::make_shared<ChColorAsset>();
+  auto col_s = chrono_types::make_shared<ChColorAsset>();
   col_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
   slider->AddAsset(col_s);
 
@@ -140,7 +140,7 @@ int main(int   argc,
   // The rotational axis of a revolute joint is along the Z axis of the
   // specified joint coordinate frame.  Here, we apply the 'z2y' rotation to
   // align it with the Y axis of the global reference frame.
-  auto revolute_ground_crank = std::make_shared<ChLinkLockRevolute>();
+  auto revolute_ground_crank = chrono_types::make_shared<ChLinkLockRevolute>();
   revolute_ground_crank->SetName("revolute_ground_crank");
   revolute_ground_crank->Initialize(ground, crank, ChCoordsys<>(ChVector<>(0, 0, 0), z2y));
   system.AddLink(revolute_ground_crank);
@@ -149,7 +149,7 @@ int main(int   argc,
   // The translational axis of a prismatic joint is along the Z axis of the
   // specified joint coordinate system.  Here, we apply the 'z2x' rotation to
   // align it with the X axis of the global reference frame.
-  auto prismatic_ground_slider = std::make_shared<ChLinkLockPrismatic>();
+  auto prismatic_ground_slider = chrono_types::make_shared<ChLinkLockPrismatic>();
   prismatic_ground_slider->SetName("prismatic_ground_slider");
   prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector<>(2, 0, 0), z2x));
   system.AddLink(prismatic_ground_slider);
@@ -158,7 +158,7 @@ int main(int   argc,
   // We provide the points on the two bodies in the global reference frame.
   // By default the imposed distance is calculated automatically as the distance
   // between these two points in the initial configuration.
-  auto dist_crank_slider = std::make_shared<ChLinkDistance>();
+  auto dist_crank_slider = chrono_types::make_shared<ChLinkDistance>();
   dist_crank_slider->SetName("dist_crank_slider");
   dist_crank_slider->Initialize(crank, slider, false, ChVector<>(-2, 0, 0), ChVector<>(2, 0, 0));
   system.AddLink(dist_crank_slider);

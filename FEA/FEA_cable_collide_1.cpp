@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
 
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
-    auto mesh = std::make_shared<ChMesh>();
+    auto mesh = chrono_types::make_shared<ChMesh>();
 
     system.Add(mesh);
 
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
     //    type of material. Here we will use ChElementCableANCF elements:
     //    they use a material of type ChBeamSectionCable, so let's do
 
-    auto beam_material = std::make_shared<ChBeamSectionCable>();
+    auto beam_material = chrono_types::make_shared<ChBeamSectionCable>();
     beam_material->SetDiameter(0.01);
     beam_material->SetYoungModulus(0.01e9);
     beam_material->SetBeamRaleyghDamping(0.01);
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
         ChVector<> direction(1.0, 0, 0);
 
         // create the node
-        auto node = std::make_shared<ChNodeFEAxyzD>(position, direction);
+        auto node = chrono_types::make_shared<ChNodeFEAxyzD>(position, direction);
 
         // add it to mesh
         mesh->AddNode(node);
@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
 
     for (int ie = 0; ie < N_nodes - 1; ++ie) {
         // create the element
-        auto element = std::make_shared<ChElementCableANCF>();
+        auto element = chrono_types::make_shared<ChElementCableANCF>();
 
         // set the connected nodes (pick two consecutive nodes in our beam_nodes container)
         element->SetNodes(beam_nodes[ie], beam_nodes[ie + 1]);
@@ -146,12 +146,12 @@ int main(int argc, char* argv[]) {
     //      to absolute reference, is not using constraints, and just
     //      use: beam_nodes[0]->SetFixed(true);  (but would fix also dir)
 
-    auto truss = std::make_shared<ChBody>();
+    auto truss = chrono_types::make_shared<ChBody>();
     truss->SetBodyFixed(true);
     system.Add(truss);
 
     // lock an end of the wire to the truss
-    auto constraint_pos = std::make_shared<ChLinkPointFrame>();
+    auto constraint_pos = chrono_types::make_shared<ChLinkPointFrame>();
     constraint_pos->Initialize(beam_nodes[0], truss);
     system.Add(constraint_pos);
 
@@ -194,14 +194,14 @@ int main(int argc, char* argv[]) {
     //     postprocessor that can handle a coloured ChTriangleMeshShape).
     //   - Do not forget AddAsset() at the end!
 
-    auto mvisualizebeamA = std::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
+    auto mvisualizebeamA = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
     mvisualizebeamA->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_ANCF_BEAM_AX);
     mvisualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
     mvisualizebeamA->SetSmoothFaces(true);
     mvisualizebeamA->SetWireframe(false);
     mesh->AddAsset(mvisualizebeamA);
 
-    auto mvisualizebeamC = std::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
+    auto mvisualizebeamC = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
     mvisualizebeamC->SetFEMglyphType(ChVisualizationFEAmesh::E_GLYPH_NODE_DOT_POS);  // E_GLYPH_NODE_CSYS for ChNodeFEAxyzrot
     mvisualizebeamC->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_NONE);
     mvisualizebeamC->SetSymbolsThickness(0.006);

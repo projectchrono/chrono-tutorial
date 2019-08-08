@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
 
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
-    auto mesh = std::make_shared<ChMesh>();
+    auto mesh = chrono_types::make_shared<ChMesh>();
 
     system.Add(mesh);
 
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
     //    Note that each FEA element type requires some corresponding
     //    type of material. ChElemetBeamEuler require a ChBeamSectionAdvanced material.
 
-    auto beam_material = std::make_shared<ChBeamSectionAdvanced>();
+    auto beam_material = chrono_types::make_shared<ChBeamSectionAdvanced>();
 	beam_material->SetAsRectangularSection(0.012, 0.025);
 	beam_material->SetYoungModulus (0.01e9);
 	beam_material->SetGshearModulus(0.01e9 * 0.3);
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
                             0);                                   // node position, z
 
         // create the node
-        auto node = std::make_shared<ChNodeFEAxyzrot>( ChFrame<>(position) );
+        auto node = chrono_types::make_shared<ChNodeFEAxyzrot>( ChFrame<>(position) );
 
         // add it to mesh
         mesh->AddNode(node);
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
 
     for (int ie = 0; ie < N_nodes - 1; ++ie) {
         // create the element
-        auto element = std::make_shared<ChElementBeamEuler>();
+        auto element = chrono_types::make_shared<ChElementBeamEuler>();
 
         // set the connected nodes (pick two consecutive nodes in our beam_nodes container)
         element->SetNodes(beam_nodes[ie], beam_nodes[ie + 1]);
@@ -141,12 +141,12 @@ int main(int argc, char* argv[]) {
     //    - For the ChNodeFEAxyzrot one can use all constraints
     //      of the ChMate class
 
-    auto truss = std::make_shared<ChBody>();
+    auto truss = chrono_types::make_shared<ChBody>();
     truss->SetBodyFixed(true);
     system.Add(truss);
 
     // lock an end of the wire to the truss
-    auto constraint_pos = std::make_shared<ChLinkMateSpherical>();
+    auto constraint_pos = chrono_types::make_shared<ChLinkMateSpherical>();
     constraint_pos->Initialize(
         beam_nodes[0],  // node to constraint
         truss,          // body to constraint
@@ -168,14 +168,14 @@ int main(int argc, char* argv[]) {
     //      dense finite elements meshes that collide with large objects.
 
     // Create a surface material to be shared with some objects
-    auto mysurfmaterial = std::make_shared<ChMaterialSurfaceSMC>();
+    auto mysurfmaterial = chrono_types::make_shared<ChMaterialSurfaceSMC>();
     mysurfmaterial->SetYoungModulus(6e4);
     mysurfmaterial->SetFriction(0.3f);
     mysurfmaterial->SetRestitution(0.2f);
     mysurfmaterial->SetAdhesion(0); 
 
     // Create the contact surface and add to the mesh
-    auto mcontactcloud = std::make_shared<ChContactSurfaceNodeCloud>();
+    auto mcontactcloud = chrono_types::make_shared<ChContactSurfaceNodeCloud>();
     mesh->AddContactSurface(mcontactcloud);
     
     // Must use this to 'populate' the contact surface use larger point size to match beam section radius
@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
 
     // 8. Create a collision plane, as a huge box
 
-    auto floor = std::make_shared<ChBodyEasyBox>(
+    auto floor = chrono_types::make_shared<ChBodyEasyBox>(
           4, 0.2, 4,  // x,y,z size
           1000,       // density
           true,       // visible
@@ -212,11 +212,11 @@ int main(int argc, char* argv[]) {
     //   - Option 2.b: implement your own ChLoader-inherited class and use in a ChLoad
 
     // Create the load container and add it to your ChSystem 
-    auto loadcontainer = std::make_shared<ChLoadContainer>();
+    auto loadcontainer = chrono_types::make_shared<ChLoadContainer>();
     system.Add(loadcontainer);
 
     // Example: Add a vertical load to the end point of the last beam element:
-    auto mwrench = std::make_shared<ChLoadBeamWrench>(beam_elements.back());
+    auto mwrench = chrono_types::make_shared<ChLoadBeamWrench>(beam_elements.back());
     mwrench->loader.SetApplication(1.0); // in -1..+1 range, -1: end A, 0: mid, +1: end B
     mwrench->loader.SetForce(ChVector<>(0,-0.2,0));
     loadcontainer->Add(mwrench);  // do not forget to add the load to the load container.
@@ -233,7 +233,7 @@ int main(int argc, char* argv[]) {
     //// -------------------------------------------------------------------------
 
     //// Add a distributed load along the beam element:
-    auto mwrenchdis = std::make_shared<ChLoadBeamWrenchDistributed>(beam_elements.back());
+    auto mwrenchdis = chrono_types::make_shared<ChLoadBeamWrenchDistributed>(beam_elements.back());
     mwrenchdis->loader.SetForcePerUnit(ChVector<>(0,-0.1,0)); // load per unit length
     loadcontainer->Add(mwrenchdis);
 
@@ -282,8 +282,8 @@ int main(int argc, char* argv[]) {
                 else 
                     Fz = -Fmax;
                 // Return load in the F wrench: {forceX, forceY, forceZ, torqueX, torqueY, torqueZ}.
-                F.PasteVector( ChVector<>(0, 0, Fz), 0,0); // load, force part; 
-                F.PasteVector( ChVector<>(0,0,0)    ,3,0); // load, torque part; 
+                F.segment(0, 3) = ChVector<>(0, 0, Fz).eigen();  // load, force part
+                F.segment(3, 3) = ChVector<>(0, 0, 0).eigen();   // load, torque part
             }
 
     public:
@@ -314,14 +314,14 @@ int main(int argc, char* argv[]) {
     //     postprocessor that can handle a coloured ChTriangleMeshShape).
     //   - Do not forget AddAsset() at the end!
 
-    auto mvisualizebeamA = std::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
+    auto mvisualizebeamA = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
     mvisualizebeamA->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_ANCF_BEAM_AX);
     mvisualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
     mvisualizebeamA->SetSmoothFaces(true);
     mvisualizebeamA->SetWireframe(false);
     mesh->AddAsset(mvisualizebeamA);
 
-    auto mvisualizebeamC = std::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
+    auto mvisualizebeamC = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
     mvisualizebeamC->SetFEMglyphType(ChVisualizationFEAmesh::E_GLYPH_NODE_CSYS); 
     mvisualizebeamC->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_NONE);
     mvisualizebeamC->SetSymbolsThickness(0.006);

@@ -94,7 +94,7 @@ double initial_velocity = 0;
 // -----------------------------------------------------------------------------
 void CreateContainer(ChSystemParallel* system) {
     // Create a material for the container
-    auto material_c = std::make_shared<ChMaterialSurfaceNSC>();
+    auto material_c = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     material_c->SetFriction(mu_c);
 
     // Create the container. This utility function creates the container body (fixed to "ground")
@@ -108,11 +108,11 @@ void CreateContainer(ChSystemParallel* system) {
 // -----------------------------------------------------------------------------
 std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
     // Create a contact material for the falling ball
-    auto material_b = std::make_shared<ChMaterialSurfaceNSC>();
+    auto material_b = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     material_b->SetFriction(mu_b);
 
     // Create the falling ball body
-    auto ball = std::make_shared<ChBody>(std::make_shared<ChCollisionModelParallel>(), ChMaterialSurface::NSC);
+    auto ball = chrono_types::make_shared<ChBody>(chrono_types::make_shared<ChCollisionModelParallel>(), ChMaterialSurface::NSC);
 
     ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
@@ -143,7 +143,7 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
 // -----------------------------------------------------------------------------
 void CreateObjects(ChSystemParallel* system) {
     // Create a contact material for granular bodies
-    auto material_g = std::make_shared<ChMaterialSurfaceNSC>();
+    auto material_g = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     material_g->SetFriction(mu_g);
 
     //// ********************************************************************************
