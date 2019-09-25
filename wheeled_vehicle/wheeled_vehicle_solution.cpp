@@ -106,23 +106,19 @@ int main(int argc, char* argv[]) {
     AddMovingObstacles(vehicle.GetSystem());
 
     // Create and initialize the powertrain system
-    vehicle::SimplePowertrain powertrain(vehicle::GetDataFile(simplepowertrain_file));
-    powertrain.Initialize(vehicle.GetChassis()->GetBody(), vehicle.GetDriveshaft());
+    auto powertrain = chrono_types::make_shared<vehicle::SimplePowertrain>(vehicle::GetDataFile(simplepowertrain_file));
+    vehicle.InitializePowertrain(powertrain);
 
     // Create and initialize the tires
-    int num_axles = vehicle.GetNumberAxles();
-    int num_wheels = 2 * num_axles;
-    std::vector<std::shared_ptr<vehicle::RigidTire>> tires(num_wheels);
-
-    for (int i = 0; i < num_wheels; i++) {
-        std::cout << "tire " << i << std::endl;
-        tires[i] = chrono_types::make_shared<vehicle::RigidTire>(vehicle::GetDataFile(rigidtire_file));
-        tires[i]->Initialize(vehicle.GetWheelBody(i), vehicle::VehicleSide(i % 2));
-        tires[i]->SetVisualizationType(vehicle::VisualizationType::MESH);
+    for (auto& axle : vehicle.GetAxles()) {
+        auto tireL = chrono_types::make_shared<vehicle::RigidTire>(vehicle::GetDataFile(rigidtire_file));
+        auto tireR = chrono_types::make_shared<vehicle::RigidTire>(vehicle::GetDataFile(rigidtire_file));
+        vehicle.InitializeTire(tireL, axle->m_wheels[0], vehicle::VisualizationType::MESH);
+        vehicle.InitializeTire(tireR, axle->m_wheels[1], vehicle::VisualizationType::MESH);
     }
 
     // Create the Irrlicht vehicle application
-    vehicle::ChVehicleIrrApp app(&vehicle, &powertrain, L"Vehicle Demo");
+    vehicle::ChVehicleIrrApp app(&vehicle, L"Vehicle Demo");
 
     app.SetSkyBox();
     app.AddTypicalLights(irr::core::vector3df(30.f, -30.f, 100.f), irr::core::vector3df(30.f, 50.f, 100.f), 250, 130);
@@ -162,15 +158,6 @@ int main(int argc, char* argv[]) {
     // Simulation loop
     // ---------------
 
-    // Inter-module communication data
-    vehicle::TerrainForces tire_forces(num_wheels);
-    vehicle::WheelStates wheel_states(num_wheels);
-    double driveshaft_speed;
-    double powertrain_torque;
-    double throttle_input;
-    double steering_input;
-    double braking_input;
-
     // Number of simulation steps between two 3D view render frames
     int render_steps = (int)std::ceil(render_step_size / step_size);
 
@@ -195,35 +182,21 @@ int main(int argc, char* argv[]) {
             frame_number++;
         }
 
-        // Collect output data from modules (for inter-module communication)
-        throttle_input = driver.GetThrottle();
-        steering_input = driver.GetSteering();
-        braking_input = driver.GetBraking();
-        powertrain_torque = powertrain.GetOutputTorque();
-        driveshaft_speed = vehicle.GetDriveshaftSpeed();
-        for (int i = 0; i < num_wheels; i++) {
-            tire_forces[i] = tires[i]->GetTireForce();
-            wheel_states[i] = vehicle.GetWheelState(i);
-        }
+        // Get driver inputs
+        vehicle::ChDriver::Inputs driver_inputs = driver.GetInputs();
 
         // Update modules (process inputs from other modules)
         time = vehicle.GetSystem()->GetChTime();
         driver.Synchronize(time);
-        powertrain.Synchronize(time, throttle_input, driveshaft_speed);
-        vehicle.Synchronize(time, steering_input, braking_input, powertrain_torque, tire_forces);
+        vehicle.Synchronize(time, driver_inputs, terrain);
         terrain.Synchronize(time);
-        for (int i = 0; i < num_wheels; i++)
-            tires[i]->Synchronize(time, wheel_states[i], terrain);
-        app.Synchronize(driver.GetInputModeAsString(), steering_input, throttle_input, braking_input);
+        app.Synchronize(driver.GetInputModeAsString(), driver_inputs);
 
         // Advance simulation for one timestep for all modules
         double step = realtime_timer.SuggestSimulationStep(step_size);
         driver.Advance(step);
-        powertrain.Advance(step);
         vehicle.Advance(step);
         terrain.Advance(step);
-        for (int i = 0; i < num_wheels; i++)
-            tires[i]->Advance(step);
         app.Advance(step);
 
         // Increment frame number
