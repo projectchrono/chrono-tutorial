@@ -295,9 +295,6 @@ int main(int argc, char* argv[]) {
     application.SetTimestep(0.001);
     application.SetTryRealtime(false);
 
-    // Mark completion of system construction
-    system.SetupInitial();
-
     while (application.GetDevice()->run()) {
         // Initialize the graphical scene.
         application.BeginScene();
