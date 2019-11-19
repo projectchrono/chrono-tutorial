@@ -34,6 +34,7 @@
 #include <cstdio>
 #include <cmath>
 
+#include "chrono/assets/ChPointPointDrawing.h"
 #include "chrono/physics/ChLinkMotorRotationSpeed.h"
 #include "chrono/physics/ChSystemNSC.h"
 #include "chrono_irrlicht/ChIrrApp.h"
@@ -270,13 +271,16 @@ int main(int argc, char* argv[]) {
     //// Set a damping coefficient of 5.
     //// -------------------------------------------------------------------------
 
-    auto tsda_ground_ball = chrono_types::make_shared<ChLinkSpring>();
+    auto tsda_ground_ball = chrono_types::make_shared<ChLinkTSDA>();
     tsda_ground_ball->SetName("tsda_ground_ball");
     tsda_ground_ball->Initialize(ground, ball, false, ChVector<>(6.5, 0, 0), ChVector<>(5.5, 0, 0));
-    tsda_ground_ball->Set_SpringK(50.0);
-    tsda_ground_ball->Set_SpringR(5.0);
-    tsda_ground_ball->Set_SpringRestLength(1.0);
+    tsda_ground_ball->SetSpringCoefficient(50.0);
+    tsda_ground_ball->SetDampingCoefficient(5.0);
+    tsda_ground_ball->SetRestLength(1.0);
     system.AddLink(tsda_ground_ball);
+
+    tsda_ground_ball->AddAsset(chrono_types::make_shared<ChColorAsset>(0.6, 0.2, 0.2));
+    tsda_ground_ball->AddAsset(chrono_types::make_shared<ChPointPointSpring>(0.05, 80, 15));
 
     // 4. Write the system hierarchy to the console (default log output destination)
     system.ShowHierarchy(GetLog());
@@ -312,10 +316,6 @@ int main(int argc, char* argv[]) {
 
         // Render all visualization objects.
         application.DrawAll();
-
-        // Render the spring
-        ChIrrTools::drawSpring(application.GetVideoDriver(), 0.05, tsda_ground_ball->GetEndPoint1Abs(),
-                               tsda_ground_ball->GetEndPoint2Abs(), video::SColor(255, 150, 20, 20), 80, 15, true);
 
         // Draw an XZ grid at the global origin to add in visualization.
         ChIrrTools::drawGrid(application.GetVideoDriver(), 1, 1, 20, 20,
