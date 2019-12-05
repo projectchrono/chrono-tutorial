@@ -34,6 +34,7 @@
 #include "chrono/physics/ChSystemSMC.h"
 #include "chrono/physics/ChLinkMate.h"
 #include "chrono/physics/ChBodyEasy.h"
+#include "chrono/solver/ChIterativeSolverLS.h"
 #include "chrono_irrlicht/ChIrrApp.h"
 
 #include "chrono/fea/ChElementBeamEuler.h"
@@ -252,11 +253,11 @@ int main(int argc, char* argv[]) {
     //    - Note that if you build the MKL module, you could use the more precise MKL solver.
 
     // Change solver
-    system.SetSolverType(ChSolver::Type::MINRES);
-    system.SetSolverWarmStarting(true);  // this helps a lot to speedup convergence in this class of problems
-    system.SetMaxItersSolverSpeed(200);
-    system.SetMaxItersSolverStab(200);
-    system.SetTolForce(1e-10);
+    auto solver = chrono_types::make_shared<ChSolverMINRES>();
+    solver->SetMaxIterations(200);
+    solver->SetTolerance(1e-10);
+    solver->EnableWarmStart(true);
+    system.SetSolver(solver);
 
     // Change integrator:
     // system.SetTimestepperType(ChTimestepper::Type::EULER_IMPLICIT_LINEARIZED);  // default: fast, 1st order
