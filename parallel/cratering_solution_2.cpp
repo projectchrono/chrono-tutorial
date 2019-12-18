@@ -160,7 +160,7 @@ void CreateObjects(ChSystemParallel* system) {
     //// ********************************************************************************
     utils::Generator gen(system);
 
-    std::shared_ptr<utils::MixtureIngredient> m1 = gen.AddMixtureIngredient(utils::SPHERE, 1.0);
+    std::shared_ptr<utils::MixtureIngredient> m1 = gen.AddMixtureIngredient(utils::MixtureType::SPHERE, 1.0);
     m1->setDefaultMaterial(material_g);
     m1->setDefaultDensity(rho_g);
     m1->setDefaultSize(r_g);
@@ -168,7 +168,7 @@ void CreateObjects(ChSystemParallel* system) {
     gen.setBodyIdentifier(Id_g);
 
     // Generate the granular bodies in a box within the container, using Poisson disk sampling
-    gen.createObjectsBox(utils::POISSON_DISK, 2.01 * r_g, ChVector<>(0, 0, hDimZ / 2),
+    gen.createObjectsBox(utils::SamplingType::POISSON_DISK, 2.01 * r_g, ChVector<>(0, 0, hDimZ / 2),
                          ChVector<>(hDimX - r_g, hDimY - r_g, hDimZ / 2 - r_g));
 
     std::cout << "Generated " << gen.getTotalNumBodies() << " bodies" << std::endl;
