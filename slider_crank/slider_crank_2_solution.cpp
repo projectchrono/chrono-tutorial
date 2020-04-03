@@ -165,10 +165,12 @@ int main(int argc, char* argv[]) {
     //// -------------------------------------------------------------------------
 
     slider->SetCollide(true);
-    slider->GetMaterialSurfaceNSC()->SetFriction(0.4f);
+
+    auto slider_mat = chrono_types::make_shared<ChMaterialSurfaceNSC>();
+    slider_mat->SetFriction(0.4f);
 
     slider->GetCollisionModel()->ClearModel();
-    slider->GetCollisionModel()->AddBox(0.2, 0.1, 0.1, VNULL, QUNIT);
+    slider->GetCollisionModel()->AddBox(slider_mat, 0.2, 0.1, 0.1, VNULL, QUNIT);
     slider->GetCollisionModel()->BuildModel();
 
     //// -------------------------------------------------------------------------
@@ -189,9 +191,12 @@ int main(int argc, char* argv[]) {
     ball->SetPos(ChVector<>(5.5, 0, 0));
     ball->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
+    // Contact material for NSC method, default properties
+    auto ball_mat = chrono_types::make_shared<ChMaterialSurfaceNSC>();
+
     ball->SetCollide(true);
     ball->GetCollisionModel()->ClearModel();
-    ball->GetCollisionModel()->AddSphere(0.2, ChVector<>(0, 0, 0));
+    ball->GetCollisionModel()->AddSphere(ball_mat, 0.2, ChVector<>(0, 0, 0));
     ball->GetCollisionModel()->BuildModel();
 
     auto sphere_b = chrono_types::make_shared<ChSphereShape>();
@@ -279,7 +284,7 @@ int main(int argc, char* argv[]) {
     tsda_ground_ball->SetRestLength(1.0);
     system.AddLink(tsda_ground_ball);
 
-    tsda_ground_ball->AddAsset(chrono_types::make_shared<ChColorAsset>(0.6, 0.2, 0.2));
+    tsda_ground_ball->AddAsset(chrono_types::make_shared<ChColorAsset>(0.6f, 0.2f, 0.2f));
     tsda_ground_ball->AddAsset(chrono_types::make_shared<ChPointPointSpring>(0.05, 80, 15));
 
     // 4. Write the system hierarchy to the console (default log output destination)

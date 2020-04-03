@@ -186,34 +186,27 @@ int main(int argc, char* argv[]) {
     mysurfmaterial->SetRestitution(0.2f);
     mysurfmaterial->SetAdhesion(0); 
 
-    // Create the contact surface and add to the mesh
-    auto mcontactcloud = chrono_types::make_shared<ChContactSurfaceNodeCloud>();
+    // Create the contact surface and add to the mesh, using our SMC contact material
+    auto mcontactcloud = chrono_types::make_shared<ChContactSurfaceNodeCloud>(mysurfmaterial);
     mesh->AddContactSurface(mcontactcloud);
     
     // Must use this to 'populate' the contact surface use larger point size to match beam section radius
     mcontactcloud->AddAllNodes(0.01); 
 
-    // Use our SMC surface material properties 
-    mcontactcloud->SetMaterialSurface(mysurfmaterial);
-
 
     // 8. Create a collision plane, as a huge box
 
-    auto floor = chrono_types::make_shared<ChBodyEasyBox>(
-          4, 0.2, 4,  // x,y,z size
-          1000,       // density
-          true,       // visible
-          true        // collide
-        );
+    auto floor = chrono_types::make_shared<ChBodyEasyBox>(4, 0.2, 4,      // x,y,z size
+                                                          1000,           // density
+                                                          true,           // collide
+                                                          true,           // visible
+                                                          mysurfmaterial  // contact material
+    );
 
     system.Add(floor);
 
     floor->SetBodyFixed(true);
     floor->SetPos( ChVector<>(0,-0.1,0) );
-
-    // Use our SMC surface material properties 
-    floor->SetMaterialSurface(mysurfmaterial);
-
 
 
     // 9. Make the finite elements visible in the 3D view

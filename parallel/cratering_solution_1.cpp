@@ -112,7 +112,7 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
     material_b->SetFriction(mu_b);
 
     // Create the falling ball body
-    auto ball = chrono_types::make_shared<ChBody>(chrono_types::make_shared<ChCollisionModelParallel>(), ChMaterialSurface::NSC);
+    auto ball = chrono_types::make_shared<ChBody>(chrono_types::make_shared<ChCollisionModelParallel>());
 
     ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
@@ -123,11 +123,9 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
     ball->SetCollide(true);
     ball->SetBodyFixed(false);
 
-    ball->SetMaterialSurface(material_b);
-
     // Specify spherical contact and visualization shapes
     ball->GetCollisionModel()->ClearModel();
-    utils::AddSphereGeometry(ball.get(), R_b);
+    utils::AddSphereGeometry(ball.get(), material_b, R_b);
     ball->GetCollisionModel()->BuildModel();
 
     system->AddBody(ball);

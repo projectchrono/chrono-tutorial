@@ -49,7 +49,7 @@ using namespace chrono::collision;
 // -----------------------------------------------------------------------------
 
 // Contact method (NSC: non-smooth, complementarity or SMC: smooth, penalty)
-ChMaterialSurface::ContactMethod method = ChMaterialSurface::NSC;
+ChContactMethod method = ChContactMethod::NSC;
 
 // Desired number of OpenMP threads (will be clamped to maximum available)
 int threads = 4;
@@ -101,13 +101,13 @@ void CreateContainer(ChSystemParallel* system) {
     std::shared_ptr<chrono::ChMaterialSurface> material_c;
 
     switch (system->GetContactMethod()) {
-        case ChMaterialSurface::NSC: {
+        case ChContactMethod::NSC: {
             auto mat_c = chrono_types::make_shared<ChMaterialSurfaceNSC>();
             mat_c->SetFriction(mu_c);
             material_c = mat_c;
             break;
         }
-        case ChMaterialSurface::SMC: {
+        case ChContactMethod::SMC: {
             auto mat_c = chrono_types::make_shared<ChMaterialSurfaceSMC>();
             mat_c->SetYoungModulus(Y_c);
             mat_c->SetFriction(mu_c);
@@ -131,13 +131,13 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
     std::shared_ptr<chrono::ChMaterialSurface> material_b;
 
     switch (system->GetContactMethod()) {
-        case ChMaterialSurface::NSC: {
+        case ChContactMethod::NSC: {
             auto mat_b = chrono_types::make_shared<ChMaterialSurfaceNSC>();
             mat_b->SetFriction(mu_b);
             material_b = mat_b;
             break;
         }
-        case ChMaterialSurface::SMC: {
+        case ChContactMethod::SMC: {
             auto mat_b = chrono_types::make_shared<ChMaterialSurfaceSMC>();
             mat_b->SetYoungModulus(Y_b);
             mat_b->SetFriction(mu_b);
@@ -159,11 +159,9 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
     ball->SetCollide(true);
     ball->SetBodyFixed(false);
 
-    ball->SetMaterialSurface(material_b);
-
     // Specify spherical contact and visualization shapes
     ball->GetCollisionModel()->ClearModel();
-    utils::AddSphereGeometry(ball.get(), R_b);
+    utils::AddSphereGeometry(ball.get(), material_b, R_b);
     ball->GetCollisionModel()->BuildModel();
 
     system->AddBody(ball);
@@ -182,13 +180,13 @@ void CreateObjects(ChSystemParallel* system) {
     std::shared_ptr<chrono::ChMaterialSurface> material_g;
 
     switch (system->GetContactMethod()) {
-        case ChMaterialSurface::NSC: {
+        case ChContactMethod::NSC: {
             auto mat_g = chrono_types::make_shared<ChMaterialSurfaceNSC>();
             mat_g->SetFriction(mu_g);
             material_g = mat_g;
             break;
         }
-        case ChMaterialSurface::SMC: {
+        case ChContactMethod::SMC: {
             auto mat_g = chrono_types::make_shared<ChMaterialSurfaceSMC>();
             mat_g->SetYoungModulus(Y_g);
             mat_g->SetFriction(mu_g);
@@ -228,7 +226,7 @@ int main(int argc, char* argv[]) {
     ChSystemParallel* system;
     double time_step;
     switch (method) {
-        case ChMaterialSurface::NSC: {
+        case ChContactMethod::NSC: {
             std::cout << "Create NSC (non-smooth, complementarity) system" << std::endl;
             ChSystemParallelNSC* sys = new ChSystemParallelNSC;
             sys->GetSettings()->solver.solver_type = SolverType::BB;
@@ -242,7 +240,7 @@ int main(int argc, char* argv[]) {
             time_step = 1e-3;
             break;
         }
-        case ChMaterialSurface::SMC: {
+        case ChContactMethod::SMC: {
             std::cout << "Create SMC (smooth, penalty) system" << std::endl;
             ChSystemParallelSMC* sys = new ChSystemParallelSMC;
             sys->GetSettings()->solver.contact_force_model = ChSystemSMC::Hooke;
