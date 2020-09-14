@@ -54,7 +54,7 @@ ChVector<> initLoc(0, 0, 1.0);
 ChQuaternion<> initRot(1, 0, 0, 0);
 
 // Simulation step size
-double step_size = 2e-4;
+double step_size = 8e-4;
 
 // Time interval between two render frames
 double render_step_size = 1.0 / 50;  // FPS = 50
@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
 
             char filename[100];
             sprintf(filename, "%s/data_%03d.dat", pov_dir.c_str(), frame_number + 1);
-            utils::WriteShapesPovray(vehicle.GetSystem(), filename);
+            //utils::WriteShapesPovray(vehicle.GetSystem(), filename);
 
             frame_number++;
         }
