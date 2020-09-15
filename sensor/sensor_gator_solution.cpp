@@ -126,57 +126,18 @@ float lidar_hfov = (float)(2 * CH_C_PI);   // 360 degrees
 float lidar_vmax = (float)(CH_C_PI / 12);   // 15 degrees up
 float lidar_vmin = (float)(-CH_C_PI / 6);    // 30 degrees down
 
-// -----------------------------------------------------------------------------
-// IMU parameters
-// -----------------------------------------------------------------------------
-// Noise model attached to the sensor
-enum IMUNoiseModel {
-    NORMAL_DRIFT,  // gaussian drifting noise with noncorrelated equal distributions
-    IMU_NONE       // no noise added
-};
-IMUNoiseModel imu_noise_type = NORMAL_DRIFT;
-
-// IMU update rate in Hz
-int imu_update_rate = 100;
-
-// IMU lag (in seconds) between sensing and when data becomes accessible
-float imu_lag = 0.f;
-
-// IMU collection time (in seconds) of each sample
-float imu_collection_time = 0.f;
-
-// -----------------------------------------------------------------------------
-// GPS parameters
-// -----------------------------------------------------------------------------
-// Noise model attached to the sensor
-enum GPSNoiseModel {
-    NORMAL,    // individually parameterized independent gaussian distribution
-    GPS_NONE,  // no noise model
-};
-GPSNoiseModel gps_noise_type = GPS_NONE;
-
-// GPS update rate in Hz
-int gps_update_rate = 10;
-
-// Camera's horizontal field of view
-float fov = 1.408f;
-
-// GPS lag (in seconds) between sensing and when data becomes accessible
-float gps_lag = 0.f;
-
-// Collection time (in seconds) of eacn sample
-float gps_collection_time = 0.f;
-
-// Origin used as the gps reference point
-// Located in Madison, WI
-ChVector<> gps_reference(-89.400, 43.070, 260.0);
-
 // ---------------
 
 // =============================================================================
 
 int main(int argc, char* argv[]) {
     GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+
+	// Path to Chrono data files (textures, etc.)
+    SetChronoDataPath(CHRONO_DATA_DIR);
+
+    // Path to the data files for this vehicle (JSON specification files)
+    vehicle::SetDataPath(GetChronoDataFile("") + "/vehicle/");
 
     // --------------
     // Create vehicle
@@ -334,9 +295,6 @@ int main(int argc, char* argv[]) {
     lidar->SetName("Lidar Sensor");
     lidar->SetLag(1 / lidar_update_rate);
     lidar->SetCollectionWindow(0);
-    if (sensor_vis)
-        lidar->PushFilter(
-            chrono_types::make_shared<ChFilterVisualize>(horizontal_samples, vertical_samples, "Raw Lidar Data"));
     lidar->PushFilter(chrono_types::make_shared<ChFilterPCfromDepth>());
     if (sensor_vis)
         lidar->PushFilter(chrono_types::make_shared<ChFilterVisualizePointCloud>(640, 480, .5, "Lidar Point Cloud"));
@@ -344,64 +302,6 @@ int main(int argc, char* argv[]) {
         lidar->PushFilter(chrono_types::make_shared<ChFilterSavePtCloud>(sens_dir + "/lidar/"));
     lidar->PushFilter(chrono_types::make_shared<ChFilterXYZIAccess>());
     manager->AddSensor(lidar);
-
-    std::shared_ptr<ChIMUNoiseModel> imu_noise_model;
-    switch (imu_noise_type) {
-        case NORMAL_DRIFT:
-            imu_noise_model = chrono_types::make_shared<ChIMUNoiseNormalDrift>(100.f,   // float updateRate,
-                                                                               0.f,     // float g_mean,
-                                                                               .001f,   // float g_stdev,
-                                                                               .0f,     // float g_bias_drift,
-                                                                               .1f,     // float g_tau_drift,
-                                                                               .0f,     // float a_mean,
-                                                                               .0075f,  // float a_stdev,
-                                                                               .001f,   // float a_bias_drift,
-                                                                               .1f      // float a_tau_drift);
-            );
-            break;
-        case IMU_NONE:
-            imu_noise_model = chrono_types::make_shared<ChIMUNoiseNone>();
-            break;
-    }
-    auto imu_offset_pose = chrono::ChFrame<double>({0, 0, 1.45}, Q_from_AngAxis(0, {1, 0, 0}));
-    auto imu = chrono_types::make_shared<ChIMUSensor>(gator.GetChassisBody(),  // body to which the IMU is attached
-                                                      imu_update_rate,         // update rate
-                                                      imu_offset_pose,         // offset pose from body
-                                                      imu_noise_model);        // IMU noise model
-    imu->SetName("IMU");
-    imu->SetLag(imu_lag);
-    imu->SetCollectionWindow(imu_collection_time);
-    imu->PushFilter(chrono_types::make_shared<ChFilterIMUAccess>());
-    manager->AddSensor(imu);
-
-    // ---------------------------------------------
-    // Create a GPS and add it to the sensor manager
-    // ---------------------------------------------
-    std::shared_ptr<ChGPSNoiseModel> gps_noise_model;
-    switch (gps_noise_type) {
-        case NORMAL:
-            gps_noise_model =
-                chrono_types::make_shared<ChGPSNoiseNormal>(ChVector<float>(1.f, 1.f, 1.f),  // Mean
-                                                            ChVector<float>(2.f, 3.f, 1.f)   // Standard Deviation
-                );
-            break;
-        case GPS_NONE:
-            gps_noise_model = chrono_types::make_shared<ChGPSNoiseNone>();
-            break;
-    }
-    auto gps_offset_pose = chrono::ChFrame<double>({0, 0, 1.45}, Q_from_AngAxis(0, {1, 0, 0}));
-    auto gps = chrono_types::make_shared<ChGPSSensor>(
-        gator.GetChassisBody(),  // body to which the GPS is attached
-        gps_update_rate,         // update rate
-        gps_offset_pose,         // offset pose from body
-        gps_reference,           // reference GPS location (GPS coordinates of simulation origin)
-        gps_noise_model          // noise model to use for adding GPS noise
-    );
-    gps->SetName("GPS");
-    gps->SetLag(gps_lag);
-    gps->SetCollectionWindow(gps_collection_time);
-    gps->PushFilter(chrono_types::make_shared<ChFilterGPSAccess>());
-    manager->AddSensor(gps);
 
     // ---------------
     // Simulation loop
@@ -423,11 +323,13 @@ int main(int argc, char* argv[]) {
     ChRealtimeStepTimer realtime_timer;
     while (app.GetDevice()->run()) {
         double time = gator.GetSystem()->GetChTime();
-
+		
+		//Change the camera location so that is orbits vehicle
         cam->SetOffsetPose(
             chrono::ChFrame<double>({-orbit_radius * cos(time * orbit_rate), -orbit_radius * sin(time * orbit_rate), 3},
                                     Q_from_AngAxis(time * orbit_rate, {0, 0, 1})));
 
+		// Update the sensor manager -> this will perform all synchronize, render, augment functions in Chrono::Sensor
         manager->Update();
 
         // Render scene and output POV-Ray data

@@ -101,6 +101,13 @@ bool povray_output = false;
 
 int main(int argc, char* argv[]) {
     GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+		
+	// Path to Chrono data files (textures, etc.)
+    SetChronoDataPath(CHRONO_DATA_DIR);
+
+    // Path to the data files for this vehicle (JSON specification files)
+    vehicle::SetDataPath(GetChronoDataFile("")+"/vehicle/");
+
 
     // --------------
     // Create vehicle

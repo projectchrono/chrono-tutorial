@@ -1,6 +1,6 @@
 #=============================================================================
 # CMake configuration file for Chrono-Tutorial
-# 
+#
 #=============================================================================
 
 cmake_minimum_required(VERSION 2.8)
@@ -20,7 +20,7 @@ set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
 # when building, don't use the install RPATH already
 # (but later on when installing)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
@@ -74,6 +74,7 @@ option(ENABLE_CHRONO_PROGRAMS "Build the Chrono tutorial programs" ON)
 option(ENABLE_VEHICLE_PROGRAMS "Build the Chrono::Vehicle tutorial programs" ON)
 option(ENABLE_FEA_PROGRAMS "Build the Chrono::FEA tutorial programs" ON)
 option(ENABLE_PARALLEL_PROGRAMS "Build the Chrono::Parallel tutorial programs" ON)
+option(ENABLE_SENSOR_PROGRAMS "Build the Chrono::Sensor tutorial programs" OFF)
 
 # Keep track of all DLLs. Each submodule should append to this list.
 list(APPEND ALL_DLLS "")
@@ -95,6 +96,10 @@ if(ENABLE_PARALLEL_PROGRAMS)
   message(STATUS "==== Chrono::Parallel programs ====")
   add_subdirectory(parallel)
 endif()
+if(ENABLE_SENSOR_PROGRAMS)
+  message(STATUS "==== Chrono::Sensor programs ====")
+  add_subdirectory(sensor)
+endif()
 
 #--------------------------------------------------------------
 # Copy DLLs
@@ -104,5 +109,3 @@ endif()
 # output folder (on Windows only).
 
 add_DLL_copy_command("${ALL_DLLS}")
-
-
