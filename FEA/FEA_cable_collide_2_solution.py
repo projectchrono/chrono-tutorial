@@ -79,7 +79,7 @@ system.Add(mesh)
 #    Note that each FEA element type requires some corresponding
 #    type of material. ChElemetBeamEuler require a ChBeamSectionAdvanced material.
 
-beam_material = fea.ChBeamSectionAdvanced()
+beam_material = fea.ChBeamSectionEulerAdvanced()
 beam_material.SetAsRectangularSection(0.012, 0.025)
 beam_material.SetYoungModulus (0.01e9)
 beam_material.SetGshearModulus(0.01e9 * 0.3)
@@ -170,16 +170,12 @@ mysurfmaterial.SetFriction(0.3)
 mysurfmaterial.SetRestitution(0.2)
 mysurfmaterial.SetAdhesion(0) 
 
-# Create the contact surface and add to the mesh
-mcontactcloud = fea.ChContactSurfaceNodeCloud()
+# Create the contact surface and add to the mesh, using our SMC contact material
+mcontactcloud = fea.ChContactSurfaceNodeCloud(mysurfmaterial)
 mesh.AddContactSurface(mcontactcloud)
 
 # Must use this to 'populate' the contact surface use larger point size to match beam section radius
 mcontactcloud.AddAllNodes(0.01) 
-
-# Use our AMC surface material properties 
-mcontactcloud.SetMaterialSurface(mysurfmaterial)
-
 
 # 8. Create a collision plane, as a huge box
 
@@ -187,7 +183,8 @@ floor = chrono.ChBodyEasyBox(
 	  4, 0.2, 4,  # x,y,z size
 	  1000,       # density
 	  True,       # visible
-	  True        # collide
+	  True,       # collide
+      mysurfmaterial
 	)
 
 system.Add(floor)
@@ -195,17 +192,12 @@ system.Add(floor)
 floor.SetBodyFixed(True)
 floor.SetPos( chrono.ChVectorD(0,-0.1,0) )
 
-# Use our AMC surface material properties 
-floor.SetMaterialSurface(mysurfmaterial)
-
-
-
 # 9. Make the finite elements visible in the 3D view
 
 #   - FEA fisualization can be managed via an easy
 #     ChVisualizationFEAmesh helper class.
 #     (Alternatively you could bypass this and output .dat
-#     files at each step, ex. for VTK or Matalb postprocessing)
+#     files at each step, ex. for VTK or Matlab postprocessing)
 #   - This will automatically update a triangle mesh (a ChTriangleMeshShape
 #     asset that is internally managed) by setting proper
 #     coordinates and vertex colours as in the FEA elements.
@@ -237,11 +229,11 @@ mesh.AddAsset(mvisualizebeamC)
 #    - Note that if you build the MKL module, you could use the more precise MKL solver.
 
 # Change solver
-system.SetSolverType(chrono.ChSolver.Type_MINRES)
-system.SetSolverWarmStarting(True)  # this helps a lot to speedup convergence in this class of problems
-system.SetMaxItersSolverSpeed(200)
-system.SetMaxItersSolverStab(200)
-system.SetTolForce(1e-10)
+solver = chrono.ChSolverMINRES()
+solver.SetMaxIterations(200)
+solver.SetTolerance(1e-10)
+solver.EnableWarmStart(True)
+system.SetSolver(solver)
 
 # Change integrator:
 # system.SetTimestepperType(ChTimestepper.Type.EULER_IMPLICIT_LINEARIZED)  # default: fast, 1st order
@@ -280,8 +272,6 @@ application.AssetUpdateAll()
 application.SetTimestep(0.001)
 application.SetTryRealtime(False)
 
-# Mark completion of system construction
-system.SetupInitial()
 
 while application.GetDevice().run() : 
 	# Initialize the graphical scene.

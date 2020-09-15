@@ -218,11 +218,11 @@ mesh.AddAsset(mvisualizebeamC)
 #    - Note that if you build the MKL module, you could use the more precise MKL solver.
 
 # Change solver
-system.SetSolverType(chrono.ChSolver.Type_MINRES)
-system.SetSolverWarmStarting(True)  # this helps a lot to speedup convergence in this class of problems
-system.SetMaxItersSolverSpeed(200)
-system.SetMaxItersSolverStab(200)
-system.SetTolForce(1e-10)
+solver = chrono.ChSolverMINRES()
+solver.SetMaxIterations(200)
+solver.SetTolerance(1e-10)
+solver.EnableWarmStart(True)
+system.SetSolver(solver)
 
 # Change integrator:
 system.SetTimestepperType(chrono.ChTimestepper.Type_EULER_IMPLICIT_LINEARIZED)  # default: fast, 1st order
@@ -257,8 +257,6 @@ application.AssetUpdateAll()
 application.SetTimestep(0.01)
 application.SetTryRealtime(True)
 
-# Mark completion of system construction
-system.SetupInitial()
 
 while application.GetDevice().run() :
     # Initialize the graphical scene.

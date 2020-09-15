@@ -156,10 +156,11 @@ rod.AddAsset(col_r)
   #### -------------------------------------------------------------------------
   
 slider.SetCollide(True)
-slider.GetMaterialSurfaceNSC().SetFriction(0.4)
+slider_mat = chrono.ChMaterialSurfaceNSC()
+slider_mat.SetFriction(0.4)
 
 slider.GetCollisionModel().ClearModel()
-slider.GetCollisionModel().AddBox(0.2, 0.1, 0.1, chrono.VNULL, chrono.ChMatrix33D(chrono.QUNIT))
+slider.GetCollisionModel().AddBox(slider_mat, 0.2, 0.1, 0.1, chrono.VNULL, chrono.ChMatrix33D(chrono.QUNIT))
 slider.GetCollisionModel().BuildModel()
 
   #### -------------------------------------------------------------------------
@@ -180,9 +181,13 @@ ball.SetInertiaXX(chrono.ChVectorD(0.02, 0.02, 0.02))
 ball.SetPos(chrono.ChVectorD(5.5, 0, 0))
 ball.SetRot(chrono.ChQuaternionD(1, 0, 0, 0))
 
+
+# Contact material for NSC method, default properties
+ball_mat = chrono.ChMaterialSurfaceNSC()
+
 ball.SetCollide(True)
 ball.GetCollisionModel().ClearModel()
-ball.GetCollisionModel().AddSphere(0.2, chrono.ChVectorD(0, 0, 0))
+ball.GetCollisionModel().AddSphere(ball_mat, 0.2, chrono.ChVectorD(0, 0, 0))
 ball.GetCollisionModel().BuildModel()
 
 sphere_b = chrono.ChSphereShape()
@@ -257,18 +262,18 @@ system.AddLink(prismatic_ground_ball)
 
   #### -------------------------------------------------------------------------
   #### EXERCISE 2.4
-  #### Add a spring-damper (ChLinkspring) between ground and the ball.
+  #### Add a spring-damper (ChLinkTSDA) between ground and the ball.
   #### This element should connect the center of the ball with the global point
   #### (6.5, 0, 0).  Set a spring constant of 50 and a spring free length of 1.
   #### Set a damping coefficient of 5.
   #### -------------------------------------------------------------------------
 
-tsda_ground_ball = chrono.ChLinkSpring()
+tsda_ground_ball = chrono.ChLinkTSDA()
 tsda_ground_ball.SetName("tsda_ground_ball")
 tsda_ground_ball.Initialize(ground, ball, False, chrono.ChVectorD(6.5, 0, 0), chrono.ChVectorD(5.5, 0, 0))
-tsda_ground_ball.Set_SpringK(50.0)
-tsda_ground_ball.Set_SpringR(5.0)
-tsda_ground_ball.Set_SpringRestLength(1.0)
+tsda_ground_ball.SetSpringCoefficient(50.0)
+tsda_ground_ball.SetDampingCoefficient(5.0)
+tsda_ground_ball.SetRestLength(1.0)
 system.AddLink(tsda_ground_ball)
 
   ## 4. Write the system hierarchy to the console (default log output destination)

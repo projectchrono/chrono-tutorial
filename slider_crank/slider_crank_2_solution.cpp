@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 2.4
-    //// Add a spring-damper (ChLinkspring) between ground and the ball.
+    //// Add a spring-damper (ChLinkTSDA) between ground and the ball.
     //// This element should connect the center of the ball with the global point
     //// (6.5, 0, 0).  Set a spring constant of 50 and a spring free length of 1.
     //// Set a damping coefficient of 5.

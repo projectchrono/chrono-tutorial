@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     //    Note that each FEA element type requires some corresponding
     //    type of material. ChElemetBeamEuler require a ChBeamSectionAdvanced material.
 
-    auto beam_material = chrono_types::make_shared<ChBeamSectionAdvanced>();
+    auto beam_material = chrono_types::make_shared<ChBeamSectionEulerAdvanced>();
 	beam_material->SetAsRectangularSection(0.012, 0.025);
 	beam_material->SetYoungModulus (0.01e9);
 	beam_material->SetGshearModulus(0.01e9 * 0.3);
