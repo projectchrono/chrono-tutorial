@@ -236,6 +236,7 @@ int main(int argc, char* argv[]) {
 
     driver.Initialize();
 
+    // sensor manager
     auto manager = chrono_types::make_shared<ChSensorManager>(gator.GetSystem());
     manager->scene->AddPointLight({100, 100, 100}, {2, 2, 2}, 5000);
     manager->SetKeyframeSizeFromTimeStep((float)step_size, exposure_time);
@@ -249,7 +250,7 @@ int main(int argc, char* argv[]) {
         image_height,                                                        // image height
         cam_fov,
         super_samples);  // fov, lag, exposure
-    cam->SetName("Camera Sensor");
+    cam->SetName("3rd Person Camera Sensor");
     cam->SetCollectionWindow(exposure_time);
     if (sensor_vis)
         cam->PushFilter(chrono_types::make_shared<ChFilterVisualize>(image_width, image_height));
@@ -267,7 +268,7 @@ int main(int argc, char* argv[]) {
         image_height,                                                           // image height
         cam_fov,
         super_samples);  // fov, lag, exposure
-    cam2->SetName("Camera Sensor");
+    cam2->SetName("Roof Mounted Camera Sensor");
     cam2->SetCollectionWindow(exposure_time);
     if (sensor_vis)
         cam2->PushFilter(chrono_types::make_shared<ChFilterVisualize>(image_width, image_height));
@@ -317,7 +318,7 @@ int main(int argc, char* argv[]) {
     int step_number = 0;
     int render_frame = 0;
 
-    float orbit_radius = 15.f;
+    float orbit_radius = 10.f;
     float orbit_rate = 1;
 
     ChRealtimeStepTimer realtime_timer;

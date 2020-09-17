@@ -18,7 +18,7 @@ find_package(Chrono
 # If Chrono and/or the required component(s) were not found, return now.
 
 if(NOT Chrono_FOUND)
-  message("Could not find requirements for Chrono::Vehicle tutorials")
+  message("Could not find requirements for Chrono::Sensor tutorials")
   return()
 endif()
 

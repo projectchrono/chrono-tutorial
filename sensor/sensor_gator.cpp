@@ -96,6 +96,32 @@ const std::string sens_dir = out_dir + "/SENSOR_OUTPUT";
 bool povray_output = false;
 
 // ---------------
+// Visualize sensor data
+bool sensor_vis = true;
+
+// Update rates of each sensor in Hz
+float cam_update_rate = 30.f;
+float lidar_update_rate = 10.f;
+
+float exposure_time = 0.02f;
+
+int super_samples = 2;
+
+// Image width and height
+unsigned int image_width = 1280;
+unsigned int image_height = 720;
+
+// Lidar horizontal and vertical samples
+unsigned int horizontal_samples = 4500;
+unsigned int vertical_samples = 32;
+
+// Camera's horizontal field of view
+float cam_fov = 1.408f;
+
+// Lidar's horizontal and vertical fov
+float lidar_hfov = (float)(2 * CH_C_PI);   // 360 degrees
+float lidar_vmax = (float)(CH_C_PI / 12);   // 15 degrees up
+float lidar_vmin = (float)(-CH_C_PI / 6);    // 30 degrees down
 
 // =============================================================================
 
@@ -205,6 +231,28 @@ int main(int argc, char* argv[]) {
     driver.SetBrakingDelta(render_step_size / braking_time);
 
     driver.Initialize();
+    
+
+    //****************************** SENSOR CODE ******************************//
+
+    // Create a sensor manager (ChSensorManager)
+    auto manager = chrono_types::make_shared<ChSensorManager>(gator.GetSystem());
+
+    // Add a light to the scene in the manager 
+    manager->scene->AddPointLight({100, 100, 100}, {2, 2, 2}, 5000);
+
+    // Set the max key frame size from the simulation time step and the largest collection window
+    manager->SetKeyframeSizeFromTimeStep((float)step_size, exposure_time);
+
+    // ###### Add a camera
+
+    // ###### Add a lidar
+
+    //****************************** SENSOR CODE ******************************//
+
+
+
+    
 
     // ---------------
     // Simulation loop
@@ -227,6 +275,12 @@ int main(int argc, char* argv[]) {
     while (app.GetDevice()->run()) {
         double time = gator.GetSystem()->GetChTime();
 
+        // ***************************** SENSOR CODE *******************************//
+
+        // ###### Update sensors through the sensor manager
+        manager->Update();
+
+        // ***************************** SENSOR CODE *******************************//
 
         // Render scene and output POV-Ray data
         if (step_number % render_steps == 0) {
