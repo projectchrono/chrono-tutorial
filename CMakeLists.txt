@@ -75,6 +75,7 @@ option(ENABLE_VEHICLE_PROGRAMS "Build the Chrono::Vehicle tutorial programs" ON)
 option(ENABLE_FEA_PROGRAMS "Build the Chrono::FEA tutorial programs" ON)
 option(ENABLE_PARALLEL_PROGRAMS "Build the Chrono::Parallel tutorial programs" ON)
 option(ENABLE_SENSOR_PROGRAMS "Build the Chrono::Sensor tutorial programs" OFF)
+option(ENABLE_SYNCHRONO_PROGRAMS "Build the SynChrono tutorial programs" OFF)
 
 # Keep track of all DLLs. Each submodule should append to this list.
 list(APPEND ALL_DLLS "")
@@ -99,6 +100,10 @@ endif()
 if(ENABLE_SENSOR_PROGRAMS)
   message(STATUS "==== Chrono::Sensor programs ====")
   add_subdirectory(sensor)
+endif()
+if(ENABLE_SYNCHRONO_PROGRAMS)
+  message(STATUS "==== SynChrono programs ====")
+  add_subdirectory(synchrono)
 endif()
 
 #--------------------------------------------------------------
