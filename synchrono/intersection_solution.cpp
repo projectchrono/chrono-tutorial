@@ -84,10 +84,17 @@ int main(int argc, char* argv[]) {
     if (!cli.Parse(argc, argv, rank == 0))
         mpi_manager.Exit();
 
+    // Path to Chrono data files (textures, etc.)
+    SetChronoDataPath(CHRONO_DATA_DIR);
+
+    // Path to the data files for this demo (JSON specification files)
+    vehicle::SetDataPath(std::string(SOURCE_DIR) + "/data/");
+    SetSynChronoDataPath(std::string(SOURCE_DIR) + "/data/");
+
     std::shared_ptr<SynWheeledVehicleAgent> agent;
     std::shared_ptr<ChMulPathFollowerACCDriver> multi_driver;
 
-    int traffic_light_rank = 1;
+    int traffic_light_rank = 2;
     if (rank == traffic_light_rank) {
         // -------------
         // Traffic light

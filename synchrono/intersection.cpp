@@ -71,6 +71,13 @@ int main(int argc, char* argv[]) {
     int rank = mpi_manager.GetRank();
     int num_ranks = mpi_manager.GetNumRanks();
 
+    // Path to Chrono data files (textures, etc.)
+    SetChronoDataPath(CHRONO_DATA_DIR);
+
+    // Path to the data files for this demo (JSON specification files)
+    vehicle::SetDataPath(std::string(SOURCE_DIR) + "/data/");
+    SetSynChronoDataPath(std::string(SOURCE_DIR) + "/data/");
+
     // CLI tools for default synchrono demos
     SynCLI cli(argv[0]);
     cli.AddDefaultDemoOptions();

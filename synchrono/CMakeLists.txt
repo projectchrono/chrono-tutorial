@@ -11,7 +11,7 @@ SET(MODELS
 
 find_package(Chrono
              COMPONENTS Vehicle Synchrono
-             OPTIONAL_COMPONENTS Irrlicht
+             OPTIONAL_COMPONENTS Irrlicht Sensor
              CONFIG
 )
 
@@ -42,6 +42,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     SET(COMPILE_FLAGS "${COMPILE_FLAGS} /wd4275")
 endif()
 
+find_package(Threads REQUIRED)
+find_package(MPI)
 
 foreach(PROGRAM ${MODELS})
 
@@ -57,6 +59,6 @@ foreach(PROGRAM ${MODELS})
     LINK_FLAGS "${COMPILE_FLAGS} ${CHRONO_LINKER_FLAGS}"
   )
 
-  target_link_libraries(${PROGRAM} ${CHRONO_LIBRARIES})
+  target_link_libraries(${PROGRAM} ${CHRONO_LIBRARIES} ${MPI_LIBRARIES})
 
 endforeach(PROGRAM)
