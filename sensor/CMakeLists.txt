@@ -42,6 +42,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     SET(COMPILE_FLAGS "${COMPILE_FLAGS} /wd4275")
 endif()
 
+find_package(Threads REQUIRED)
 
 foreach(PROGRAM ${MODELS})
 
