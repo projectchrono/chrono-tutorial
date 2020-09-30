@@ -48,6 +48,7 @@
 #include "chrono_sensor/ChSensorManager.h"
 #include "chrono_sensor/filters/ChFilterAccess.h"
 #include "chrono_sensor/filters/ChFilterVisualize.h"
+#include "chrono_sensor/filters/ChFilterCameraNoise.h"
 
 using namespace chrono;
 using namespace chrono::irrlicht;
@@ -252,6 +253,8 @@ int main(int argc, char* argv[]) {
         super_samples);  // fov, lag, exposure
     cam->SetName("3rd Person Camera Sensor");
     cam->SetCollectionWindow(exposure_time);
+    // add camera noise model
+    // cam->PushFilter(chrono_types::make_shared<ChFilterCameraNoisePixDep>(0.f, .02f, .03f));
     if (sensor_vis)
         cam->PushFilter(chrono_types::make_shared<ChFilterVisualize>(image_width, image_height));
     if (sensor_save)

@@ -102,9 +102,7 @@ bool sensor_vis = true;
 // Update rates of each sensor in Hz
 float cam_update_rate = 30.f;
 float lidar_update_rate = 10.f;
-
 float exposure_time = 0.02f;
-
 int super_samples = 2;
 
 // Image width and height
@@ -233,26 +231,41 @@ int main(int argc, char* argv[]) {
     driver.Initialize();
     
 
-    //****************************** SENSOR CODE ******************************//
+    // ------------------------------------------------------------------------------------------------------------
+    // EXERCISE 1 
+    // Initialize Sensor System and Manager
+    //          - create a sensor manager (ChSensorManager) associated with the chrono system (gator.GetSystem())
+    //          - add a light to the scene in the manager
+    //              - global position of lights = {100,100,100} 
+    //              - rgb intensity = {2,2,2}
+    //              - range = 5000
+    //          - Set the max key frame size from the simulation time step and the largest collection window
+    // -------------------------------------------------------------------------------------------------------------
 
-    // Create a sensor manager (ChSensorManager)
-    auto manager = chrono_types::make_shared<ChSensorManager>(gator.GetSystem());
+    //--------------------------------------------------------------------------------------------------------------
+    // EXERCISE 2   (UNCOMMENT manager-Update() in the simualtion loop below!!!)
+    //  Add a third person pov camera
+    //          - attach to gator vehicle, gator.GetChassisBody()
+    //          - offset = chrono::ChFrame<double>({-8, 0, 3}, Q_from_AngAxis(.2, {0, 1, 0}))
+    //          - updateRate, width, height, hFOV, super_samples are declared in ln103~ln119
+    //          - Visualization with cam->PushFilter(.....)
+    //          - Add sensor to manager 
+    //  Add a roof mounted camera
+    //          - same steps above except 
+    //              -offset = chrono::ChFrame<double>({.1, 0, 1.45}, Q_from_AngAxis(.2, {0, 1, 0}))
+    //  BONUS 
+    //          - add noise before visualization
+    //              - cam->PushFilter(chrono_types::make_shared<ChFilterCameraNoisePixDep>(0.f, .02f, .03f));
+    //--------------------------------------------------------------------------------------------------------------
 
-    // Add a light to the scene in the manager 
-    manager->scene->AddPointLight({100, 100, 100}, {2, 2, 2}, 5000);
-
-    // Set the max key frame size from the simulation time step and the largest collection window
-    manager->SetKeyframeSizeFromTimeStep((float)step_size, exposure_time);
-
-    // ###### Add a camera
-
-    // ###### Add a lidar
-
-    //****************************** SENSOR CODE ******************************//
-
-
-
-    
+    //--------------------------------------------------------------------------------------------------------------
+    // EXERCISE 3
+    //  Add a lidar
+    //          - attach to gator vehicle, gator.GetChassisBody()
+    //          - offset = chrono::ChFrame<double>({-.282, 0, 1.82}, Q_from_AngAxis(0, {1, 0, 0}))
+    //          - lidar parameters declared in ln103~ln119
+    //          - add sensor to manager
+    //--------------------------------------------------------------------------------------------------------------
 
     // ---------------
     // Simulation loop
@@ -275,10 +288,15 @@ int main(int argc, char* argv[]) {
     while (app.GetDevice()->run()) {
         double time = gator.GetSystem()->GetChTime();
 
-        // ***************************** SENSOR CODE *******************************//
-
-        // ###### Update sensors through the sensor manager
-        manager->Update();
+        // --------------------------------------------------------
+        // BONUS
+		//  Change the camera location so that is orbits vehicle
+        // --------------------------------------------------------
+        //  cam->SetOffsetPose(
+        //      chrono::ChFrame<double>({-orbit_radius * cos(time * orbit_rate), -orbit_radius * sin(time * orbit_rate), 3},
+        //                              Q_from_AngAxis(time * orbit_rate, {0, 0, 1})));
+        
+        // manager->Update();
 
         // ***************************** SENSOR CODE *******************************//
 
