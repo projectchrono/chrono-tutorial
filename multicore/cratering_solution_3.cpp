@@ -12,7 +12,7 @@
 // Author: Radu Serban
 // =============================================================================
 //
-// Chrono::Parallel tutorial.
+// Chrono::Multicore tutorial.
 //
 // The model simulated here consists of a spherical projectile dropped in a
 // bed of granular material, using either smooth (penalty) or non-smooth
@@ -35,7 +35,7 @@
 #include "chrono/utils/ChUtilsCreators.h"
 #include "chrono/utils/ChUtilsGenerators.h"
 
-#include "chrono_parallel/physics/ChSystemParallel.h"
+#include "chrono_multicore/physics/ChSystemMulticore.h"
 
 #ifdef CHRONO_OPENGL
 #include "chrono_opengl/ChOpenGLWindow.h"
@@ -96,7 +96,7 @@ double initial_velocity = 0;
 // -----------------------------------------------------------------------------
 // Create the container (five boxes)
 // -----------------------------------------------------------------------------
-void CreateContainer(ChSystemParallel* system) {
+void CreateContainer(ChSystemMulticore* system) {
     // Create a material for the container
     std::shared_ptr<chrono::ChMaterialSurface> material_c;
 
@@ -126,7 +126,7 @@ void CreateContainer(ChSystemParallel* system) {
 // Create the falling ball at the specified height, with specified vertical
 // initial velocity.
 // -----------------------------------------------------------------------------
-std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
+std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     // Create a contact material for the falling ball
     std::shared_ptr<chrono::ChMaterialSurface> material_b;
 
@@ -175,7 +175,7 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
 // region inside the container, using Poisson Disk sampling (thus ensuring that
 // no two spheres are closer than twice the radius)
 // -----------------------------------------------------------------------------
-void CreateObjects(ChSystemParallel* system) {
+void CreateObjects(ChSystemMulticore* system) {
     // Create a contact material for granular bodies
     std::shared_ptr<chrono::ChMaterialSurface> material_g;
 
@@ -222,13 +222,13 @@ int main(int argc, char* argv[]) {
     // Set the path to the Chrono data folder.
     SetChronoDataPath(CHRONO_DATA_DIR);
 
-    // Create the (parallel) system and set method-specific solver settings.
-    ChSystemParallel* system;
+    // Create the (multicore) system and set method-specific solver settings.
+    ChSystemMulticore* system;
     double time_step;
     switch (method) {
         case ChContactMethod::NSC: {
             std::cout << "Create NSC (non-smooth, complementarity) system" << std::endl;
-            ChSystemParallelNSC* sys = new ChSystemParallelNSC;
+            ChSystemMulticoreNSC* sys = new ChSystemMulticoreNSC;
             sys->GetSettings()->solver.solver_type = SolverType::BB;
             sys->GetSettings()->solver.solver_mode = SolverMode::SLIDING;
             sys->GetSettings()->solver.max_iteration_normal = 0;
@@ -242,7 +242,7 @@ int main(int argc, char* argv[]) {
         }
         case ChContactMethod::SMC: {
             std::cout << "Create SMC (smooth, penalty) system" << std::endl;
-            ChSystemParallelSMC* sys = new ChSystemParallelSMC;
+            ChSystemMulticoreSMC* sys = new ChSystemMulticoreSMC;
             sys->GetSettings()->solver.contact_force_model = ChSystemSMC::Hooke;
             sys->GetSettings()->solver.tangential_displ_mode = ChSystemSMC::TangentialDisplacementModel::OneStep;
             sys->GetSettings()->solver.use_material_properties = true;

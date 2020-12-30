@@ -12,7 +12,7 @@
 // Author: Radu Serban
 // =============================================================================
 //
-// Chrono::Parallel tutorial.
+// Chrono::Multicore tutorial.
 //
 // The model simulated here consists of a spherical projectile dropped in a
 // bed of granular material, using either penalty or complementarity method for
@@ -20,7 +20,7 @@
 //
 // SOLUTION for EXERCISE 2:
 //   - use PENALTY-based contact and friction method
-//   - replace Chrono::Parallel system type
+//   - replace Chrono::Multicore system type
 //   - use appropriate contact material type and settings 
 //
 // The global reference frame has Z up.
@@ -35,7 +35,7 @@
 #include "chrono/utils/ChUtilsCreators.h"
 #include "chrono/utils/ChUtilsGenerators.h"
 
-#include "chrono_parallel/physics/ChSystemParallel.h"
+#include "chrono_multicore/physics/ChSystemMulticore.h"
 
 #ifdef CHRONO_OPENGL
 #include "chrono_opengl/ChOpenGLWindow.h"
@@ -93,7 +93,7 @@ double initial_velocity = 0;
 // -----------------------------------------------------------------------------
 // Create the container (five boxes)
 // -----------------------------------------------------------------------------
-void CreateContainer(ChSystemParallel* system) {
+void CreateContainer(ChSystemMulticore* system) {
     // Create a material for the container
     auto material_c = chrono_types::make_shared<ChMaterialSurfaceSMC>();
     material_c->SetYoungModulus(Y_c);
@@ -109,7 +109,7 @@ void CreateContainer(ChSystemParallel* system) {
 // Create the falling ball at the specified height, with specified vertical
 // initial velocity.
 // -----------------------------------------------------------------------------
-std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
+std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     // Create a contact material for the falling ball
     auto material_b = chrono_types::make_shared<ChMaterialSurfaceSMC>();
     material_b->SetYoungModulus(Y_b);
@@ -117,7 +117,7 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
     material_b->SetRestitution(cr_b);
 
     // Create the falling ball body
-    auto ball = chrono_types::make_shared<ChBody>(chrono_types::make_shared<ChCollisionModelParallel>());
+    auto ball = chrono_types::make_shared<ChBody>(chrono_types::make_shared<ChCollisionModelMulticore>());
 
     ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
@@ -144,7 +144,7 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
 // region inside the container, using Poisson Disk sampling (thus ensuring that
 // no two spheres are closer than twice the radius)
 // -----------------------------------------------------------------------------
-void CreateObjects(ChSystemParallel* system) {
+void CreateObjects(ChSystemMulticore* system) {
     // Create a contact material for granular bodies
     auto material_g = chrono_types::make_shared<ChMaterialSurfaceSMC>();
     material_g->SetYoungModulus(Y_g);
@@ -177,8 +177,8 @@ int main(int argc, char* argv[]) {
     // Set the path to the Chrono data folder.
     SetChronoDataPath(CHRONO_DATA_DIR);
 
-    // Create the (parallel) system and set method-specific solver settings.
-    ChSystemParallelSMC* system = new ChSystemParallelSMC;
+    // Create the (multicore) system and set method-specific solver settings.
+    ChSystemMulticoreSMC* system = new ChSystemMulticoreSMC;
     system->GetSettings()->solver.contact_force_model = ChSystemSMC::Hooke;
     system->GetSettings()->solver.tangential_displ_mode = ChSystemSMC::TangentialDisplacementModel::OneStep;
     system->GetSettings()->solver.use_material_properties = true;

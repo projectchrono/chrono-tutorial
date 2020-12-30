@@ -13,7 +13,7 @@ SET(MODELS
 # Invoke find_package in CONFIG mode
 
 find_package(Chrono
-             COMPONENTS Parallel
+             COMPONENTS Multicore
              OPTIONAL_COMPONENTS OpenGL
              CONFIG
 )
@@ -21,7 +21,7 @@ find_package(Chrono
 # If Chrono and/or the required component(s) were not found, return now.
 
 if(NOT Chrono_FOUND)
-  message("Could not find requirements for Chrono::Parallel tutorials")
+  message("Could not find requirements for Chrono::Multicore tutorials")
   return()
 endif()
 

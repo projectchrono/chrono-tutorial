@@ -12,15 +12,11 @@
 // Author: Radu Serban
 // =============================================================================
 //
-// Chrono::Parallel tutorial.
+// Chrono::Multicore tutorial.
 //
 // The model simulated here consists of a spherical projectile dropped in a
 // bed of granular material, using either penalty or complementarity method for
 // frictional contact.
-//
-// SOLUTION for EXERCISE 1:
-//   - create granular material (complete implementation of CreateObjects)
-//   - set numbers of bins for broad-phase collision
 //
 // The global reference frame has Z up.
 // All units SI.
@@ -34,7 +30,7 @@
 #include "chrono/utils/ChUtilsCreators.h"
 #include "chrono/utils/ChUtilsGenerators.h"
 
-#include "chrono_parallel/physics/ChSystemParallel.h"
+#include "chrono_multicore/physics/ChSystemMulticore.h"
 
 #ifdef CHRONO_OPENGL
 #include "chrono_opengl/ChOpenGLWindow.h"
@@ -92,7 +88,7 @@ double initial_velocity = 0;
 // -----------------------------------------------------------------------------
 // Create the container (five boxes)
 // -----------------------------------------------------------------------------
-void CreateContainer(ChSystemParallel* system) {
+void CreateContainer(ChSystemMulticore* system) {
     // Create a material for the container
     auto material_c = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     material_c->SetFriction(mu_c);
@@ -106,13 +102,13 @@ void CreateContainer(ChSystemParallel* system) {
 // Create the falling ball at the specified height, with specified vertical
 // initial velocity.
 // -----------------------------------------------------------------------------
-std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
+std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     // Create a contact material for the falling ball
     auto material_b = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     material_b->SetFriction(mu_b);
 
     // Create the falling ball body
-    auto ball = chrono_types::make_shared<ChBody>(chrono_types::make_shared<ChCollisionModelParallel>());
+    auto ball = chrono_types::make_shared<ChBody>(chrono_types::make_shared<ChCollisionModelMulticore>());
 
     ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
@@ -139,7 +135,7 @@ std::shared_ptr<ChBody>  CreateFallingBall(ChSystemParallel* system) {
 // region inside the container, using Poisson Disk sampling (thus ensuring that
 // no two spheres are closer than twice the radius)
 // -----------------------------------------------------------------------------
-void CreateObjects(ChSystemParallel* system) {
+void CreateObjects(ChSystemMulticore* system) {
     // Create a contact material for granular bodies
     auto material_g = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     material_g->SetFriction(mu_g);
@@ -149,20 +145,6 @@ void CreateObjects(ChSystemParallel* system) {
     //// Create a granular maetrial generator with a mixture entirely made out of spheres
     //// of equal radius, all sharing the same contact material
     //// ********************************************************************************
-    utils::Generator gen(system);
-
-    std::shared_ptr<utils::MixtureIngredient> m1 = gen.AddMixtureIngredient(utils::MixtureType::SPHERE, 1.0);
-    m1->setDefaultMaterial(material_g);
-    m1->setDefaultDensity(rho_g);
-    m1->setDefaultSize(r_g);
-
-    gen.setBodyIdentifier(Id_g);
-
-    // Generate the granular bodies in a box within the container, using Poisson disk sampling
-    gen.createObjectsBox(utils::SamplingType::POISSON_DISK, 2.01 * r_g, ChVector<>(0, 0, hDimZ / 2),
-                         ChVector<>(hDimX - r_g, hDimY - r_g, hDimZ / 2 - r_g));
-
-    std::cout << "Generated " << gen.getTotalNumBodies() << " bodies" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -170,8 +152,8 @@ int main(int argc, char* argv[]) {
     // Set the path to the Chrono data folder.
     SetChronoDataPath(CHRONO_DATA_DIR);
 
-    // Create the (parallel) system and set method-specific solver settings.
-    ChSystemParallel* system = new ChSystemParallelNSC;
+    // Create the (multicore) system and set method-specific solver settings.
+    ChSystemMulticore* system = new ChSystemMulticoreNSC;
     system->GetSettings()->solver.solver_type = SolverType::BB;
     system->GetSettings()->solver.solver_mode = SolverMode::SLIDING;
     system->GetSettings()->solver.max_iteration_normal = 0;
@@ -192,7 +174,7 @@ int main(int argc, char* argv[]) {
     // Set gravitational acceleration
     system->Set_G_acc(ChVector<>(0, 0, -9.81));
 
-    // Edit system settings
+    // Set method-independent solver settings
     system->GetSettings()->solver.use_full_inertia_tensor = false;
     system->GetSettings()->solver.tolerance = 1.0;
 
@@ -203,7 +185,7 @@ int main(int argc, char* argv[]) {
     //// EXERCISE:
     //// Provide a more efficient split of bins for broad-phase
     //// ******************************************************
-    system->GetSettings()->collision.bins_per_axis = vec3(20, 20, 10);
+    system->GetSettings()->collision.bins_per_axis = vec3(1, 1, 1);
 
     // Create the objects
     CreateContainer(system);
