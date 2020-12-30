@@ -70,7 +70,7 @@ VisualizationType wheel_vis_type = VisualizationType::NONE;
 VisualizationType tire_vis_type = VisualizationType::MESH;
 
 // Collision type for chassis (PRIMITIVES, MESH, or NONE)
-ChassisCollisionType chassis_collision_type = ChassisCollisionType::NONE;
+CollisionType collision_type = CollisionType::NONE;
 
 // Type of tire model (RIGID, TMEASY)
 TireModelType tire_model = TireModelType::TMEASY;
@@ -124,8 +124,8 @@ float cam_fov = 1.408f;
 
 // Lidar's horizontal and vertical fov
 float lidar_hfov = (float)(2 * CH_C_PI);   // 360 degrees
-float lidar_vmax = (float)(CH_C_PI / 12);   // 15 degrees up
-float lidar_vmin = (float)(-CH_C_PI / 6);    // 30 degrees down
+float lidar_vmax = (float)(CH_C_PI / 12);  // 15 degrees up
+float lidar_vmin = (float)(-CH_C_PI / 6);  // 30 degrees down
 
 // ---------------
 
@@ -134,7 +134,7 @@ float lidar_vmin = (float)(-CH_C_PI / 6);    // 30 degrees down
 int main(int argc, char* argv[]) {
     GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
 
-	// Path to Chrono data files (textures, etc.)
+    // Path to Chrono data files (textures, etc.)
     SetChronoDataPath(CHRONO_DATA_DIR);
 
     // Path to the data files for this vehicle (JSON specification files)
@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
 
     Gator gator;
     gator.SetContactMethod(contact_method);
-    gator.SetChassisCollisionType(chassis_collision_type);
+    gator.SetChassisCollisionType(collision_type);
     gator.SetChassisFixed(false);
     gator.SetInitPosition(ChCoordsys<>(initLoc, initRot));
     gator.SetTireType(tire_model);
@@ -327,13 +327,13 @@ int main(int argc, char* argv[]) {
     ChRealtimeStepTimer realtime_timer;
     while (app.GetDevice()->run()) {
         double time = gator.GetSystem()->GetChTime();
-		
-		//Change the camera location so that is orbits vehicle
+
+        // Change the camera location so that is orbits vehicle
         cam->SetOffsetPose(
             chrono::ChFrame<double>({-orbit_radius * cos(time * orbit_rate), -orbit_radius * sin(time * orbit_rate), 3},
                                     Q_from_AngAxis(time * orbit_rate, {0, 0, 1})));
 
-		// Update the sensor manager -> this will perform all synchronize, render, augment functions in Chrono::Sensor
+        // Update the sensor manager -> this will perform all synchronize, render, augment functions in Chrono::Sensor
         manager->Update();
 
         // Render scene and output POV-Ray data
