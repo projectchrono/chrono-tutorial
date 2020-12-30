@@ -22,7 +22,12 @@ if(NOT Chrono_FOUND)
   return()
 endif()
 
+message(STATUS "include dir here")
+message(STATUS "${SYN_INCLUDES}")
+message(STATUS "${CHRONO_LIBRARIES}")
+
 include_directories(${CHRONO_INCLUDE_DIRS})
+include_directories(${SYN_INCLUDES})
 
 #--------------------------------------------------------------
 # Append to the parent's list of DLLs (and make it visible up)
