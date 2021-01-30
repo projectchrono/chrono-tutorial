@@ -289,19 +289,19 @@ int main(int argc, char* argv[]) {
         lidar_hfov,                                                               // horizontal field of view
         lidar_vmax,                                                               // vertical field of view
         lidar_vmin,                                                               // vertical field of view
-        100.0,                                                                    //
+        100.0f,                                                                   //
         1,                                                                        //
-        0,                                                                        //
-        STRONGEST_RETURN,                                                         //
-        RAYCAST,                                                                  //
-        .1                                                                        //
+        0.0f,                                                                     //
+        LidarReturnMode::STRONGEST_RETURN,                                        //
+        LidarModelType::RAYCAST,                                                  //
+        0.1f                                                                      //
     );
     lidar->SetName("Lidar Sensor");
     lidar->SetLag(1 / lidar_update_rate);
     lidar->SetCollectionWindow(0);
     lidar->PushFilter(chrono_types::make_shared<ChFilterPCfromDepth>());
     if (sensor_vis)
-        lidar->PushFilter(chrono_types::make_shared<ChFilterVisualizePointCloud>(640, 480, .5, "Lidar Point Cloud"));
+        lidar->PushFilter(chrono_types::make_shared<ChFilterVisualizePointCloud>(640, 480, 0.5f, "Lidar Point Cloud"));
     if (sensor_save)
         lidar->PushFilter(chrono_types::make_shared<ChFilterSavePtCloud>(sens_dir + "/lidar/"));
     lidar->PushFilter(chrono_types::make_shared<ChFilterXYZIAccess>());
