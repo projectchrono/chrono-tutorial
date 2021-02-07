@@ -75,7 +75,7 @@ double step_size = 3e-3;
 double render_step_size = 1.0 / 50;  // FPS = 50
 
 // How often SynChrono state messages are interchanged
-float heartbeat = 1e-2;  // 100[Hz]
+float heartbeat = 1e-2f;  // 100[Hz]
 
 struct VehInfo {
     std::string vehicle_filename;
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
     // Normal simulation options
     step_size = cli.GetAsType<double>("step_size");
     end_time = cli.GetAsType<double>("end_time");
-    heartbeat = cli.GetAsType<double>("heartbeat");
+    heartbeat = cli.GetAsType<float>("heartbeat");
 
     const bool use_sensor = cli.HasValueInVector<int>("sens", node_id);
     const bool sensor_vis = cli.GetAsType<bool>("sens_vis");
