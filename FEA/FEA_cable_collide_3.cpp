@@ -30,23 +30,23 @@
 //
 // =============================================================================
 
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
 
-#include "chrono/physics/ChSystemSMC.h"
-#include "chrono/physics/ChLinkMate.h"
 #include "chrono/physics/ChBodyEasy.h"
+#include "chrono/physics/ChLinkMate.h"
+#include "chrono/physics/ChSystemSMC.h"
 #include "chrono/solver/ChIterativeSolverLS.h"
 #include "chrono_irrlicht/ChIrrApp.h"
 
-#include "chrono/fea/ChElementBeamEuler.h"
 #include "chrono/fea/ChBuilderBeam.h"
-#include "chrono/fea/ChMesh.h"
-#include "chrono/fea/ChVisualizationFEAmesh.h"
 #include "chrono/fea/ChContactSurfaceMesh.h"
 #include "chrono/fea/ChContactSurfaceNodeCloud.h"
-#include "chrono/physics/ChLoadContainer.h"
+#include "chrono/fea/ChElementBeamEuler.h"
 #include "chrono/fea/ChLoadsBeam.h"
+#include "chrono/fea/ChMesh.h"
+#include "chrono/fea/ChVisualizationFEAmesh.h"
+#include "chrono/physics/ChLoadContainer.h"
 
 using namespace chrono;
 using namespace chrono::irrlicht;
@@ -54,7 +54,6 @@ using namespace chrono::fea;
 using namespace irr;
 
 int main(int argc, char* argv[]) {
-
     // 0. Set the path to the Chrono data folder
 
     SetChronoDataPath(CHRONO_DATA_DIR);
@@ -65,13 +64,11 @@ int main(int argc, char* argv[]) {
     ChSystemSMC system;
     system.Set_G_acc(ChVector<>(0, -9.81, 0));
 
-
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
     auto mesh = chrono_types::make_shared<ChMesh>();
 
     system.Add(mesh);
-
 
     // 3. Create a material for the beam finite elements.
 
@@ -79,18 +76,17 @@ int main(int argc, char* argv[]) {
     //    type of material. ChElemetBeamEuler require a ChBeamSectionAdvanced material.
 
     auto beam_material = chrono_types::make_shared<ChBeamSectionEulerAdvanced>();
-	beam_material->SetAsRectangularSection(0.012, 0.025);
-	beam_material->SetYoungModulus (0.01e9);
-	beam_material->SetGshearModulus(0.01e9 * 0.3);
-	beam_material->SetBeamRaleyghDamping(0.01);
-
+    beam_material->SetAsRectangularSection(0.012, 0.025);
+    beam_material->SetYoungModulus(0.01e9);
+    beam_material->SetGshearModulus(0.01e9 * 0.3);
+    beam_material->SetBeamRaleyghDamping(0.01);
 
     // 4. Create the nodes
 
     //    - We use a simple for() loop to create nodes along the cable.
     //    - Nodes for ChElemetBeamEuler must be of ChNodeFEAxyzrot class;
     //      i.e. each node has coordinates of type: {position, rotation},
-    //      where X axis of rotated system is the direction of the beam, 
+    //      where X axis of rotated system is the direction of the beam,
     //      Y and Z are the section plane.
 
     std::vector<std::shared_ptr<ChNodeFEAxyzrot> > beam_nodes;
@@ -104,7 +100,7 @@ int main(int argc, char* argv[]) {
                             0);                                   // node position, z
 
         // create the node
-        auto node = chrono_types::make_shared<ChNodeFEAxyzrot>( ChFrame<>(position) );
+        auto node = chrono_types::make_shared<ChNodeFEAxyzrot>(ChFrame<>(position));
 
         // add it to mesh
         mesh->AddNode(node);
@@ -113,10 +109,9 @@ int main(int argc, char* argv[]) {
         beam_nodes.push_back(node);
     }
 
-
     // 5. Create the elements
 
-    std::vector<std::shared_ptr<ChElementBeamEuler> > beam_elements; // only for easy access later, when adding loads
+    std::vector<std::shared_ptr<ChElementBeamEuler> > beam_elements;  // only for easy access later, when adding loads
 
     for (int ie = 0; ie < N_nodes - 1; ++ie) {
         // create the element
@@ -135,7 +130,6 @@ int main(int argc, char* argv[]) {
         beam_elements.push_back(element);
     }
 
-
     // 6. Add constraints
 
     //    - Constraints can be applied to FEA nodes
@@ -148,19 +142,17 @@ int main(int argc, char* argv[]) {
 
     // lock an end of the wire to the truss
     auto constraint_pos = chrono_types::make_shared<ChLinkMateSpherical>();
-    constraint_pos->Initialize(
-        beam_nodes[0],  // node to constraint
-        truss,          // body to constraint
-        false,          // false: next 2 pos are in absolute coords, true: in relative coords
-        beam_nodes[0]->GetPos(), // sphere ball pos 
-        beam_nodes[0]->GetPos()  // sphere cavity pos
-        );
+    constraint_pos->Initialize(beam_nodes[0],  // node to constraint
+                               truss,          // body to constraint
+                               false,          // false: next 2 pos are in absolute coords, true: in relative coords
+                               beam_nodes[0]->GetPos(),  // sphere ball pos
+                               beam_nodes[0]->GetPos()   // sphere cavity pos
+    );
     system.Add(constraint_pos);
-
 
     // 7. Add a collision mesh to the skin of the finite element mesh
 
-    //    - Create a ChMaterialSurfaceSMC, it must be assigned to FEA 
+    //    - Create a ChMaterialSurfaceSMC, it must be assigned to FEA
     //      meshes and rigid bodies. The ChSystemSMC requires it!
     //    - Create a ChContactSurfaceNodeCloud and add to the FEA mesh.
     //      This is the easiest representation of a FEA contact surface: it
@@ -173,15 +165,14 @@ int main(int argc, char* argv[]) {
     mysurfmaterial->SetYoungModulus(6e4);
     mysurfmaterial->SetFriction(0.3f);
     mysurfmaterial->SetRestitution(0.2f);
-    mysurfmaterial->SetAdhesion(0); 
+    mysurfmaterial->SetAdhesion(0);
 
     // Create the contact surface and add to the mesh, using our SMC contact material
     auto mcontactcloud = chrono_types::make_shared<ChContactSurfaceNodeCloud>(mysurfmaterial);
     mesh->AddContactSurface(mcontactcloud);
-    
-    // Must use this to 'populate' the contact surface use larger point size to match beam section radius
-    mcontactcloud->AddAllNodes(0.01); 
 
+    // Must use this to 'populate' the contact surface use larger point size to match beam section radius
+    mcontactcloud->AddAllNodes(0.01);
 
     // 8. Create a collision plane, as a huge box
 
@@ -195,10 +186,9 @@ int main(int argc, char* argv[]) {
     system.Add(floor);
 
     floor->SetBodyFixed(true);
-    floor->SetPos( ChVector<>(0,-0.1,0) );
+    floor->SetPos(ChVector<>(0, -0.1, 0));
 
-
-    // 9. Apply some loads to the beam. 
+    // 9. Apply some loads to the beam.
     //
     //   - A ChLoadContainer must be added to the system
     //   - You must create ChLoad objects to add to the ChLoadContainer
@@ -206,14 +196,14 @@ int main(int argc, char* argv[]) {
     //   - Option 2.a: implement your own ChLoad-inherited class
     //   - Option 2.b: implement your own ChLoader-inherited class and use in a ChLoad
 
-    // Create the load container and add it to your ChSystem 
+    // Create the load container and add it to your ChSystem
     auto loadcontainer = chrono_types::make_shared<ChLoadContainer>();
     system.Add(loadcontainer);
 
     // Example: Add a vertical load to the end point of the last beam element:
     auto mwrench = chrono_types::make_shared<ChLoadBeamWrench>(beam_elements.back());
-    mwrench->loader.SetApplication(1.0); // in -1..+1 range, -1: end A, 0: mid, +1: end B
-    mwrench->loader.SetForce(ChVector<>(0,-0.2,0));
+    mwrench->loader.SetApplication(1.0);  // in -1..+1 range, -1: end A, 0: mid, +1: end B
+    mwrench->loader.SetForce(ChVector<>(0, -0.2, 0));
     loadcontainer->Add(mwrench);  // do not forget to add the load to the load container.
 
     //// -------------------------------------------------------------------------
@@ -226,58 +216,56 @@ int main(int argc, char* argv[]) {
     ////
     //// -------------------------------------------------------------------------
 
-
     // Example: Create a custom distributed load: a horizontal time-dependant sinusoidal load.
-    // We will use a ChLoader class. A ChLoader is an object that is used by a ChLoad to apply 
+    // We will use a ChLoader class. A ChLoader is an object that is used by a ChLoad to apply
     // loads to a ChLoadable object: this is useful especially when the load is distributed, because
     // the ChLoad will automatically use ChLoader many times along the integration points.
     // There are some stubs in the ChLoaderU.h ChLoaderUV.h ChLoaderUVW.h , inherit from them.
-    // For example, let's make a distributed time-dependant load. A load on the beam is a 
-    // wrench, i.e. force+load per unit lenght aplied at a certain abscyssa U, that is a six-dimensional load. 
+    // For example, let's make a distributed time-dependant load. A load on the beam is a
+    // wrench, i.e. force+load per unit lenght aplied at a certain abscyssa U, that is a six-dimensional load.
 
     class MyLoaderHorizontalSine : public ChLoaderUdistributed {
-    public:
-            // Useful: a constructor that also sets ChLoadable    
-            MyLoaderHorizontalSine(std::shared_ptr<ChLoadableU> mloadable) 
-                :  ChLoaderUdistributed(mloadable) {}
+      public:
+        // Useful: a constructor that also sets ChLoadable
+        MyLoaderHorizontalSine(std::shared_ptr<ChLoadableU> mloadable) : ChLoaderUdistributed(mloadable) {}
 
-            // Compute F=F(u)
-            // This is the function that YOU MUST implement. It should return the
-            // load at U, per unit lenght. For Eulero beams, loads are expected as 6-rows vectors, i.e.
-            // a wrench: forceX, forceY, forceZ, torqueX, torqueY, torqueZ. 
-            virtual void ComputeF(const double U,     ///< parametric coordinate in line
-                          ChVectorDynamic<>& F,       ///< Result F vector here, size must be = n.field coords.of loadable
-                          ChVectorDynamic<>* state_x, ///< if != 0, update state (pos. part) to this, then evaluate F
-                          ChVectorDynamic<>* state_w  ///< if != 0, update state (speed part) to this, then evaluate F
-                          ) override {
-                assert(auxsystem);
-                double T = auxsystem->GetChTime();
-                double freq = 4;
-                double Fmax = 20; // btw, Fmax is in Newton per unit length, this is a distributed load
-                double Fz = Fmax*sin(T*freq); // compute the time-dependant load
-                // Return load in the F wrench: {forceX, forceY, forceZ, torqueX, torqueY, torqueZ}.
-                F.segment(0, 3) = ChVector<>(0, 0, Fz).eigen();  // load, force part
-                F.segment(3, 3) = ChVector<>(0, 0, 0).eigen();   // load, torque part
-            }
+        // Compute F=F(u)
+        // This is the function that YOU MUST implement. It should return the
+        // load at U, per unit lenght. For Eulero beams, loads are expected as 6-rows vectors, i.e.
+        // a wrench: forceX, forceY, forceZ, torqueX, torqueY, torqueZ.
+        virtual void ComputeF(
+            const double U,              ///< parametric coordinate in line
+            ChVectorDynamic<>& F,        ///< Result F vector here, size must be = n.field coords.of loadable
+            ChVectorDynamic<>* state_x,  ///< if != 0, update state (pos. part) to this, then evaluate F
+            ChVectorDynamic<>* state_w   ///< if != 0, update state (speed part) to this, then evaluate F
+            ) override {
+            assert(auxsystem);
+            double T = auxsystem->GetChTime();
+            double freq = 4;
+            double Fmax = 20;                  // btw, Fmax is in Newton per unit length, this is a distributed load
+            double Fz = Fmax * sin(T * freq);  // compute the time-dependant load
+            // Return load in the F wrench: {forceX, forceY, forceZ, torqueX, torqueY, torqueZ}.
+            F.segment(0, 3) = ChVector<>(0, 0, Fz).eigen();  // load, force part
+            F.segment(3, 3) = ChVector<>(0, 0, 0).eigen();   // load, torque part
+        }
 
-            // Needed because inheriting ChLoaderUdistributed. Use 1 because linear load fx.
-            virtual int GetIntegrationPointsU() override {return 1;}
+        // Needed because inheriting ChLoaderUdistributed. Use 1 because linear load fx.
+        virtual int GetIntegrationPointsU() override { return 1; }
 
-    public:
-            // add auxiliary data to the class, if you need to access it during ComputeF().
-            ChSystem* auxsystem;
+      public:
+        // add auxiliary data to the class, if you need to access it during ComputeF().
+        ChSystem* auxsystem;
     };
 
     // Create a custom load that uses the custom loader above.
     // The ChLoad is a 'manager' for your ChLoader.
     // It is created using templates, that is instancing a ChLoad<my_loader_class>()
 
-    std::shared_ptr< ChLoad<MyLoaderHorizontalSine> > mloadsine (new ChLoad<MyLoaderHorizontalSine>(beam_elements.back()) );
-    mloadsine->loader.auxsystem = &system; // initialize auxiliary data of the loader, if needed
-    loadcontainer->Add(mloadsine);  // do not forget to add the load to the load container.
+    std::shared_ptr<ChLoad<MyLoaderHorizontalSine> > mloadsine(
+        new ChLoad<MyLoaderHorizontalSine>(beam_elements.back()));
+    mloadsine->loader.auxsystem = &system;  // initialize auxiliary data of the loader, if needed
+    loadcontainer->Add(mloadsine);          // do not forget to add the load to the load container.
 
-
-    
     //// -------------------------------------------------------------------------
     //// EXERCISE 2
     ////
@@ -285,16 +273,12 @@ int main(int argc, char* argv[]) {
     //// b) instead of a custom distributed load, use a custom point load (atomic load)
     ////
     //// Hint: it is not much different than the example few rows above.
-    //// Hint: Instead of inheriting from ChLoaderUdistributed, inherit 
+    //// Hint: Instead of inheriting from ChLoaderUdistributed, inherit
     ////       from ChLoaderUatomic class.
     //// Hint: to compute a square wave, look at the sign of a sine wave.
     //// Hint: use a small value for the amplitude of the square wave, ex 0.8 Newtons,
     ////       otherwise the beam might wobble too much
     //// -------------------------------------------------------------------------
-
-
-
-
 
     // 10. Make the finite elements visible in the 3D view
 
@@ -317,13 +301,12 @@ int main(int argc, char* argv[]) {
     mesh->AddAsset(mvisualizebeamA);
 
     auto mvisualizebeamC = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
-    mvisualizebeamC->SetFEMglyphType(ChVisualizationFEAmesh::E_GLYPH_NODE_CSYS); 
+    mvisualizebeamC->SetFEMglyphType(ChVisualizationFEAmesh::E_GLYPH_NODE_CSYS);
     mvisualizebeamC->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_NONE);
     mvisualizebeamC->SetSymbolsThickness(0.006);
     mvisualizebeamC->SetSymbolsScale(0.005);
     mvisualizebeamC->SetZbufferHide(false);
     mesh->AddAsset(mvisualizebeamC);
-
 
     // 10. Configure the solver and timestepper
 
@@ -343,32 +326,28 @@ int main(int argc, char* argv[]) {
     // system.SetTimestepperType(ChTimestepper::Type::EULER_IMPLICIT_LINEARIZED);  // default: fast, 1st order
     // system.SetTimestepperType(ChTimestepper::Type::HHT);  // precise, slower, might iterate each step
 
-
     // 11. Prepare visualization with Irrlicht
     //    Note that Irrlicht uses left-handed frames with Y up.
 
     // Create the Irrlicht application and set-up the camera.
-    ChIrrApp application(&system,                            // pointer to the mechanical system
-                                         L"FEA cable collide demo",          // title of the Irrlicht window
-                                         core::dimension2d<u32>(1024, 768),  // window dimension (width x height)
-                                         false,                              // use full screen?
-                                         true,                               // enable stencil shadows?
-                                         true);                              // enable antialiasing?
+    ChIrrApp application(&system,                           // pointer to the mechanical system
+                         L"FEA cable collide demo",         // title of the Irrlicht window
+                         core::dimension2d<u32>(1024, 768)  // window dimension (width x height)
+    );
 
     application.AddTypicalLogo();
     application.AddTypicalSky();
     application.AddTypicalLights();
     application.AddTypicalCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
-                                  core::vector3df(0.0f, 0.0f, 0.0f));  // "look at" location
+                                 core::vector3df(0.0f, 0.0f, 0.0f));  // "look at" location
 
     // Enable drawing of contacts
-    application.SetContactsDrawMode(ChIrrTools::CONTACT_FORCES);
+    application.SetContactsDrawMode(IrrContactsDrawMode::CONTACT_FORCES);
     application.SetSymbolscale(0.1);
 
     // Let the Irrlicht application convert the visualization assets.
     application.AssetBindAll();
     application.AssetUpdateAll();
-
 
     // 12. Perform the simulation.
 
@@ -384,9 +363,9 @@ int main(int argc, char* argv[]) {
         application.DrawAll();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        ChIrrTools::drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
-                             ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
-                             video::SColor(255, 80, 100, 100), true);
+        tools::drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
+                        ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)), video::SColor(255, 80, 100, 100),
+                        true);
 
         // Advance simulation by one step.
         application.DoStep();

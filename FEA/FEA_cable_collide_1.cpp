@@ -25,19 +25,19 @@
 //
 // =============================================================================
 
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
 
-#include "chrono/physics/ChSystemNSC.h"
 #include "chrono/physics/ChBodyEasy.h"
+#include "chrono/physics/ChSystemNSC.h"
 #include "chrono/solver/ChIterativeSolverLS.h"
 #include "chrono_irrlicht/ChIrrApp.h"
 
-#include "chrono/fea/ChElementCableANCF.h"
 #include "chrono/fea/ChBuilderBeam.h"
+#include "chrono/fea/ChElementCableANCF.h"
+#include "chrono/fea/ChLinkPointFrame.h"
 #include "chrono/fea/ChMesh.h"
 #include "chrono/fea/ChVisualizationFEAmesh.h"
-#include "chrono/fea/ChLinkPointFrame.h"
 
 using namespace chrono;
 using namespace chrono::irrlicht;
@@ -45,7 +45,6 @@ using namespace chrono::fea;
 using namespace irr;
 
 int main(int argc, char* argv[]) {
-
     // 0. Set the path to the Chrono data folder
 
     SetChronoDataPath(CHRONO_DATA_DIR);
@@ -57,13 +56,11 @@ int main(int argc, char* argv[]) {
     ChSystemNSC system;
     system.Set_G_acc(ChVector<>(0, -9.81, 0));
 
-
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
     auto mesh = chrono_types::make_shared<ChMesh>();
 
     system.Add(mesh);
-
 
     // 3. Create a material for the beam finite elements.
 
@@ -75,7 +72,6 @@ int main(int argc, char* argv[]) {
     beam_material->SetDiameter(0.01);
     beam_material->SetYoungModulus(0.01e9);
     beam_material->SetBeamRaleyghDamping(0.01);
-
 
     // 4. Create the nodes
 
@@ -111,7 +107,6 @@ int main(int argc, char* argv[]) {
         beam_nodes.push_back(node);
     }
 
-
     // 5. Create the elements
 
     //    - We use a simple for() loop to create elements between the
@@ -134,7 +129,6 @@ int main(int argc, char* argv[]) {
         mesh->AddElement(element);
     }
 
-
     // 6. Add constraints
 
     //    - Constraints can be applied to FEA nodes
@@ -143,7 +137,7 @@ int main(int argc, char* argv[]) {
     //      ChLinkPointFrame and ChLinkDirFrame
     //    - To attach one end of the beam to the ground, we need a
     //      'truss' ChBody that is fixed.
-    //    - Note. An alternative, only when the node must be fixed 
+    //    - Note. An alternative, only when the node must be fixed
     //      to absolute reference, is not using constraints, and just
     //      use: beam_nodes[0]->SetFixed(true);  (but would fix also dir)
 
@@ -156,31 +150,27 @@ int main(int argc, char* argv[]) {
     constraint_pos->Initialize(beam_nodes[0], truss);
     system.Add(constraint_pos);
 
-
     //// -------------------------------------------------------------------------
     //// EXERCISE 1a
     ////
     //// Add a cylinder.
     //// Suggested size: 0.02 radius, 0.1 height, density:1000.
-    //// Hint: use the ChBodyEasyCylinder to make the cylinder, pass size as 
+    //// Hint: use the ChBodyEasyCylinder to make the cylinder, pass size as
     //// parameters in construction.
-    //// 
+    ////
     //// -------------------------------------------------------------------------
 
-
     // TO DO ...
-
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 1b
     ////
     //// Attach the cylinder to the free end of the cable.
     //// Hint: use the ChLinkPointFrame to connect the cylinder and the end node.
-    //// 
+    ////
     //// -------------------------------------------------------------------------
 
     // TO DO ...
-
 
     // 7. Make the finite elements visible in the 3D view
 
@@ -203,13 +193,13 @@ int main(int argc, char* argv[]) {
     mesh->AddAsset(mvisualizebeamA);
 
     auto mvisualizebeamC = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
-    mvisualizebeamC->SetFEMglyphType(ChVisualizationFEAmesh::E_GLYPH_NODE_DOT_POS);  // E_GLYPH_NODE_CSYS for ChNodeFEAxyzrot
+    mvisualizebeamC->SetFEMglyphType(
+        ChVisualizationFEAmesh::E_GLYPH_NODE_DOT_POS);  // E_GLYPH_NODE_CSYS for ChNodeFEAxyzrot
     mvisualizebeamC->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_NONE);
     mvisualizebeamC->SetSymbolsThickness(0.006);
     mvisualizebeamC->SetSymbolsScale(0.005);
     mvisualizebeamC->SetZbufferHide(false);
     mesh->AddAsset(mvisualizebeamC);
-
 
     // 8. Configure the solver and timestepper
 
@@ -229,28 +219,24 @@ int main(int argc, char* argv[]) {
     system.SetTimestepperType(ChTimestepper::Type::EULER_IMPLICIT_LINEARIZED);  // default: fast, 1st order
     // system.SetTimestepperType(ChTimestepper::Type::HHT);  // precise, slower, might iterate each step
 
-
     // 9. Prepare visualization with Irrlicht
     //    Note that Irrlicht uses left-handed frames with Y up.
 
     // Create the Irrlicht application and set-up the camera.
-    ChIrrApp application(&system,                            // pointer to the mechanical system
-                                         L"FEA cable collide demo",          // title of the Irrlicht window
-                                         core::dimension2d<u32>(1024, 768),  // window dimension (width x height)
-                                         false,                              // use full screen?
-                                         true,                               // enable stencil shadows?
-                                         true);                              // enable antialiasing?
+    ChIrrApp application(&system,                           // pointer to the mechanical system
+                         L"FEA cable collide demo",         // title of the Irrlicht window
+                         core::dimension2d<u32>(1024, 768)  // window dimension (width x height)
+    );
 
     application.AddTypicalLogo();
     application.AddTypicalSky();
     application.AddTypicalLights();
     application.AddTypicalCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
-                                  core::vector3df(0.0f, 0.0f, 0.0f));  // "look at" location
+                                 core::vector3df(0.0f, 0.0f, 0.0f));  // "look at" location
 
     // Let the Irrlicht application convert the visualization assets.
     application.AssetBindAll();
     application.AssetUpdateAll();
-
 
     // 10. Perform the simulation.
 
@@ -266,9 +252,9 @@ int main(int argc, char* argv[]) {
         application.DrawAll();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        ChIrrTools::drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
-                             ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
-                             video::SColor(255, 80, 100, 100), true);
+        tools::drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
+                        ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)), video::SColor(255, 80, 100, 100),
+                        true);
 
         // Advance simulation by one step.
         application.DoStep();

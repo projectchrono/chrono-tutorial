@@ -31,8 +31,8 @@
 //
 // =============================================================================
 
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
 
 #include "chrono/assets/ChPointPointDrawing.h"
 #include "chrono/physics/ChLinkMotorRotationSpeed.h"
@@ -294,16 +294,15 @@ int main(int argc, char* argv[]) {
     //    Note that Irrlicht uses left-handed frames with Y up.
 
     // Create the Irrlicht application and set-up the camera.
-    ChIrrApp application(&system,                           // pointer to the mechanical system
-                                         L"Slider-Crank Demo 2",            // title of the Irrlicht window
-                                         core::dimension2d<u32>(800, 600),  // window dimension (width x height)
-                                         false,                             // use full screen?
-                                         true);                             // enable shadows?
+    ChIrrApp application(&system,                          // pointer to the mechanical system
+                         L"Slider-Crank Demo 2",           // title of the Irrlicht window
+                         core::dimension2d<u32>(800, 600)  // window dimension (width x height)
+    );
     application.AddTypicalLogo();
     application.AddTypicalSky();
     application.AddTypicalLights();
     application.AddTypicalCamera(core::vector3df(2, 5, -3),  // camera location
-                                  core::vector3df(2, 0, 0));  // "look at" location
+                                 core::vector3df(2, 0, 0));  // "look at" location
 
     // Let the Irrlicht application convert the visualization assets.
     application.AssetBindAll();
@@ -323,9 +322,9 @@ int main(int argc, char* argv[]) {
         application.DrawAll();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        ChIrrTools::drawGrid(application.GetVideoDriver(), 1, 1, 20, 20,
-                             ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
-                             video::SColor(255, 80, 100, 100), true);
+        tools::drawGrid(application.GetVideoDriver(), 1, 1, 20, 20,
+                        ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)), video::SColor(255, 80, 100, 100),
+                        true);
 
         // Advance simulation by one step.
         application.DoStep();

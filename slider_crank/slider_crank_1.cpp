@@ -27,8 +27,8 @@
 //
 // =============================================================================
 
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
 
 #include "chrono/physics/ChSystemNSC.h"
 #include "chrono_irrlicht/ChIrrApp.h"
@@ -37,201 +37,177 @@ using namespace chrono;
 using namespace chrono::irrlicht;
 using namespace irr;
 
+int main(int argc, char* argv[]) {
+    // 0. Set the path to the Chrono data folder
 
-int main(int   argc,
-         char* argv[])
-{
-  // 0. Set the path to the Chrono data folder
+    SetChronoDataPath(CHRONO_DATA_DIR);
 
-  SetChronoDataPath(CHRONO_DATA_DIR);
+    // 1. Create the physical system that will handle all bodies and constraints.
 
+    //    Specify the gravitational acceleration vector, consistent with the
+    //    global reference frame having Z up.
+    ChSystemNSC system;
+    system.Set_G_acc(ChVector<>(0, 0, -9.81));
 
-  // 1. Create the physical system that will handle all bodies and constraints.
+    // 2. Create the rigid bodies of the slider-crank mechanical system.
+    //    For each body, specify:
+    //    - a unique identifier
+    //    - mass and moments of inertia
+    //    - position and orientation of the (centroidal) body frame
+    //    - visualization assets (defined with respect to the body frame)
 
-  //    Specify the gravitational acceleration vector, consistent with the
-  //    global reference frame having Z up.
-  ChSystemNSC system;
-  system.Set_G_acc(ChVector<>(0, 0, -9.81));
+    // Ground
+    auto ground = chrono_types::make_shared<ChBody>();
+    system.AddBody(ground);
+    ground->SetIdentifier(-1);
+    ground->SetName("ground");
+    ground->SetBodyFixed(true);
 
+    auto cyl_g = chrono_types::make_shared<ChCylinderShape>();
+    cyl_g->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
+    cyl_g->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
+    cyl_g->GetCylinderGeometry().rad = 0.03;
+    ground->AddAsset(cyl_g);
 
-  // 2. Create the rigid bodies of the slider-crank mechanical system.
-  //    For each body, specify:
-  //    - a unique identifier
-  //    - mass and moments of inertia
-  //    - position and orientation of the (centroidal) body frame
-  //    - visualization assets (defined with respect to the body frame)
+    auto col_g = chrono_types::make_shared<ChColorAsset>();
+    col_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
+    ground->AddAsset(col_g);
 
-  // Ground
-  auto ground = chrono_types::make_shared<ChBody>();
-  system.AddBody(ground);
-  ground->SetIdentifier(-1);
-  ground->SetName("ground");
-  ground->SetBodyFixed(true);
+    // Crank
+    auto crank = chrono_types::make_shared<ChBody>();
+    system.AddBody(crank);
+    crank->SetIdentifier(1);
+    crank->SetName("crank");
+    crank->SetMass(1.0);
+    crank->SetInertiaXX(ChVector<>(0.005, 0.1, 0.1));
+    crank->SetPos(ChVector<>(-1, 0, 0));
+    crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-  auto cyl_g = chrono_types::make_shared<ChCylinderShape>();
-  cyl_g->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
-  cyl_g->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
-  cyl_g->GetCylinderGeometry().rad = 0.03;
-  ground->AddAsset(cyl_g);
+    auto box_c = chrono_types::make_shared<ChBoxShape>();
+    box_c->GetBoxGeometry().Size = ChVector<>(0.95, 0.05, 0.05);
+    crank->AddAsset(box_c);
 
-  auto col_g = chrono_types::make_shared<ChColorAsset>();
-  col_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
-  ground->AddAsset(col_g);
+    auto cyl_c = chrono_types::make_shared<ChCylinderShape>();
+    cyl_c->GetCylinderGeometry().p1 = ChVector<>(1, 0.1, 0);
+    cyl_c->GetCylinderGeometry().p2 = ChVector<>(1, -0.1, 0);
+    cyl_c->GetCylinderGeometry().rad = 0.05;
+    crank->AddAsset(cyl_c);
 
-  // Crank
-  auto crank = chrono_types::make_shared<ChBody>();
-  system.AddBody(crank);
-  crank->SetIdentifier(1);
-  crank->SetName("crank");
-  crank->SetMass(1.0);
-  crank->SetInertiaXX(ChVector<>(0.005, 0.1, 0.1));
-  crank->SetPos(ChVector<>(-1, 0, 0));
-  crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
+    auto sph_c = chrono_types::make_shared<ChSphereShape>();
+    sph_c->GetSphereGeometry().center = ChVector<>(-1, 0, 0);
+    sph_c->GetSphereGeometry().rad = 0.05;
+    crank->AddAsset(sph_c);
 
-  auto box_c = chrono_types::make_shared<ChBoxShape>();
-  box_c->GetBoxGeometry().Size = ChVector<>(0.95, 0.05, 0.05);
-  crank->AddAsset(box_c);
+    auto col_c = chrono_types::make_shared<ChColorAsset>();
+    col_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
+    crank->AddAsset(col_c);
 
-  auto cyl_c = chrono_types::make_shared<ChCylinderShape>();
-  cyl_c->GetCylinderGeometry().p1 = ChVector<>(1, 0.1, 0);
-  cyl_c->GetCylinderGeometry().p2 = ChVector<>(1, -0.1, 0);
-  cyl_c->GetCylinderGeometry().rad = 0.05;
-  crank->AddAsset(cyl_c);
+    // Slider
+    auto slider = chrono_types::make_shared<ChBody>();
+    system.AddBody(slider);
+    slider->SetIdentifier(2);
+    slider->SetName("slider");
+    slider->SetMass(1.0);
+    slider->SetInertiaXX(ChVector<>(0.05, 0.05, 0.05));
+    slider->SetPos(ChVector<>(2, 0, 0));
+    slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-  auto sph_c = chrono_types::make_shared<ChSphereShape>();
-  sph_c->GetSphereGeometry().center = ChVector<>(-1, 0, 0);
-  sph_c->GetSphereGeometry().rad = 0.05;
-  crank->AddAsset(sph_c);
+    auto box_s = chrono_types::make_shared<ChBoxShape>();
+    box_s->GetBoxGeometry().Size = ChVector<>(0.2, 0.1, 0.1);
+    slider->AddAsset(box_s);
 
-  auto col_c = chrono_types::make_shared<ChColorAsset>();
-  col_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
-  crank->AddAsset(col_c);
+    auto col_s = chrono_types::make_shared<ChColorAsset>();
+    col_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
+    slider->AddAsset(col_s);
 
-  // Slider
-  auto slider = chrono_types::make_shared<ChBody>();
-  system.AddBody(slider);
-  slider->SetIdentifier(2);
-  slider->SetName("slider");
-  slider->SetMass(1.0);
-  slider->SetInertiaXX(ChVector<>(0.05, 0.05, 0.05));
-  slider->SetPos(ChVector<>(2, 0, 0));
-  slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
+    //// -------------------------------------------------------------------------
+    //// EXERCISE 1.1
+    //// Create a connecting rod body to replace the distance constraint.
+    //// This body should have:
+    ////    mass: 0.5
+    ////    moments of inertia:  I_xx = 0.005, I_yy = 0.1, I_zz = 0.1
+    ////    visualization: a green box with width and height 0.1
+    //// -------------------------------------------------------------------------
 
-  auto box_s = chrono_types::make_shared<ChBoxShape>();
-  box_s->GetBoxGeometry().Size = ChVector<>(0.2, 0.1, 0.1);
-  slider->AddAsset(box_s);
+    // 3. Create joint constraints.
+    //    All joint frames are specified in the global frame.
 
-  auto col_s = chrono_types::make_shared<ChColorAsset>();
-  col_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
-  slider->AddAsset(col_s);
+    // Define two quaternions representing:
+    // - a rotation of -90 degrees around x (z2y)
+    // - a rotation of +90 degrees around y (z2x)
+    ChQuaternion<> z2y;
+    ChQuaternion<> z2x;
+    z2y.Q_from_AngAxis(-CH_C_PI / 2, ChVector<>(1, 0, 0));
+    z2x.Q_from_AngAxis(CH_C_PI / 2, ChVector<>(0, 1, 0));
 
-  //// -------------------------------------------------------------------------
-  //// EXERCISE 1.1
-  //// Create a connecting rod body to replace the distance constraint.
-  //// This body should have:
-  ////    mass: 0.5
-  ////    moments of inertia:  I_xx = 0.005, I_yy = 0.1, I_zz = 0.1
-  ////    visualization: a green box with width and height 0.1
-  //// -------------------------------------------------------------------------
+    //// -------------------------------------------------------------------------
+    //// EXERCISE 1.2
+    //// Replace the revolute joint between ground and crank with a
+    //// ChLinkMotorRotationSpeed element and enforce constant angular speed of
+    //// 90 degrees/s.
+    //// -------------------------------------------------------------------------
 
+    // Prismatic joint between ground and slider.
+    // The translational axis of a prismatic joint is along the Z axis of the
+    // specified joint coordinate system.  Here, we apply the 'z2x' rotation to
+    // align it with the X axis of the global reference frame.
+    auto prismatic_ground_slider = chrono_types::make_shared<ChLinkLockPrismatic>();
+    prismatic_ground_slider->SetName("prismatic_ground_slider");
+    prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector<>(2, 0, 0), z2x));
+    system.AddLink(prismatic_ground_slider);
 
+    //// -------------------------------------------------------------------------
+    //// EXERCISE 1.3
+    //// Replace the distance constraint with joints connecting the rod to the
+    //// crank (use ChLinkLockSpherical) and to the slider (ChLinkUniversal). The
+    //// universal joint's cross should be aligned with the Z and Y global axes.
+    //// -------------------------------------------------------------------------
 
+    // 4. Write the system hierarchy to the console (default log output destination)
+    system.ShowHierarchy(GetLog());
 
+    // 5. Prepare visualization with Irrlicht
+    //    Note that Irrlicht uses left-handed frames with Y up.
 
-  // 3. Create joint constraints.
-  //    All joint frames are specified in the global frame.
+    // Create the Irrlicht application and set-up the camera.
+    ChIrrApp application(&system,                          // pointer to the mechanical system
+                         L"Slider-Crank Demo 1",           // title of the Irrlicht window
+                         core::dimension2d<u32>(800, 600)  // window dimension (width x height)
+    );
+    application.AddTypicalLogo();
+    application.AddTypicalSky();
+    application.AddTypicalLights();
+    application.AddTypicalCamera(core::vector3df(2, 5, -3),  // camera location
+                                 core::vector3df(2, 0, 0));  // "look at" location
 
-  // Define two quaternions representing:
-  // - a rotation of -90 degrees around x (z2y)
-  // - a rotation of +90 degrees around y (z2x)
-  ChQuaternion<> z2y;
-  ChQuaternion<> z2x;
-  z2y.Q_from_AngAxis(-CH_C_PI / 2, ChVector<>(1, 0, 0));
-  z2x.Q_from_AngAxis(CH_C_PI / 2, ChVector<>(0, 1, 0));
+    // Let the Irrlicht application convert the visualization assets.
+    application.AssetBindAll();
+    application.AssetUpdateAll();
 
-  //// -------------------------------------------------------------------------
-  //// EXERCISE 1.2
-  //// Replace the revolute joint between ground and crank with a
-  //// ChLinkMotorRotationSpeed element and enforce constant angular speed of
-  //// 90 degrees/s.
-  //// -------------------------------------------------------------------------
+    // 6. Perform the simulation.
 
+    // Specify the step-size.
+    application.SetTimestep(0.01);
+    application.SetTryRealtime(true);
 
+    while (application.GetDevice()->run()) {
+        // Initialize the graphical scene.
+        application.BeginScene();
 
+        // Render all visualization objects.
+        application.DrawAll();
 
+        // Draw an XZ grid at the global origin to add in visualization.
+        tools::drawGrid(application.GetVideoDriver(), 1, 1, 20, 20,
+                        ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)), video::SColor(255, 80, 100, 100),
+                        true);
 
-  // Prismatic joint between ground and slider.
-  // The translational axis of a prismatic joint is along the Z axis of the
-  // specified joint coordinate system.  Here, we apply the 'z2x' rotation to
-  // align it with the X axis of the global reference frame.
-  auto prismatic_ground_slider = chrono_types::make_shared<ChLinkLockPrismatic>();
-  prismatic_ground_slider->SetName("prismatic_ground_slider");
-  prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector<>(2, 0, 0), z2x));
-  system.AddLink(prismatic_ground_slider);
+        // Advance simulation by one step.
+        application.DoStep();
 
-  //// -------------------------------------------------------------------------
-  //// EXERCISE 1.3
-  //// Replace the distance constraint with joints connecting the rod to the
-  //// crank (use ChLinkLockSpherical) and to the slider (ChLinkUniversal). The
-  //// universal joint's cross should be aligned with the Z and Y global axes.
-  //// -------------------------------------------------------------------------
+        // Finalize the graphical scene.
+        application.EndScene();
+    }
 
-
-
-  // 4. Write the system hierarchy to the console (default log output destination)
-  system.ShowHierarchy(GetLog());
-
-
-  // 5. Prepare visualization with Irrlicht
-  //    Note that Irrlicht uses left-handed frames with Y up.
-
-  // Create the Irrlicht application and set-up the camera.
-  ChIrrApp application(
-    &system,                               // pointer to the mechanical system
-    L"Slider-Crank Demo 1",                // title of the Irrlicht window
-    core::dimension2d<u32>(800, 600),      // window dimension (width x height)
-    false,                                 // use full screen?
-    true);                                 // enable shadows?
-  application.AddTypicalLogo();
-  application.AddTypicalSky();
-  application.AddTypicalLights();
-  application.AddTypicalCamera(
-    core::vector3df(2, 5, -3),             // camera location
-    core::vector3df(2, 0, 0));             // "look at" location
-
-  // Let the Irrlicht application convert the visualization assets.
-  application.AssetBindAll();
-  application.AssetUpdateAll();
-
-
-  // 6. Perform the simulation.
-
-  // Specify the step-size.
-  application.SetTimestep(0.01);
-  application.SetTryRealtime(true);
-
-  while (application.GetDevice()->run())
-  {
-    // Initialize the graphical scene.
-    application.BeginScene();
-    
-    // Render all visualization objects.
-    application.DrawAll();
-
-    // Draw an XZ grid at the global origin to add in visualization.
-    ChIrrTools::drawGrid(
-      application.GetVideoDriver(), 1, 1, 20, 20,
-      ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
-      video::SColor(255, 80, 100, 100), true);
-
-    // Advance simulation by one step.
-    application.DoStep();
-
-    // Finalize the graphical scene.
-    application.EndScene();
-  }
-
-  return 0;
+    return 0;
 }
-
-
