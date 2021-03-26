@@ -62,6 +62,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         add_definitions( "-D_SCL_SECURE_NO_DEPRECATE" )  # avoids deprecation warnings
         add_definitions( "-DNOMINMAX" ) # do not use MSVC's min/max macros
         add_definitions( "-MP" ) # perform parallel builds
+        add_compile_options(/wd4251) # class needs to have dll-interface
     endif(MSVC)
 endif()
 
