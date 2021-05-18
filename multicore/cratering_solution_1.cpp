@@ -149,6 +149,7 @@ void CreateObjects(ChSystemMulticore* system) {
     //// Create a granular maetrial generator with a mixture entirely made out of spheres
     //// of equal radius, all sharing the same contact material
     //// ********************************************************************************
+    utils::PDSampler<double> sampler(2.01 * r_g);
     utils::Generator gen(system);
 
     std::shared_ptr<utils::MixtureIngredient> m1 = gen.AddMixtureIngredient(utils::MixtureType::SPHERE, 1.0);
@@ -159,8 +160,7 @@ void CreateObjects(ChSystemMulticore* system) {
     gen.setBodyIdentifier(Id_g);
 
     // Generate the granular bodies in a box within the container, using Poisson disk sampling
-    gen.createObjectsBox(utils::SamplingType::POISSON_DISK, 2.01 * r_g, ChVector<>(0, 0, hDimZ / 2),
-                         ChVector<>(hDimX - r_g, hDimY - r_g, hDimZ / 2 - r_g));
+    gen.CreateObjectsBox(sampler, ChVector<>(0, 0, hDimZ / 2), ChVector<>(hDimX - r_g, hDimY - r_g, hDimZ / 2 - r_g));
 
     std::cout << "Generated " << gen.getTotalNumBodies() << " bodies" << std::endl;
 }
