@@ -266,7 +266,7 @@ int main(int argc, char* argv[]) {
     system->GetSettings()->solver.use_full_inertia_tensor = false;
     system->GetSettings()->solver.tolerance = 1.0;
 
-    system->GetSettings()->collision.narrowphase_algorithm = NarrowPhaseType::NARROWPHASE_HYBRID_MPR;
+    system->GetSettings()->collision.narrowphase_algorithm = ChNarrowphase::Algorithm::HYBRID;
     system->GetSettings()->collision.collision_envelope = 0.05 * r_g;
 
     //// ******************************************************
