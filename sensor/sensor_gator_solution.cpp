@@ -20,12 +20,12 @@
 // =============================================================================
 
 #include "chrono/core/ChRealtimeStep.h"
-#include "chrono/utils/ChUtilsInputOutput.h"
 #include "chrono/physics/ChBodyEasy.h"
+#include "chrono/utils/ChUtilsInputOutput.h"
 
 #include "chrono_vehicle/ChVehicleModelData.h"
-#include "chrono_vehicle/terrain/RigidTerrain.h"
 #include "chrono_vehicle/driver/ChIrrGuiDriver.h"
+#include "chrono_vehicle/terrain/RigidTerrain.h"
 #include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
 
 #include "chrono_models/vehicle/gator/Gator.h"
@@ -33,22 +33,19 @@
 
 #include "chrono_thirdparty/filesystem/path.h"
 
-#include "chrono_sensor/ChCameraSensor.h"
-#include "chrono_sensor/ChLidarSensor.h"
 #include "chrono_sensor/ChSensorManager.h"
 #include "chrono_sensor/filters/ChFilterAccess.h"
+#include "chrono_sensor/filters/ChFilterCameraNoise.h"
 #include "chrono_sensor/filters/ChFilterPCfromDepth.h"
-#include "chrono_sensor/filters/ChFilterVisualize.h"
 #include "chrono_sensor/filters/ChFilterSave.h"
 #include "chrono_sensor/filters/ChFilterSavePtCloud.h"
-#include "chrono_sensor/filters/ChFilterVisualizePointCloud.h"
-#include "chrono_sensor/utils/ChVisualMaterialUtils.h"
-#include "chrono_sensor/ChGPSSensor.h"
-#include "chrono_sensor/ChIMUSensor.h"
-#include "chrono_sensor/ChSensorManager.h"
-#include "chrono_sensor/filters/ChFilterAccess.h"
 #include "chrono_sensor/filters/ChFilterVisualize.h"
-#include "chrono_sensor/filters/ChFilterCameraNoise.h"
+#include "chrono_sensor/filters/ChFilterVisualizePointCloud.h"
+#include "chrono_sensor/sensors/ChCameraSensor.h"
+#include "chrono_sensor/sensors/ChGPSSensor.h"
+#include "chrono_sensor/sensors/ChIMUSensor.h"
+#include "chrono_sensor/sensors/ChLidarSensor.h"
+#include "chrono_sensor/utils/ChVisualMaterialUtils.h"
 
 using namespace chrono;
 using namespace chrono::irrlicht;
@@ -179,8 +176,8 @@ int main(int argc, char* argv[]) {
             patch->SetTexture(vehicle::GetDataFile("terrain/textures/tile4.jpg"), 200, 200);
             break;
         case RigidTerrain::PatchType::HEIGHT_MAP:
-            patch = terrain.AddPatch(patch_mat, CSYSNORM, vehicle::GetDataFile("terrain/height_maps/test64.bmp"),
-                                     128, 128, 0, 4);
+            patch = terrain.AddPatch(patch_mat, CSYSNORM, vehicle::GetDataFile("terrain/height_maps/test64.bmp"), 128,
+                                     128, 0, 4);
             patch->SetTexture(vehicle::GetDataFile("terrain/textures/grass.jpg"), 16, 16);
             break;
         case RigidTerrain::PatchType::MESH:
@@ -240,7 +237,6 @@ int main(int argc, char* argv[]) {
     // sensor manager
     auto manager = chrono_types::make_shared<ChSensorManager>(gator.GetSystem());
     manager->scene->AddPointLight({100, 100, 100}, {2, 2, 2}, 5000);
-    manager->SetKeyframeSizeFromTimeStep((float)step_size, exposure_time);
 
     // third person camera
     auto cam = chrono_types::make_shared<ChCameraSensor>(
@@ -290,10 +286,11 @@ int main(int argc, char* argv[]) {
         lidar_vmax,                                                               // vertical field of view
         lidar_vmin,                                                               // vertical field of view
         100.0f,                                                                   //
+        LidarBeamShape::RECTANGULAR,                                              //
         1,                                                                        //
         0.0f,                                                                     //
+        0.0f,                                                                     //
         LidarReturnMode::STRONGEST_RETURN,                                        //
-        LidarModelType::RAYCAST,                                                  //
         0.1f                                                                      //
     );
     lidar->SetName("Lidar Sensor");
@@ -345,7 +342,7 @@ int main(int argc, char* argv[]) {
             if (povray_output) {
                 char filename[100];
                 sprintf(filename, "%s/data_%03d.dat", pov_dir.c_str(), render_frame + 1);
-                utils::WriteShapesPovray(gator.GetSystem(), filename);
+                utils::WriteVisualizationAssets(gator.GetSystem(), filename);
             }
 
             render_frame++;

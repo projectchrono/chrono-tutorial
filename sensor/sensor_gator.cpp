@@ -33,8 +33,8 @@
 
 #include "chrono_thirdparty/filesystem/path.h"
 
-#include "chrono_sensor/ChCameraSensor.h"
-#include "chrono_sensor/ChLidarSensor.h"
+#include "chrono_sensor/sensors/ChCameraSensor.h"
+#include "chrono_sensor/sensors/ChLidarSensor.h"
 #include "chrono_sensor/ChSensorManager.h"
 #include "chrono_sensor/filters/ChFilterAccess.h"
 #include "chrono_sensor/filters/ChFilterPCfromDepth.h"
@@ -43,8 +43,8 @@
 #include "chrono_sensor/filters/ChFilterSavePtCloud.h"
 #include "chrono_sensor/filters/ChFilterVisualizePointCloud.h"
 #include "chrono_sensor/utils/ChVisualMaterialUtils.h"
-#include "chrono_sensor/ChGPSSensor.h"
-#include "chrono_sensor/ChIMUSensor.h"
+#include "chrono_sensor/sensors/ChGPSSensor.h"
+#include "chrono_sensor/sensors/ChIMUSensor.h"
 #include "chrono_sensor/ChSensorManager.h"
 #include "chrono_sensor/filters/ChFilterAccess.h"
 #include "chrono_sensor/filters/ChFilterVisualize.h"
@@ -308,7 +308,7 @@ int main(int argc, char* argv[]) {
             if (povray_output) {
                 char filename[100];
                 sprintf(filename, "%s/data_%03d.dat", pov_dir.c_str(), render_frame + 1);
-                utils::WriteShapesPovray(gator.GetSystem(), filename);
+                utils::WriteVisualizationAssets(gator.GetSystem(), filename);
             }
 
             render_frame++;
