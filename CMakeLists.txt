@@ -70,6 +70,11 @@ endif()
 # Invoke CMake in subdirectories
 #-----------------------------------------------------------------------------
 
+if(NOT Chrono_DIR)
+  set(Chrono_DIR "" CACHE PATH "The directory containing a CMake configuration file for Chrono.")
+  return()
+endif()
+
 # Options for configuring/building individual sets of programs
 option(ENABLE_CHRONO_PROGRAMS "Build the Chrono tutorial programs" ON)
 option(ENABLE_VEHICLE_PROGRAMS "Build the Chrono::Vehicle tutorial programs" ON)

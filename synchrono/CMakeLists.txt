@@ -9,7 +9,7 @@ SET(MODELS
 
 # Invoke find_package in CONFIG mode
 
-find_package(Chrono
+find_package(Chrono QUIET
              COMPONENTS Vehicle Synchrono
              OPTIONAL_COMPONENTS Irrlicht Sensor
              CONFIG
@@ -42,9 +42,6 @@ set(COMPILE_FLAGS ${CHRONO_CXX_FLAGS})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     SET(COMPILE_FLAGS "${COMPILE_FLAGS} /wd4275")
 endif()
-
-find_package(Threads REQUIRED)
-find_package(MPI)
 
 foreach(PROGRAM ${MODELS})
 
