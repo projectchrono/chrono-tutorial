@@ -200,8 +200,8 @@ int main(int argc, char* argv[]) {
     RigidTerrain terrain(system);
 
     // Loading the mesh to be used for collisions
-    auto patch =
-        terrain.AddPatch(patch_mat, CSYSNORM, synchrono::GetDataFile("meshes/Highway_intersection.obj"), 0.01, false);
+    auto patch = terrain.AddPatch(patch_mat, CSYSNORM, synchrono::GetDataFile("meshes/Highway_intersection.obj"), true,
+                                  0.01, false);
 
     // In this case the visualization mesh is the same, but it doesn't have to be (e.g. a detailed visual mesh of
     // buildings, but the collision mesh is just the driveable surface of the road)
