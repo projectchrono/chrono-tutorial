@@ -164,47 +164,47 @@ int main(int argc, char* argv[]) {
     //    Note that Irrlicht uses left-handed frames with Y up.
 
     // Create the Irrlicht application and set-up the camera.
-    ChIrrApp* application = new ChIrrApp(&system,                          // pointer to the mechanical system
-                                         L"Slider-Crank Demo 0",           // title of the Irrlicht window
-                                         core::dimension2d<u32>(800, 600)  // window dimension (width x height)
-    );
-    application->AddTypicalLogo();
-    application->AddTypicalSky();
-    application->AddTypicalLights();
-    application->AddTypicalCamera(core::vector3df(2, 5, -3),  // camera location
-                                  core::vector3df(2, 0, 0));  // "look at" location
+    ChIrrApp application(&system,                           // pointer to the mechanical system
+                         L"Slider-Crank Demo 0",            // title of the Irrlicht window
+                         core::dimension2d<u32>(800, 600),  // window dimension (width x height)
+                         VerticalDir::Z);                   // camera up direction
+    application.AddTypicalLogo();
+    application.AddTypicalSky();
+    application.AddTypicalLights();
+    application.AddTypicalCamera(core::vector3df(2, 5, 0),   // camera location
+                                 core::vector3df(2, 0, 0));  // "look at" location
 
     // Let the Irrlicht application convert the visualization assets.
-    application->AssetBindAll();
-    application->AssetUpdateAll();
+    application.AssetBindAll();
+    application.AssetUpdateAll();
 
     // 6. Perform the simulation.
 
     // Specify the step-size.
-    application->SetTimestep(0.01);
-    application->SetTryRealtime(true);
+    application.SetTimestep(0.01);
+    application.SetTryRealtime(true);
 
-    while (application->GetDevice()->run()) {
+    while (application.GetDevice()->run()) {
         // Initialize the graphical scene.
-        application->BeginScene();
+        application.BeginScene();
 
         // Render all visualization objects.
-        application->DrawAll();
+        application.DrawAll();
 
         // Render the distance constraint.
-        tools::drawSegment(application->GetVideoDriver(), dist_crank_slider->GetEndPoint1Abs(),
+        tools::drawSegment(application.GetVideoDriver(), dist_crank_slider->GetEndPoint1Abs(),
                            dist_crank_slider->GetEndPoint2Abs(), video::SColor(255, 200, 20, 0), true);
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(application->GetVideoDriver(), 1, 1, 20, 20,
+        tools::drawGrid(application.GetVideoDriver(), 1, 1, 20, 20,
                         ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)), video::SColor(255, 80, 100, 100),
                         true);
 
         // Advance simulation by one step.
-        application->DoStep();
+        application.DoStep();
 
         // Finalize the graphical scene.
-        application->EndScene();
+        application.EndScene();
     }
 
     return 0;
