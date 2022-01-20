@@ -9,7 +9,7 @@
 ## http:##projectchrono.org/license-chrono.txt.
 ##
 ## =============================================================================
-## Author: Simone sBenatti
+## Author: Simone Benatti
 ## =============================================================================
 ##
 ## Slider-crank Chrono tutorial (model 1)
@@ -30,26 +30,24 @@
 import pychrono as chrono
 from pychrono import irrlicht as chronoirr
 
-  ## 0. Set the path to the Chrono data folder
+## 0. Set the path to the Chrono data folder
 chrono.SetChronoDataPath('C:/codes/Chrono/Chrono_Source/data/')
 
+## 1. Create the physical system that will handle all bodies and constraints.
 
-  ## 1. Create the physical system that will handle all bodies and constraints.
-
-  ##    Specify the gravitational acceleration vector, consistent with the
-  ##    global reference frame having Z up.
+##    Specify the gravitational acceleration vector, consistent with the
+##    global reference frame having Z up.
 system = chrono.ChSystemNSC()
 system.Set_G_acc(chrono.ChVectorD(0, 0, -9.81))
 
+## 2. Create the rigid bodies of the slider-crank mechanical system.
+##    For each body, specify:
+##    - a unique identifier
+##    - mass and moments of inertia
+##    - position and orientation of the (centroidal) body frame
+##    - visualization assets (defined with respect to the body frame)
 
-  ## 2. Create the rigid bodies of the slider-crank mechanical system.
-  ##    For each body, specify:
-  ##    - a unique identifier
-  ##    - mass and moments of inertia
-  ##    - position and orientation of the (centroidal) body frame
-  ##    - visualization assets (defined with respect to the body frame)
-
-  ## Ground
+## Ground
 ground = chrono.ChBody()
 system.AddBody(ground)
 ground.SetIdentifier(-1)
@@ -66,7 +64,7 @@ col_g = chrono.ChColorAsset()
 col_g.SetColor(chrono.ChColor(0.6, 0.6, 0.2))
 ground.AddAsset(col_g)
 
-  ## Crank
+## Crank
 crank = chrono.ChBody()
 system.AddBody(crank)
 crank.SetIdentifier(1)
@@ -122,6 +120,7 @@ slider.AddAsset(col_s)
   ####    visualization: a green box with width and height 0.1
   #### -------------------------------------------------------------------------
 
+## Connecting rod
 rod = chrono.ChBody()
 system.AddBody(rod)
 rod.SetIdentifier(3)
@@ -146,14 +145,12 @@ col_r = chrono.ChColorAsset()
 col_r.SetColor(chrono.ChColor(0.2, 0.6, 0.2))
 rod.AddAsset(col_r)
 
+## 3. Create joint constraints.
+##    All joint frames are specified in the global frame.
 
-
-  ## 3. Create joint constraints.
-  ##    All joint frames are specified in the global frame.
-
-  ## Define two quaternions representing:
-  ## - a rotation of -90 degrees around x (z2y)
-  ## - a rotation of +90 degrees around y (z2x)
+## Define two quaternions representing:
+## - a rotation of -90 degrees around x (z2y)
+## - a rotation of +90 degrees around y (z2x)
 z2y = chrono.ChQuaternionD()
 z2x = chrono.ChQuaternionD()
 z2y.Q_from_AngAxis(-chrono.CH_C_PI / 2, chrono.ChVectorD(1, 0, 0))
@@ -165,8 +162,8 @@ z2x.Q_from_AngAxis(chrono.CH_C_PI / 2, chrono.ChVectorD(0, 1, 0))
   #### ChLinkMotorRotationSpeed element and enforce constant angular speed of
   #### 90 degrees/s.
   #### -------------------------------------------------------------------------
+
 # Create a ChFunction object that always returns the constant value PI/2.
-  
 fun = chrono.ChFunction_Const()
 fun.Set_yconst(chrono.CH_C_PI)
 
@@ -180,13 +177,10 @@ engine_ground_crank.Initialize(ground, crank, chrono.ChFrameD(chrono.ChVectorD(0
 engine_ground_crank.SetSpeedFunction(fun)
 system.AddLink(engine_ground_crank)
 
-
-
-
-  ## Prismatic joint between ground and slider.
-  ## The translational axis of a prismatic joint is along the Z axis of the
-  ## specified joint coordinate system.  Here, we apply the 'z2x' rotation to
-  ## align it with the X axis of the global reference frame.
+## Prismatic joint between ground and slider.
+## The translational axis of a prismatic joint is along the Z axis of the
+## specified joint coordinate system.  Here, we apply the 'z2x' rotation to
+## align it with the X axis of the global reference frame.
 prismatic_ground_slider = chrono.ChLinkLockPrismatic()
 prismatic_ground_slider.SetName("prismatic_ground_slider")
 prismatic_ground_slider.Initialize(ground, slider, chrono.ChCoordsysD(chrono.ChVectorD(2, 0, 0), z2x))
@@ -214,35 +208,31 @@ universal_rod_slider.SetName("universal_rod_slider")
 universal_rod_slider.Initialize(rod, slider, chrono.ChFrameD(chrono.ChVectorD(2, 0, 0), z2x))
 system.AddLink(universal_rod_slider)
 
-  ## 4. Write the system hierarchy to the console (default log output destination)
+## 4. Write the system hierarchy to the console (default log output destination)
 system.ShowHierarchy(chrono.GetLog())
 
+## 5. Prepare visualization with Irrlicht
+##    Note that Irrlicht uses left-handed frames with Y up.
 
-  ## 5. Prepare visualization with Irrlicht
-  ##    Note that Irrlicht uses left-handed frames with Y up.
-
-  ## Create the Irrlicht application and set-up the camera.
+## Create the Irrlicht application and set-up the camera.
 application = chronoirr.ChIrrApp (
-                                    system,                               ## pointer to the mechanical system
-                                    "Slider-Crank Demo 1",                ## title of the Irrlicht window
-                                    chronoirr.dimension2du(800, 600),      ## window dimension (width x height)
-                                    False,                                 ## use full screen?
-                                    True)                                 ## enable shadows?
+        system,                               ## pointer to the mechanical system
+        "Slider-Crank Demo 1",                ## title of the Irrlicht window
+        chronoirr.dimension2du(800, 600))     ## window dimension (width x height)
 application.AddTypicalLogo();
 application.AddTypicalSky();
 application.AddTypicalLights();
 application.AddTypicalCamera(
-                            chronoirr.vector3df(2, 5, -3),             ## camera location
-                            chronoirr.vector3df(2, 0, 0));             ## "look at" location
+        chronoirr.vector3df(2, 5, -3),        ## camera location
+        chronoirr.vector3df(2, 0, 0));        ## "look at" location
 
-  ## Let the Irrlicht application convert the visualization assets.
+## Let the Irrlicht application convert the visualization assets.
 application.AssetBindAll()
 application.AssetUpdateAll()
 
+## 6. Perform the simulation.
 
-  ## 6. Perform the simulation.
-
-  ## Specify the step-size.
+## Specify the step-size.
 application.SetTimestep(0.01)
 application.SetTryRealtime(True)
 
@@ -254,18 +244,14 @@ while (application.GetDevice().run()):
     ## Render all visualization objects.
     application.DrawAll()
 
-    ## Draw an XZ grid at the global origin to add in visualization.
-    
-    chronoirr.ChIrrTools.drawGrid(
-                                  application.GetVideoDriver(), 1, 1, 20, 20,
-                                  chrono.ChCoordsysD(chrono.ChVectorD(0, 0, 0), chrono.Q_from_AngX(chrono.CH_C_PI_2)),
-                                  chronoirr.SColor(255, 80, 100, 100), True)
+    ## Draw an XZ grid at the global origin to add in visualization. 
+    chronoirr.drawGrid(
+        application.GetVideoDriver(), 1, 1, 20, 20,
+        chrono.ChCoordsysD(chrono.ChVectorD(0, 0, 0), chrono.Q_from_AngX(chrono.CH_C_PI_2)),
+        chronoirr.SColor(255, 80, 100, 100), True)
 
     ## Advance simulation by one step.
     application.DoStep()
 
     ## Finalize the graphical scene.
     application.EndScene()
-
-
-
