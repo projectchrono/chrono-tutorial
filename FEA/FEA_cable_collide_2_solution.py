@@ -244,22 +244,19 @@ system.SetSolver(solver)
 #    Note that Irrlicht uses left-handed frames with Y up.
 
 # Create the Irrlicht application and set-up the camera.
-application = chronoirr.ChIrrApp(system,                            # pointer to the mechanical system
-								 "FEA cable collide demo",          # title of the Irrlicht window
+application = chronoirr.ChIrrApp(system,                             # pointer to the mechanical system
+								 "FEA cable collide demo",           # title of the Irrlicht window
 								 chronoirr.dimension2du(1024, 768),  # window dimension (width x height)
+								 chronoirr.VerticalDir_Y,            # camera vertical direction
 								 False,                              # use full screen?
 								 True,                               # enable stencil shadows?
-								 True)                              # enable antialiasing?
+								 True)                               # enable antialiasing?
 
-application.AddTypicalLogo()
-application.AddTypicalSky()
+application.AddLogo()
+application.AddSkyBox()
 application.AddTypicalLights()
-application.AddTypicalCamera(chronoirr.vector3df(0.1, 0.2, -2.0),  # camera location
-							  chronoirr.vector3df(0.0, 0.0, 0.0))  # "look at" location
-
-# Enable drawing of contacts
-application.SetContactsDrawMode(chronoirr.ChIrrTools.CONTACT_FORCES)
-application.SetSymbolscale(0.1)
+application.AddCamera(chronoirr.vector3df(0.1, 0.2, -2.0),  # camera location
+                      chronoirr.vector3df(0.0, 0.0, 0.0))   # "look at" location
 
 # Let the Irrlicht application convert the visualization assets.
 application.AssetBindAll()
@@ -274,21 +271,21 @@ application.SetTryRealtime(False)
 
 
 while application.GetDevice().run() : 
-	# Initialize the graphical scene.
-	application.BeginScene()
+    # Initialize the graphical scene.
+    application.BeginScene()
 
-	# Render all visualization objects.
-	application.DrawAll()
+    # Render all visualization objects.
+    application.DrawAll()
 
-	# Draw an XZ grid at the global origin to add in visualization.
-	chronoirr.ChIrrTools.drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
-						 chrono.ChCoordsysD(chrono.ChVectorD(0, 0, 0), chrono.Q_from_AngX(chrono.CH_C_PI_2)),
-						 chronoirr.SColor(255, 80, 100, 100), True)
+    # Draw an XZ grid at the global origin to add in visualization.
+    chronoirr.drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
+                       chrono.ChCoordsysD(chrono.ChVectorD(0, 0, 0), chrono.Q_from_AngX(chrono.CH_C_PI_2)),
+                       chronoirr.SColor(255, 80, 100, 100), True)
 
-	# Advance simulation by one step.
-	application.DoStep()
+    # Advance simulation by one step.
+    application.DoStep()
 
-	# Finalize the graphical scene.
-	application.EndScene()
+    # Finalize the graphical scene.
+    application.EndScene()
 
 

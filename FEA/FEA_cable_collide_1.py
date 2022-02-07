@@ -218,18 +218,19 @@ system.SetTimestepperType(chrono.ChTimestepper.Type_EULER_IMPLICIT_LINEARIZED)  
 #    Note that Irrlicht uses left-handed frames with Y up.
 
 # Create the Irrlicht application and set-up the camera.
-application = chronoirr.ChIrrApp (system,                            # pointer to the mechanical system
-                                  "FEA cable collide demo",          # title of the Irrlicht window
-                                  chronoirr.dimension2du(1024, 768),  # window dimension (width x height)
-                                  False,                              # use full screen?
-                                  True,                               # enable stencil shadows?
-                                  True)                              # enable antialiasing?
+application = chronoirr.ChIrrApp(system,                             # pointer to the mechanical system
+                                 "FEA cable collide demo",           # title of the Irrlicht window
+                                 chronoirr.dimension2du(1024, 768),  # window dimension (width x height)
+                                 chronoirr.VerticalDir_Y,            # camera vertical direction
+                                 False,                              # use full screen?
+                                 True,                               # enable stencil shadows?
+                                 True)                               # enable antialiasing?
 
-application.AddTypicalLogo()
-application.AddTypicalSky()
+application.AddLogo()
+application.AddSkyBox()
 application.AddTypicalLights()
-application.AddTypicalCamera(chronoirr.vector3df(0.1, 0.2, -2.0),  # camera location
-                              chronoirr.vector3df(0.0, 0.0, 0.0))  # "look at" location
+application.AddCamera(chronoirr.vector3df(0.1, 0.2, -2.0),  # camera location
+                      chronoirr.vector3df(0.0, 0.0, 0.0))   # "look at" location
 
 # Let the Irrlicht application convert the visualization assets.
 application.AssetBindAll()
@@ -251,9 +252,9 @@ while application.GetDevice().run() :
     application.DrawAll()
 
     # Draw an XZ grid at the global origin to add in visualization.
-    chronoirr.ChIrrTools.drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
-                         chrono.ChCoordsysD(chrono.ChVectorD(0, 0, 0), chrono.Q_from_AngX(chrono.CH_C_PI_2)),
-                         chronoirr.SColor(255, 80, 100, 100), True)
+    chronoirr.drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
+                       chrono.ChCoordsysD(chrono.ChVectorD(0, 0, 0), chrono.Q_from_AngX(chrono.CH_C_PI_2)),
+                       chronoirr.SColor(255, 80, 100, 100), True)
 
     # Advance simulation by one step.
     application.DoStep()

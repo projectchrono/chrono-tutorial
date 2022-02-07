@@ -335,11 +335,11 @@ int main(int argc, char* argv[]) {
                          core::dimension2d<u32>(1024, 768)  // window dimension (width x height)
     );
 
-    application.AddTypicalLogo();
-    application.AddTypicalSky();
+    application.AddLogo();
+    application.AddSkyBox();
     application.AddTypicalLights();
-    application.AddTypicalCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
-                                 core::vector3df(0.0f, 0.0f, 0.0f));  // "look at" location
+    application.AddCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
+                          core::vector3df(0.0f, 0.0f, 0.0f));  // "look at" location
 
     // Enable drawing of contacts
     application.SetContactsDrawMode(IrrContactsDrawMode::CONTACT_FORCES);

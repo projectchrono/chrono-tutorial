@@ -258,9 +258,7 @@ int main(int argc, char* argv[]) {
         ChVector<> track_point(0.0, 0.0, 1.75);
 
         app = chrono_types::make_shared<ChWheeledVehicleIrrApp>(&my_sedan.GetVehicle(), L"SynChrono Vehicle Demo");
-        app->SetSkyBox();
-        app->AddTypicalLights(irr::core::vector3df(30.f, -30.f, 100.f), irr::core::vector3df(30.f, 50.f, 100.f), 250,
-                              130);
+        app->AddTypicalLights();
         app->SetChaseCamera(track_point, 6.0, 0.5);
         app->SetTimestep(step_size);
         app->AssetBindAll();

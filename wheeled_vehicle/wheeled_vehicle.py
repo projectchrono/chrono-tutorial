@@ -124,9 +124,8 @@ def main():
 
     # Create the Irrlicht vehicle application
     app = veh.ChVehicleIrrApp(vehicle, "Vehicle Demo")
-
-    app.SetSkyBox()
-    app.AddTypicalLights(chronoirr.vector3df(30, -30, 100), chronoirr.vector3df(30, 50, 100), 250, 130)
+    
+    app.AddTypicalLights()
     app.SetChaseCamera(trackPoint, 6.0, 0.5)
 
     app.SetTimestep(step_size)

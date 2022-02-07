@@ -298,11 +298,11 @@ int main(int argc, char* argv[]) {
                          L"Slider-Crank Demo 0",            // title of the Irrlicht window
                          core::dimension2d<u32>(800, 600),  // window dimension (width x height)
                          VerticalDir::Z);                   // camera up direction
-    application.AddTypicalLogo();
-    application.AddTypicalSky();
+    application.AddLogo();
+    application.AddSkyBox();
     application.AddTypicalLights();
-    application.AddTypicalCamera(core::vector3df(2, 5, 0),   // camera location
-                                 core::vector3df(2, 0, 0));  // "look at" location
+    application.AddCamera(core::vector3df(2, 5, 0),   // camera location
+                          core::vector3df(2, 0, 0));  // "look at" location
 
     // Let the Irrlicht application convert the visualization assets.
     application.AssetBindAll();

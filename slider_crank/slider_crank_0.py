@@ -160,11 +160,11 @@ application = chronoirr.ChIrrApp(
         "Slider-Crank Demo 0",                ## title of the Irrlicht window
         chronoirr.dimension2du(800, 600),     ## window dimension (width x height)
         chronoirr.VerticalDir_Z)              ## up direction
-application.AddTypicalLogo()
-application.AddTypicalSky()
+application.AddLogo()
+application.AddSkyBox()
 application.AddTypicalLights()
-application.AddTypicalCamera(
-        chronoirr.vector3df(2, 5, 0),         ## camera location
+application.AddCamera(
+        chronoirr.vector3df(2, -5, 0),        ## camera location
         chronoirr.vector3df(2, 0, 0))         ## "look at" location
 
 ## Let the Irrlicht application convert the visualization assets.
