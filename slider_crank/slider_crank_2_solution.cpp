@@ -295,7 +295,7 @@ int main(int argc, char* argv[]) {
 
     // Create the Irrlicht application and set-up the camera.
     ChIrrApp application(&system,                           // pointer to the mechanical system
-                         L"Slider-Crank Demo 0",            // title of the Irrlicht window
+                         L"Slider-Crank Demo 2",            // title of the Irrlicht window
                          core::dimension2d<u32>(800, 600),  // window dimension (width x height)
                          VerticalDir::Z);                   // camera up direction
     application.AddLogo();

@@ -246,7 +246,7 @@ system.ShowHierarchy(chrono.GetLog())
 ## Create the Irrlicht application and set-up the camera.
 application = chronoirr.ChIrrApp (
         system,                               ## pointer to the mechanical system
-        "Slider-Crank Demo 1",                ## title of the Irrlicht window
+        "Slider-Crank Demo 2",                ## title of the Irrlicht window
         chronoirr.dimension2du(800, 600),     ## window dimension (width x height)
         chronoirr.VerticalDir_Z)              ## up direction
 application.AddLogo();
