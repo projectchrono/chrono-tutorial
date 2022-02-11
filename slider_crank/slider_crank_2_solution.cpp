@@ -299,10 +299,9 @@ int main(int argc, char* argv[]) {
                          core::dimension2d<u32>(800, 600),  // window dimension (width x height)
                          VerticalDir::Z);                   // camera up direction
     application.AddLogo();
-    application.AddSkyBox();
     application.AddTypicalLights();
-    application.AddCamera(core::vector3df(2, 5, 0),   // camera location
-                          core::vector3df(2, 0, 0));  // "look at" location
+    application.AddCamera(core::vector3df(2, -5, 0),   // camera location
+                          core::vector3df(2, 0, 0));   // "look at" location
 
     // Let the Irrlicht application convert the visualization assets.
     application.AssetBindAll();
@@ -316,15 +315,16 @@ int main(int argc, char* argv[]) {
 
     while (application.GetDevice()->run()) {
         // Initialize the graphical scene.
-        application.BeginScene();
+        application.BeginScene(true, true, video::SColor(255, 225, 225, 225));
 
         // Render all visualization objects.
         application.DrawAll();
 
         // Draw an XZ grid at the global origin to add in visualization.
         tools::drawGrid(application.GetVideoDriver(), 1, 1, 20, 20,
-                        ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)), video::SColor(255, 80, 100, 100),
-                        true);
+                        ChCoordsys<>(ChVector<>(0.01, 0, 0.01), Q_from_AngX(CH_C_PI_2)),
+                        video::SColor(255, 150, 150, 150), true);
+        tools::drawAllCOGs(system, application.GetVideoDriver(), 1.0);
 
         // Advance simulation by one step.
         application.DoStep();

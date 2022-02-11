@@ -161,7 +161,6 @@ application = chronoirr.ChIrrApp(
         chronoirr.dimension2du(800, 600),     ## window dimension (width x height)
         chronoirr.VerticalDir_Z)              ## up direction
 application.AddLogo()
-application.AddSkyBox()
 application.AddTypicalLights()
 application.AddCamera(
         chronoirr.vector3df(2, -5, 0),        ## camera location
@@ -177,7 +176,7 @@ application.SetTryRealtime(True)
 
 while (application.GetDevice().run()):
     ## Initialize the graphical scene.
-    application.BeginScene()
+    application.BeginScene(True, True, chronoirr.SColor(255, 225, 225, 225))
     
     ## Render all visualization objects.
     application.DrawAll()
@@ -194,6 +193,7 @@ while (application.GetDevice().run()):
         application.GetVideoDriver(), 1, 1, 20, 20,
         chrono.ChCoordsysD(chrono.ChVectorD(0, 0, 0), chrono.Q_from_AngX(chrono.CH_C_PI_2)),
         chronoirr.SColor(255, 80, 100, 100), True)
+    chronoirr.drawAllCOGs(system, application.GetVideoDriver(), 1)
 
     ## Advance simulation by one step.
     application.DoStep()
