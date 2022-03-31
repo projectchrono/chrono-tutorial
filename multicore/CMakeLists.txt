@@ -45,13 +45,9 @@ foreach(PROGRAM ${MODELS})
   add_executable(${PROGRAM}  "${PROGRAM}.cpp")
   source_group(""  FILES "${PROGRAM}.cpp")
 
-  set_target_properties(${PROGRAM} PROPERTIES
-    FOLDER demos
-    COMPILE_FLAGS "${CHRONO_CXX_FLAGS}"
-    COMPILE_DEFINITIONS "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\""
-    LINK_FLAGS "${CHRONO_LINKER_FLAGS}"
-  )
-
+  target_compile_definitions(${PROGRAM} PUBLIC "CHRONO_DATA_DIR=\"${CHRONO_DATA_DIR}\"") 
+  target_compile_options(${PROGRAM} PUBLIC ${CHRONO_CXX_FLAGS})
+  target_link_options(${PROGRAM} PUBLIC ${CHRONO_LINKER_FLAGS})
   target_link_libraries(${PROGRAM} ${CHRONO_LIBRARIES})
 
-endforeach(PROGRAM)
+endforeach()
