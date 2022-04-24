@@ -220,7 +220,7 @@ int main(int argc, char* argv[]) {
     // Vehicle Controllers
     // -------------------
 
-    auto loc = vehicle.GetVehiclePos();
+    auto loc = vehicle.GetPos();
 
     // These two points just define a straight line in the direction the vehicle is oriented
     auto curve_pts = std::vector<ChVector<>>({loc, loc + ChVector<>(0, 140, 0)});
@@ -381,7 +381,7 @@ int main(int argc, char* argv[]) {
         }
 
         if (node_id != traffic_light_node) {
-            auto pos = vehicle.GetVehicleCOMPos();
+            auto pos = vehicle.GetCOMFrame().GetPos();
             // std::cout << "Position: " << pos.x() << ", " << pos.y() << ", " << pos.z() << std::endl;
         }
     }
