@@ -31,7 +31,8 @@
 #include <cstdio>
 
 #include "chrono/physics/ChSystemNSC.h"
-#include "chrono_irrlicht/ChIrrApp.h"
+#include "chrono/core/ChRealtimeStep.h"
+#include "chrono_irrlicht/ChVisualSystemIrrlicht.h"
 
 using namespace chrono;
 using namespace chrono::irrlicht;
@@ -67,11 +68,8 @@ int main(int argc, char* argv[]) {
     cyl_g->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
     cyl_g->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
     cyl_g->GetCylinderGeometry().rad = 0.03;
-    ground->AddAsset(cyl_g);
-
-    auto col_g = chrono_types::make_shared<ChColorAsset>();
-    col_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
-    ground->AddAsset(col_g);
+    cyl_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
+    ground->AddVisualShape(cyl_g);
 
     // Crank
     auto crank = chrono_types::make_shared<ChBody>();
@@ -85,22 +83,20 @@ int main(int argc, char* argv[]) {
 
     auto box_c = chrono_types::make_shared<ChBoxShape>();
     box_c->GetBoxGeometry().Size = ChVector<>(0.95, 0.05, 0.05);
-    crank->AddAsset(box_c);
+    box_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
+    crank->AddVisualShape(box_c);
 
     auto cyl_c = chrono_types::make_shared<ChCylinderShape>();
     cyl_c->GetCylinderGeometry().p1 = ChVector<>(1, 0.1, 0);
     cyl_c->GetCylinderGeometry().p2 = ChVector<>(1, -0.1, 0);
     cyl_c->GetCylinderGeometry().rad = 0.05;
-    crank->AddAsset(cyl_c);
+    cyl_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
+    crank->AddVisualShape(cyl_c);
 
     auto sph_c = chrono_types::make_shared<ChSphereShape>();
-    sph_c->GetSphereGeometry().center = ChVector<>(-1, 0, 0);
     sph_c->GetSphereGeometry().rad = 0.05;
-    crank->AddAsset(sph_c);
-
-    auto col_c = chrono_types::make_shared<ChColorAsset>();
-    col_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
-    crank->AddAsset(col_c);
+    sph_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
+    crank->AddVisualShape(sph_c, ChFrame<>(ChVector<>(-1, 0, 0)));
 
     // Slider
     auto slider = chrono_types::make_shared<ChBody>();
@@ -114,11 +110,8 @@ int main(int argc, char* argv[]) {
 
     auto box_s = chrono_types::make_shared<ChBoxShape>();
     box_s->GetBoxGeometry().Size = ChVector<>(0.2, 0.1, 0.1);
-    slider->AddAsset(box_s);
-
-    auto col_s = chrono_types::make_shared<ChColorAsset>();
-    col_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
-    slider->AddAsset(col_s);
+    box_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
+    slider->AddVisualShape(box_s);
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 1.1
@@ -170,43 +163,39 @@ int main(int argc, char* argv[]) {
     //    Note that Irrlicht uses left-handed frames with Y up.
 
     // Create the Irrlicht application and set-up the camera.
-    ChIrrApp application(&system,                           // pointer to the mechanical system
-                         L"Slider-Crank Demo 1",            // title of the Irrlicht window
-                         core::dimension2d<u32>(800, 600),  // window dimension (width x height)
-                         VerticalDir::Z);                   // camera up direction
-    application.AddLogo();
-    application.AddTypicalLights();
-    application.AddCamera(core::vector3df(2, -5, 0),   // camera location
-                          core::vector3df(2, 0, 0));   // "look at" location
-
-    // Let the Irrlicht application convert the visualization assets.
-    application.AssetBindAll();
-    application.AssetUpdateAll();
+    auto vis = chrono_types::make_shared<ChVisualSystemIrrlicht>();
+    system.SetVisualSystem(vis);
+    vis->SetWindowSize(800, 600);
+    vis->SetCameraVertical(CameraVerticalDir::Z);
+    vis->SetWindowTitle("Slider-Crank Demo 1");
+    vis->Initialize();
+    vis->AddLogo();
+    vis->AddSkyBox();
+    vis->AddCamera(ChVector<>(2, -5, 0), ChVector<>(2, 0, 0));
+    vis->AddTypicalLights();
 
     // 6. Perform the simulation.
 
-    // Specify the step-size.
-    application.SetTimestep(0.01);
-    application.SetTryRealtime(true);
-
-    while (application.GetDevice()->run()) {
+    ChRealtimeStepTimer realtime_timer;
+    while (vis->Run()) {
         // Initialize the graphical scene.
-        application.BeginScene(true, true, video::SColor(255, 225, 225, 225));
+        vis->BeginScene();
 
         // Render all visualization objects.
-        application.DrawAll();
+        vis->DrawAll();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(application.GetVideoDriver(), 1, 1, 20, 20,
+        tools::drawGrid(vis->GetVideoDriver(), 1, 1, 20, 20,
                         ChCoordsys<>(ChVector<>(0.01, 0, 0.01), Q_from_AngX(CH_C_PI_2)),
                         video::SColor(255, 150, 150, 150), true);
-        tools::drawAllCOGs(system, application.GetVideoDriver(), 1.0);
-
-        // Advance simulation by one step.
-        application.DoStep();
+        tools::drawAllCOGs(system, vis->GetVideoDriver(), 1.0);
 
         // Finalize the graphical scene.
-        application.EndScene();
+        vis->EndScene();
+
+        // Advance simulation by one step.
+        system.DoStepDynamics(0.01);
+        realtime_timer.Spin(0.01);
     }
 
     return 0;

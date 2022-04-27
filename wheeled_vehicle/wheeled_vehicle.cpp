@@ -33,7 +33,7 @@
 
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
 #include "chrono_vehicle/wheeled_vehicle/tire/RigidTire.h"
-#include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
+#include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleVisualSystemIrrlicht.h"
 
 using namespace chrono;
 
@@ -110,18 +110,17 @@ int main(int argc, char* argv[]) {
     }
 
     // Create the Irrlicht vehicle application
-    vehicle::ChVehicleIrrApp app(&vehicle, L"Vehicle Demo");
-
-    app.AddTypicalLights();
-    app.SetChaseCamera(trackPoint, 6.0, 0.5);
-
-    app.SetTimestep(step_size);
-
-    app.AssetBindAll();
-    app.AssetUpdateAll();
+    auto vis = chrono_types::make_shared<vehicle::ChWheeledVehicleVisualSystemIrrlicht>();
+    vis->SetWindowTitle("Vehicle Demo");
+    vis->SetChaseCamera(trackPoint, 5.0, 0.5);
+    vis->Initialize();
+    vis->AddTypicalLights();
+    vis->AddSkyBox();
+    vis->AddLogo();
+    vehicle.SetVisualSystem(vis);
 
     // Create the driver system (interactive)
-    vehicle::ChIrrGuiDriver driver(app);
+    vehicle::ChIrrGuiDriver driver(*vis);
 
     // Set the time response for steering and throttle keyboard inputs.
     // NOTE: this is not exact, since we do not render quite at the specified FPS.
@@ -141,11 +140,11 @@ int main(int argc, char* argv[]) {
     double time = 0;
 
     ChRealtimeStepTimer realtime_timer;
-    while (app.GetDevice()->run()) {
+    while (vis->Run()) {
         // Render scene
-        app.BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
-        app.DrawAll();
-        app.EndScene();
+        vis->BeginScene();
+        vis->DrawAll();
+        vis->EndScene();
 
         // Get driver inputs
         vehicle::ChDriver::Inputs driver_inputs = driver.GetInputs();
@@ -155,13 +154,13 @@ int main(int argc, char* argv[]) {
         driver.Synchronize(time);
         vehicle.Synchronize(time, driver_inputs, terrain);
         terrain.Synchronize(time);
-        app.Synchronize(driver.GetInputModeAsString(), driver_inputs);
+        vis->Synchronize(driver.GetInputModeAsString(), driver_inputs);
 
         // Advance simulation for one timestep for all modules
         driver.Advance(step_size);
         vehicle.Advance(step_size);
         terrain.Advance(step_size);
-        app.Advance(step_size);
+        vis->Advance(step_size);
 
         // Increment frame number
         step_number++;

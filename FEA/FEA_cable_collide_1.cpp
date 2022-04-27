@@ -31,13 +31,13 @@
 #include "chrono/physics/ChBodyEasy.h"
 #include "chrono/physics/ChSystemNSC.h"
 #include "chrono/solver/ChIterativeSolverLS.h"
-#include "chrono_irrlicht/ChIrrApp.h"
+#include "chrono_irrlicht/ChVisualSystemIrrlicht.h"
 
 #include "chrono/fea/ChBuilderBeam.h"
 #include "chrono/fea/ChElementCableANCF.h"
 #include "chrono/fea/ChLinkPointFrame.h"
 #include "chrono/fea/ChMesh.h"
-#include "chrono/fea/ChVisualizationFEAmesh.h"
+#include "chrono/assets/ChVisualShapeFEA.h"
 
 using namespace chrono;
 using namespace chrono::irrlicht;
@@ -185,21 +185,20 @@ int main(int argc, char* argv[]) {
     //     postprocessor that can handle a coloured ChTriangleMeshShape).
     //   - Do not forget AddAsset() at the end!
 
-    auto mvisualizebeamA = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
-    mvisualizebeamA->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_ANCF_BEAM_AX);
+    auto mvisualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    mvisualizebeamA->SetFEMdataType(ChVisualShapeFEA::DataType::ANCF_BEAM_AX);
     mvisualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
     mvisualizebeamA->SetSmoothFaces(true);
     mvisualizebeamA->SetWireframe(false);
-    mesh->AddAsset(mvisualizebeamA);
+    mesh->AddVisualShapeFEA(mvisualizebeamA);
 
-    auto mvisualizebeamC = chrono_types::make_shared<ChVisualizationFEAmesh>(*(mesh.get()));
-    mvisualizebeamC->SetFEMglyphType(
-        ChVisualizationFEAmesh::E_GLYPH_NODE_DOT_POS);  // E_GLYPH_NODE_CSYS for ChNodeFEAxyzrot
-    mvisualizebeamC->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_NONE);
+    auto mvisualizebeamC = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    mvisualizebeamC->SetFEMglyphType(ChVisualShapeFEA::GlyphType::NODE_DOT_POS);
+    mvisualizebeamC->SetFEMdataType(ChVisualShapeFEA::DataType::NONE);
     mvisualizebeamC->SetSymbolsThickness(0.006);
     mvisualizebeamC->SetSymbolsScale(0.005);
     mvisualizebeamC->SetZbufferHide(false);
-    mesh->AddAsset(mvisualizebeamC);
+    mesh->AddVisualShapeFEA(mvisualizebeamC);
 
     // 8. Configure the solver and timestepper
 
@@ -223,44 +222,37 @@ int main(int argc, char* argv[]) {
     //    Note that Irrlicht uses left-handed frames with Y up.
 
     // Create the Irrlicht application and set-up the camera.
-    ChIrrApp application(&system,                           // pointer to the mechanical system
-                         L"FEA cable collide demo",         // title of the Irrlicht window
-                         core::dimension2d<u32>(1024, 768)  // window dimension (width x height)
-    );
-
-    application.AddLogo();
-    application.AddSkyBox();
-    application.AddTypicalLights();
-    application.AddCamera(core::vector3df(0.1f, 0.2f, -2.0f),  // camera location
-                          core::vector3df(0.0f, 0.0f, 0.0f));  // "look at" location
-
-    // Let the Irrlicht application convert the visualization assets.
-    application.AssetBindAll();
-    application.AssetUpdateAll();
+    auto vis = chrono_types::make_shared<ChVisualSystemIrrlicht>();
+    vis->SetWindowSize(1024, 768);
+    vis->SetWindowTitle("FEA cable collide demo");
+    vis->Initialize();
+    vis->AddLogo();
+    vis->AddSkyBox();
+    vis->AddTypicalLights();
+    vis->AddCamera(ChVector<>(0.1f, 0.2f, -2.0f));
+    vis->EnableContactDrawing(IrrContactsDrawMode::CONTACT_FORCES);
+    vis->SetSymbolScale(0.1);
+    system.SetVisualSystem(vis);
 
     // 10. Perform the simulation.
 
-    // Specify the step-size.
-    application.SetTimestep(0.01);
-    application.SetTryRealtime(true);
-
-    while (application.GetDevice()->run()) {
+    while (vis->Run()) {
         // Initialize the graphical scene.
-        application.BeginScene();
+        vis->BeginScene();
 
         // Render all visualization objects.
-        application.DrawAll();
+        vis->DrawAll();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
+        tools::drawGrid(vis->GetVideoDriver(), 0.1, 0.1, 20, 20,
                         ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)), video::SColor(255, 80, 100, 100),
                         true);
 
-        // Advance simulation by one step.
-        application.DoStep();
-
         // Finalize the graphical scene.
-        application.EndScene();
+        vis->EndScene();
+
+        // Advance simulation by one step.
+        system.DoStepDynamics(0.001);
     }
 
     return 0;

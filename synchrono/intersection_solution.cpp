@@ -38,7 +38,7 @@
 #include "chrono_vehicle/utils/ChUtilsJSON.h"
 
 #ifdef CHRONO_IRRLICHT
-#include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleIrrApp.h"
+#include "chrono_vehicle/wheeled_vehicle/utils/ChWheeledVehicleVisualSystemIrrlicht.h"
 using namespace chrono::irrlicht;
 #endif
 
@@ -210,9 +210,9 @@ int main(int argc, char* argv[]) {
 
     auto trimesh_shape = chrono_types::make_shared<ChTriangleMeshShape>();
     trimesh_shape->SetMesh(vis_mesh);
-    trimesh_shape->SetStatic(true);
+    trimesh_shape->SetMutable(false);
 
-    patch->GetGroundBody()->AddAsset(trimesh_shape);
+    patch->GetGroundBody()->AddVisualShape(trimesh_shape);
 
     terrain.Initialize();
 
@@ -266,16 +266,18 @@ int main(int argc, char* argv[]) {
 
 #ifdef CHRONO_IRRLICHT
     // Create the vehicle Irrlicht interface
-    std::shared_ptr<ChWheeledVehicleIrrApp> app;
+    std::shared_ptr<ChWheeledVehicleVisualSystemIrrlicht> vis;
     if (use_irrlicht_vis) {
         ChVector<> track_point(0.0, 0.0, 1.75);
 
-        app = chrono_types::make_shared<ChWheeledVehicleIrrApp>(&vehicle, L"SynChrono Vehicle Demo");
-        app->AddTypicalLights();
-        app->SetChaseCamera(track_point, 6.0, 0.5);
-        app->SetTimestep(step_size);
-        app->AssetBindAll();
-        app->AssetUpdateAll();
+        vis = chrono_types::make_shared<ChWheeledVehicleVisualSystemIrrlicht>();
+        vis->SetWindowTitle("SynChrono Vehicle Demo");
+        vis->SetChaseCamera(track_point, 6.0, 0.5);
+        vis->Initialize();
+        vis->AddTypicalLights();
+        vis->AddSkyBox();
+        vis->AddLogo();
+        vehicle.SetVisualSystem(vis);
     }
 #endif
 
@@ -329,14 +331,14 @@ int main(int argc, char* argv[]) {
 
 #ifdef CHRONO_IRRLICHT
         if (use_irrlicht_vis) {
-            if (!app->GetDevice()->run())
+            if (!vis->Run())
                 break;
 
             // Render scene and output POV-Ray data
-            if (step_number % render_steps == 0 && app) {
-                app->BeginScene(true, true, irr::video::SColor(255, 140, 161, 192));
-                app->DrawAll();
-                app->EndScene();
+            if (step_number % render_steps == 0 && vis) {
+                vis->BeginScene();
+                vis->DrawAll();
+                vis->EndScene();
             }
         }
 #endif  // CHRONO_IRRLICHT
@@ -352,7 +354,7 @@ int main(int argc, char* argv[]) {
         vehicle.Synchronize(time, driver_inputs, terrain);
 #ifdef CHRONO_IRRLICHT
         if (use_irrlicht_vis)
-            app->Synchronize("", driver_inputs);
+            vis->Synchronize("", driver_inputs);
 #endif
 
         // Advance simulation for one timestep for all modules
@@ -361,7 +363,7 @@ int main(int argc, char* argv[]) {
         vehicle.Advance(step_size);
 #ifdef CHRONO_IRRLICHT
         if (use_irrlicht_vis)
-            app->Advance(step_size);
+            vis->Advance(step_size);
 #endif
 
 #ifdef CHRONO_SENSOR
