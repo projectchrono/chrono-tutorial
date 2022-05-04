@@ -185,10 +185,9 @@ int main(int argc, char* argv[]) {
         vis->DrawAll();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(vis->GetVideoDriver(), 1, 1, 20, 20,
-                        ChCoordsys<>(ChVector<>(0.01, 0, 0.01), Q_from_AngX(CH_C_PI_2)),
-                        video::SColor(255, 150, 150, 150), true);
-        tools::drawAllCOGs(system, vis->GetVideoDriver(), 1.0);
+        tools::drawGrid(vis.get(), 1, 1, 20, 20, ChCoordsys<>(ChVector<>(0.01, 0, 0.01), Q_from_AngX(CH_C_PI_2)),
+                        ChColor(0.6f, 0.6f, 0.6f), true);
+        tools::drawAllCOGs(vis.get(), 1.0);
 
         // Finalize the graphical scene.
         vis->EndScene();

@@ -179,14 +179,13 @@ int main(int argc, char* argv[]) {
         vis->DrawAll();
 
         // Render the distance constraint.
-        tools::drawSegment(vis->GetVideoDriver(), dist_crank_slider->GetEndPoint1Abs(),
-                           dist_crank_slider->GetEndPoint2Abs(), video::SColor(255, 200, 20, 0), true);
+        tools::drawSegment(vis.get(), dist_crank_slider->GetEndPoint1Abs(),
+                           dist_crank_slider->GetEndPoint2Abs(), ChColor(0.8f, 0.2f, 0), true);
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(vis->GetVideoDriver(), 1, 1, 20, 20,
-                        ChCoordsys<>(ChVector<>(0.01, 0, 0.01), Q_from_AngX(CH_C_PI_2)),
-                        video::SColor(255, 150, 150, 150), true);
-        tools::drawAllCOGs(system, vis->GetVideoDriver(), 1.0);
+        tools::drawGrid(vis.get(), 1, 1, 20, 20, ChCoordsys<>(ChVector<>(0.01, 0, 0.01), Q_from_AngX(CH_C_PI_2)),
+                        ChColor(0.6f, 0.6f, 0.6f), true);
+        tools::drawAllCOGs(vis.get(), 1.0);
 
         // Finalize the graphical scene.
         vis->EndScene();

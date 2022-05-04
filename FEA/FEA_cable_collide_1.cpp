@@ -230,7 +230,7 @@ int main(int argc, char* argv[]) {
     vis->AddSkyBox();
     vis->AddTypicalLights();
     vis->AddCamera(ChVector<>(0.1f, 0.2f, -2.0f));
-    vis->EnableContactDrawing(IrrContactsDrawMode::CONTACT_FORCES);
+    vis->EnableContactDrawing(ContactsDrawMode::CONTACT_FORCES);
     vis->SetSymbolScale(0.1);
     system.SetVisualSystem(vis);
 
@@ -244,9 +244,8 @@ int main(int argc, char* argv[]) {
         vis->DrawAll();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(vis->GetVideoDriver(), 0.1, 0.1, 20, 20,
-                        ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)), video::SColor(255, 80, 100, 100),
-                        true);
+        tools::drawGrid(vis.get(), 0.1, 0.1, 20, 20, ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
+                        ChColor(0.3f, 0.4f, 0.4f), true);
 
         // Finalize the graphical scene.
         vis->EndScene();
