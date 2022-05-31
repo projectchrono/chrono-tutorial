@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
         }
 
         // Get driver inputs
-        vehicle::ChDriver::Inputs driver_inputs = driver.GetInputs();
+        vehicle::DriverInputs driver_inputs = driver.GetInputs();
 
         // Update modules (process inputs from other modules)
         time = vehicle.GetSystem()->GetChTime();

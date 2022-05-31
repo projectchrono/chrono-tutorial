@@ -339,7 +339,7 @@ int main(int argc, char* argv[]) {
 #endif  // CHRONO_IRRLICHT
 
         // Get driver inputs
-        ChDriver::Inputs driver_inputs = acc_driver.GetInputs();
+        DriverInputs driver_inputs = acc_driver.GetInputs();
 
         // SynChrono update step - everything else is normal Chrono::Vehicle steps
         syn_manager.Synchronize(time);  // Synchronize between nodes
