@@ -198,7 +198,8 @@ int main(int argc, char* argv[]) {
 #ifdef CHRONO_OPENGL
     // If Chrono::openGL is available, create the visualization window
     opengl::ChOpenGLWindow& gl_window = opengl::ChOpenGLWindow::getInstance();
-    gl_window.Initialize(1280, 720, "Crater Test", system);
+    gl_window.AttachSystem(system);
+    gl_window.Initialize(1280, 720, "Crater Test");
     gl_window.SetCamera(ChVector<>(0, -7 * hDimY, hDimZ),  // camera position
                         ChVector<>(0, 0, hDimZ),           // camera look-at
                         ChVector<>(0, 0, 1),               // camera up vector
