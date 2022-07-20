@@ -33,7 +33,7 @@
 #include "chrono_multicore/physics/ChSystemMulticore.h"
 
 #ifdef CHRONO_OPENGL
-#include "chrono_opengl/ChOpenGLWindow.h"
+#include "chrono_opengl/ChVisualSystemOpenGL.h"
 #endif
 
 using namespace chrono;
@@ -197,23 +197,20 @@ int main(int argc, char* argv[]) {
 
 #ifdef CHRONO_OPENGL
     // If Chrono::openGL is available, create the visualization window
-    opengl::ChOpenGLWindow& gl_window = opengl::ChOpenGLWindow::getInstance();
-    gl_window.AttachSystem(system);
-    gl_window.Initialize(1280, 720, "Crater Test");
-    gl_window.SetCamera(ChVector<>(0, -7 * hDimY, hDimZ),  // camera position
-                        ChVector<>(0, 0, hDimZ),           // camera look-at
-                        ChVector<>(0, 0, 1),               // camera up vector
-                        0.001f,                            // camera movement scale
-                        0.01f,                             // near clip distance
-                        10.0f                              // far clip distance
-                        );
-    gl_window.SetRenderMode(opengl::WIREFRAME);
+    opengl::ChVisualSystemOpenGL vis;
+    vis.AttachSystem(system);
+    vis.SetWindowTitle("Crater Test");
+    vis.SetWindowSize(1280, 720);
+    vis.SetRenderMode(opengl::WIREFRAME);
+    vis.Initialize();
+    vis.SetCameraPosition(ChVector<>(0, -7 * hDimY, hDimZ), ChVector<>(0, 0, hDimZ));
+    vis.SetCameraVertical(CameraVerticalDir::Z);
 
     // Run simulation loop (ESC to terminate)
     while (true) {
-        if (gl_window.Active()) {
-            gl_window.DoStepDynamics(time_step);
-            gl_window.Render();
+        if (vis.Run()) {
+            system->DoStepDynamics(time_step);
+            vis.Render();
         } else {
             break;
         }

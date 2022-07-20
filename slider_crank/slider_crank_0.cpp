@@ -158,7 +158,6 @@ int main(int argc, char* argv[]) {
 
     // Create the Irrlicht application and set-up the camera.
     auto vis = chrono_types::make_shared<ChVisualSystemIrrlicht>();
-    system.SetVisualSystem(vis);
     vis->SetWindowSize(800, 600);
     vis->SetCameraVertical(CameraVerticalDir::Z);
     vis->SetWindowTitle("Slider-Crank Demo 0");
@@ -167,6 +166,7 @@ int main(int argc, char* argv[]) {
     vis->AddSkyBox();
     vis->AddCamera(ChVector<>(2, -5, 0), ChVector<>(2, 0, 0));
     vis->AddTypicalLights();
+    vis->AttachSystem(&system);
 
     // 6. Perform the simulation.
 
@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
         vis->BeginScene();
 
         // Render all visualization objects.
-        vis->DrawAll();
+        vis->Render();
 
         // Render the distance constraint.
         tools::drawSegment(vis.get(), dist_crank_slider->GetEndPoint1Abs(),

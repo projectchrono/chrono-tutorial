@@ -344,7 +344,7 @@ int main(int argc, char* argv[]) {
     vis->AddCamera(ChVector<>(0.1f, 0.2f, -2.0f));
     vis->EnableContactDrawing(ContactsDrawMode::CONTACT_FORCES);
     vis->SetSymbolScale(0.1);
-    system.SetVisualSystem(vis);
+    vis->AttachSystem(&system);
 
     // 12. Perform the simulation.
 
@@ -353,7 +353,7 @@ int main(int argc, char* argv[]) {
         vis->BeginScene();
 
         // Render all visualization objects.
-        vis->DrawAll();
+        vis->Render();
 
         // Draw an XZ grid at the global origin to add in visualization.
         tools::drawGrid(vis.get(), 0.1, 0.1, 20, 20, ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),

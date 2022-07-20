@@ -277,7 +277,7 @@ int main(int argc, char* argv[]) {
         vis->AddTypicalLights();
         vis->AddSkyBox();
         vis->AddLogo();
-        vehicle.SetVisualSystem(vis);
+        vis->AttachVehicle(&vehicle);
     }
 #endif
 
@@ -337,7 +337,7 @@ int main(int argc, char* argv[]) {
             // Render scene and output POV-Ray data
             if (step_number % render_steps == 0 && vis) {
                 vis->BeginScene();
-                vis->DrawAll();
+                vis->Render();
                 vis->EndScene();
             }
         }
