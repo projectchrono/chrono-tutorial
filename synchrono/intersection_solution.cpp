@@ -191,7 +191,7 @@ int main(int argc, char* argv[]) {
     // -------
     // Terrain
     // -------
-    MaterialInfo minfo;
+    ChContactMaterialData minfo;
     minfo.mu = 0.9f;
     minfo.cr = 0.01f;
     minfo.Y = 2e7f;
@@ -231,7 +231,6 @@ int main(int argc, char* argv[]) {
     double target_following_time = 1.2;  // [s]
     double target_min_distance = 10;     // [m]
     double current_distance = 100;       // [m]
-    bool is_path_closed = false;
 
     std::shared_ptr<ChDriver> driver;
 
@@ -239,7 +238,7 @@ int main(int argc, char* argv[]) {
         // Nodes 2, 3, 4, ...
         auto acc_driver = chrono_types::make_shared<ChPathFollowerACCDriver>(vehicle, path, "Highway", target_speed,
                                                                              target_following_time, target_min_distance,
-                                                                             current_distance, is_path_closed);
+                                                                             current_distance);
 
         // Set some additional PID parameters and how far ahead along the bezier curve we should look
         acc_driver->GetSpeedController().SetGains(0.4, 0.0, 0.0);
@@ -252,10 +251,10 @@ int main(int argc, char* argv[]) {
         auto curve_pts2 = std::vector<ChVector<>>({ChVector<>(lane2_x, -70, 0.2), ChVector<>(5.8, 70, 0.2)});
         auto path2 = chrono_types::make_shared<ChBezierCurve>(curve_pts2);
 
-        std::vector<std::pair<std::shared_ptr<ChBezierCurve>, bool>> path_pairs = {{path, false}, {path2, false}};
+        std::vector<std::shared_ptr<ChBezierCurve>> paths = {path, path2};
 
         auto multi_driver = chrono_types::make_shared<ChMultiPathFollowerACCDriver>(
-            vehicle, path_pairs, "Highway", target_speed, target_following_time, target_min_distance, current_distance);
+            vehicle, paths, "Highway", target_speed, target_following_time, target_min_distance, current_distance);
 
         multi_driver->GetSpeedController().SetGains(0.4, 0.0, 0.0);
         multi_driver->GetSteeringController().SetGains(0.4, 0.1, 0.2);

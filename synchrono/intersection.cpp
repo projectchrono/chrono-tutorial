@@ -185,7 +185,7 @@ int main(int argc, char* argv[]) {
     // -------
     // Terrain
     // -------
-    MaterialInfo minfo;
+    ChContactMaterialData minfo;
     minfo.mu = 0.9f;
     minfo.cr = 0.01f;
     minfo.Y = 2e7f;
@@ -223,7 +223,6 @@ int main(int argc, char* argv[]) {
     double target_following_time = 1.2;           // [s]
     double target_min_distance = 10;              // [m]
     double current_distance = 100;                // [m]
-    bool is_path_closed = false;
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 2
@@ -232,15 +231,14 @@ int main(int argc, char* argv[]) {
     //// Some info:
     ////    - The other lane is along x = lane2_x (see CityBus initialization)
     ////    - ChMulPathFollowerACCDriver (say that 5 times fast...) takes a vector
-    ////        of pairs of <shared_ptr<ChBezierCurve>, is_path_closed> defining
-    ////        several lanes
+    ////        of shared_ptr<ChBezierCurve> defining several lanes
     ////    - The vehicle needs to know when to change lanes driver->changePath
     ////    - Having it change after 2 seconds is a good amount of time
     ////
     //// -------------------------------------------------------------------------
 
     ChPathFollowerACCDriver acc_driver(my_sedan.GetVehicle(), path, "Highway", target_speed, target_following_time,
-                                       target_min_distance, current_distance, is_path_closed);
+                                       target_min_distance, current_distance);
 
     // Set some additional PID parameters and how far ahead along the bezier curve we should look
     acc_driver.GetSpeedController().SetGains(0.4, 0.0, 0.0);
