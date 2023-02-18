@@ -134,7 +134,7 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
 }
 
 // -----------------------------------------------------------------------------
-// Create the the granular material, consisting of identical spheres with given
+// Create the granular material, consisting of identical spheres with given
 // radius and material properties; the spheres are generated in a prismatic
 // region inside the container, using Poisson Disk sampling (thus ensuring that
 // no two spheres are closer than twice the radius)
