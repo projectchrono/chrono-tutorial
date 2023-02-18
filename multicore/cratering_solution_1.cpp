@@ -146,7 +146,7 @@ void CreateObjects(ChSystemMulticore* system) {
 
     //// ********************************************************************************
     //// EXERCISE:
-    //// Create a granular maetrial generator with a mixture entirely made out of spheres
+    //// Create a granular material generator with a mixture entirely made out of spheres
     //// of equal radius, all sharing the same contact material
     //// ********************************************************************************
     utils::PDSampler<double> sampler(2.01 * r_g);
