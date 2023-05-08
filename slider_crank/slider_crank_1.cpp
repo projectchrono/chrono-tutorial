@@ -64,12 +64,8 @@ int main(int argc, char* argv[]) {
     ground->SetName("ground");
     ground->SetBodyFixed(true);
 
-    auto cyl_g = chrono_types::make_shared<ChCylinderShape>();
-    cyl_g->GetCylinderGeometry().p1 = ChVector<>(0, 0.2, 0);
-    cyl_g->GetCylinderGeometry().p2 = ChVector<>(0, -0.2, 0);
-    cyl_g->GetCylinderGeometry().rad = 0.03;
-    cyl_g->SetColor(ChColor(0.6f, 0.6f, 0.2f));
-    ground->AddVisualShape(cyl_g);
+    auto cyl_g = chrono_types::make_shared<ChCylinderShape>(0.03, 0.4);
+    ground->AddVisualShape(cyl_g, ChFrame<>(VNULL, Q_from_AngX(CH_C_PI_2)));
 
     // Crank
     auto crank = chrono_types::make_shared<ChBody>();
@@ -81,20 +77,15 @@ int main(int argc, char* argv[]) {
     crank->SetPos(ChVector<>(-1, 0, 0));
     crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    auto box_c = chrono_types::make_shared<ChBoxShape>();
-    box_c->GetBoxGeometry().Size = ChVector<>(0.95, 0.05, 0.05);
+    auto box_c = chrono_types::make_shared<ChBoxShape>(1.9, 0.1, 0.1);
     box_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
     crank->AddVisualShape(box_c);
 
-    auto cyl_c = chrono_types::make_shared<ChCylinderShape>();
-    cyl_c->GetCylinderGeometry().p1 = ChVector<>(1, 0.1, 0);
-    cyl_c->GetCylinderGeometry().p2 = ChVector<>(1, -0.1, 0);
-    cyl_c->GetCylinderGeometry().rad = 0.05;
+    auto cyl_c = chrono_types::make_shared<ChCylinderShape>(0.05, 0.2);
     cyl_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
-    crank->AddVisualShape(cyl_c);
+    crank->AddVisualShape(cyl_c, ChFrame<>(ChVector<>(1, 0, 0), Q_from_AngX(CH_C_PI_2)));
 
-    auto sph_c = chrono_types::make_shared<ChSphereShape>();
-    sph_c->GetSphereGeometry().rad = 0.05;
+    auto sph_c = chrono_types::make_shared<ChSphereShape>(0.05);
     sph_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
     crank->AddVisualShape(sph_c, ChFrame<>(ChVector<>(-1, 0, 0)));
 
@@ -108,8 +99,7 @@ int main(int argc, char* argv[]) {
     slider->SetPos(ChVector<>(2, 0, 0));
     slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    auto box_s = chrono_types::make_shared<ChBoxShape>();
-    box_s->GetBoxGeometry().Size = ChVector<>(0.2, 0.1, 0.1);
+    auto box_s = chrono_types::make_shared<ChBoxShape>(0.4, 0.2, 0.2);
     box_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
     slider->AddVisualShape(box_s);
 

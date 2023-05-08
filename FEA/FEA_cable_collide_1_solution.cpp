@@ -161,11 +161,12 @@ int main(int argc, char* argv[]) {
     //// -------------------------------------------------------------------------
 
     // create the cylinder
-    auto cylinder = chrono_types::make_shared<ChBodyEasyCylinder>(0.02,   // radius
-                                                                  0.1,    // height
-                                                                  1000,   // density (used to auto-set inertia, mass)
-                                                                  true,   // do collide
-                                                                  true);  // do visualize
+    auto cylinder = chrono_types::make_shared<ChBodyEasyCylinder>(geometry::ChAxis::Y,  // axis direction
+                                                                  0.02,                 // radius
+                                                                  0.1,                  // height
+                                                                  1000,                 // density
+                                                                  true,                 // do collide
+                                                                  true);                // do visualize
 
     // move cylinder to end of beam
     cylinder->SetPos(beam_nodes.back()->GetPos() + ChVector<>(0, -0.05, 0));

@@ -29,7 +29,8 @@
 
 #include "chrono_vehicle/ChVehicleModelData.h"
 
-#include "chrono_vehicle/powertrain/SimplePowertrain.h"
+#include "chrono_vehicle/powertrain/EngineSimple.h"
+#include "chrono_vehicle/powertrain/AutomaticTransmissionSimpleMap.h"
 #include "chrono_vehicle/terrain/RigidTerrain.h"
 #include "chrono_vehicle/driver/ChInteractiveDriverIRR.h"
 
@@ -45,7 +46,8 @@ using namespace chrono;
 
 std::string vehicle_file("vehicle/WheeledVehicle_mod.json");
 std::string rigidtire_file("vehicle/RigidTire.json");
-std::string simplepowertrain_file("vehicle/SimplePowertrain.json");
+std::string engine_file("vehicle/SimpleEngine.json");
+std::string transmission_file("vehicle/AutomaticTransmissionSimpleMap.json");
 
 std::string rigidterrain_file("terrain/RigidPlane.json");
 
@@ -106,7 +108,9 @@ int main(int argc, char* argv[]) {
     AddMovingObstacles(vehicle.GetSystem());
 
     // Create and initialize the powertrain system
-    auto powertrain = chrono_types::make_shared<vehicle::SimplePowertrain>(vehicle::GetDataFile(simplepowertrain_file));
+    auto engine = chrono_types::make_shared<vehicle::EngineSimple>(engine_file);
+    auto transmission = chrono_types::make_shared<vehicle::AutomaticTransmissionSimpleMap>(transmission_file);
+    auto powertrain = chrono_types::make_shared<vehicle::ChPowertrainAssembly>(engine, transmission);
     vehicle.InitializePowertrain(powertrain);
 
     // Create and initialize the tires
@@ -229,9 +233,9 @@ void AddMovingObstacles(ChSystem* system) {
     int numObstacles = 10;
 
     for (int i = 0; i < numObstacles; i++) {
-        double o_sizeX = 1.0 + 3.0 * ChRandom();
-        double o_sizeY = 0.3 + 0.2 * ChRandom();
-        double o_sizeZ = 0.05 + 0.1 * ChRandom();
+        double o_sizeX = 1.0 + 6.0 * ChRandom();
+        double o_sizeY = 0.3 + 0.4 * ChRandom();
+        double o_sizeZ = 0.05 + 0.2 * ChRandom();
         auto obstacle = chrono_types::make_shared<ChBodyEasyBox>(o_sizeX, o_sizeY, o_sizeZ, 2000.0, true, true, material);
 
         double o_posX = (ChRandom() - 0.5) * 0.4 * sizeX;
@@ -265,8 +269,9 @@ void AddFixedObstacles(ChSystem* system) {
     }
 
     double radius = 3;
-    double length = 10;
-    auto obstacle = chrono_types::make_shared<ChBodyEasyCylinder>(radius, length, 2000, true, true, material);
+    double length = 20;
+    auto obstacle =
+        chrono_types::make_shared<ChBodyEasyCylinder>(geometry::ChAxis::Y, radius, length, 2000, true, true, material);
 
     obstacle->SetPos(ChVector<>(-20, 0, -2.7));
     obstacle->SetBodyFixed(true);
@@ -274,7 +279,7 @@ void AddFixedObstacles(ChSystem* system) {
     system->AddBody(obstacle);
 
     for (int i = 0; i < 8; ++i) {
-        auto stoneslab = chrono_types::make_shared<ChBodyEasyBox>(0.5, 2.5, 0.25, 2000, true, true, material);
+        auto stoneslab = chrono_types::make_shared<ChBodyEasyBox>(1.0, 5.0, 0.5, 2000, true, true, material);
         stoneslab->SetPos(ChVector<>(-1.2 * i + 22, -1.5, -0.05));
         stoneslab->SetRot(Q_from_AngAxis(15 * CH_C_DEG_TO_RAD, VECT_Y));
         stoneslab->SetBodyFixed(true);

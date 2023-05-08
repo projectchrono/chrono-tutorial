@@ -79,7 +79,8 @@ float heartbeat = 1e-2f;  // 100[Hz]
 
 struct VehInfo {
     std::string vehicle_filename;
-    std::string powertrain_filename;
+    std::string engine_filename;
+    std::string transmission_filename;
     std::string tire_filename;
     std::string zombie_filename;
 
@@ -143,7 +144,9 @@ int main(int argc, char* argv[]) {
     vehicle.SetWheelVisualizationType(VisualizationType::MESH);
 
     // Create and initialize the powertrain system
-    auto powertrain = ReadPowertrainJSON(veh_info.powertrain_filename);
+    auto engine = ReadEngineJSON(veh_info.engine_filename);
+    auto transmission = ReadTransmissionJSON(veh_info.transmission_filename);
+    auto powertrain = chrono_types::make_shared<ChPowertrainAssembly>(engine, transmission);
     vehicle.InitializePowertrain(powertrain);
 
     // Create and initialize the tires
@@ -319,7 +322,7 @@ int main(int argc, char* argv[]) {
     int render_steps = (int)std::ceil(render_step_size / step_size);
     int step_number = 0;
 
-    ChTimer<> timer;
+    ChTimer timer;
     timer.start();
 
     while (true) {
@@ -403,7 +406,8 @@ struct VehInfo InitializeVehicle(int node_id) {
     switch (node_id) {
         case 0:
             info.vehicle_filename = vehicle::GetDataFile("sedan/vehicle/Sedan_Vehicle.json");
-            info.powertrain_filename = vehicle::GetDataFile("sedan/powertrain/Sedan_SimpleMapPowertrain.json");
+            info.engine_filename = vehicle::GetDataFile("sedan/powertrain/Sedan_EngineSimpleMap.json");
+            info.transmission_filename = vehicle::GetDataFile("sedan/powertrain/Sedan_AutomaticTransmissionSimpleMap.json");
             info.tire_filename = vehicle::GetDataFile("sedan/tire/Sedan_TMeasyTire.json");
             info.zombie_filename = synchrono::GetDataFile("vehicle/Sedan.json");
 
@@ -413,7 +417,9 @@ struct VehInfo InitializeVehicle(int node_id) {
             break;
         case 1:
             info.vehicle_filename = vehicle::GetDataFile("citybus/vehicle/CityBus_Vehicle.json");
-            info.powertrain_filename = vehicle::GetDataFile("citybus/powertrain/CityBus_SimpleMapPowertrain.json");
+            info.engine_filename = vehicle::GetDataFile("citybus/powertrain/CityBus_EngineSimpleMap.json");
+            info.transmission_filename =
+                vehicle::GetDataFile("citybus/powertrain/CityBus_AutomaticTransmissionSimpleMap.json");
             info.tire_filename = vehicle::GetDataFile("citybus/tire/CityBus_TMeasyTire.json");
             info.zombie_filename = synchrono::GetDataFile("vehicle/CityBus.json");
 
