@@ -8,7 +8,6 @@ SET(MODELS
 #--------------------------------------------------------------
 
 # Invoke find_package in CONFIG mode
-
 find_package(Chrono QUIET
              COMPONENTS Vehicle Synchrono
              OPTIONAL_COMPONENTS Irrlicht Sensor
@@ -16,11 +15,14 @@ find_package(Chrono QUIET
 )
 
 # If Chrono and/or the required component(s) were not found, return now.
-
 if(NOT Chrono_FOUND)
   message("Could not find requirements for Chrono::Sensor tutorials")
   return()
 endif()
+
+# Use same C++ standard as for building Chrono
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD ${CHRONO_CXX_STANDARD})
 
 include_directories(${CHRONO_INCLUDE_DIRS})
 include_directories(${SYN_INCLUDES})
