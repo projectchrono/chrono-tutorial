@@ -41,7 +41,6 @@
 #include "chrono_irrlicht/ChVisualSystemIrrlicht.h"
 
 using namespace chrono;
-using namespace chrono::collision;
 using namespace chrono::irrlicht;
 using namespace irr;
 
