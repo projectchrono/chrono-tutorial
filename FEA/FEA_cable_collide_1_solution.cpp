@@ -193,11 +193,11 @@ int main(int argc, char* argv[]) {
     //     ChVisualizationFEAmesh helper class.
     //     (Alternatively you could bypass this and output .dat
     //     files at each step, ex. for VTK or Matalb postprocessing)
-    //   - This will automatically update a triangle mesh (a ChTriangleMeshShape
+    //   - This will automatically update a triangle mesh (a ChVisualShapeTriangleMesh
     //     asset that is internally managed) by setting proper
     //     coordinates and vertex colours as in the FEA elements.
     //   - Such triangle mesh can be rendered by Irrlicht or POVray or whatever
-    //     postprocessor that can handle a coloured ChTriangleMeshShape).
+    //     postprocessor that can handle a coloured ChVisualShapeTriangleMesh).
     //   - Do not forget AddAsset() at the end!
 
     auto mvisualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>(mesh);

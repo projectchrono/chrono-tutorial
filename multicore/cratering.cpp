@@ -120,9 +120,9 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     ball->SetBodyFixed(false);
 
     // Specify spherical contact and visualization shapes
-    ball->GetCollisionModel()->ClearModel();
+    ball->GetCollisionModel()->Clear();
     utils::AddSphereGeometry(ball.get(), material_b, R_b);
-    ball->GetCollisionModel()->BuildModel();
+    ball->GetCollisionModel()->Build();
 
     system->AddBody(ball);
 

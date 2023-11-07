@@ -211,7 +211,7 @@ int main(int argc, char* argv[]) {
     auto vis_mesh = chrono_types::make_shared<ChTriangleMeshConnected>();
     vis_mesh->LoadWavefrontMesh(synchrono::GetDataFile("meshes/Highway_intersection.obj"), true, true);
 
-    auto trimesh_shape = chrono_types::make_shared<ChTriangleMeshShape>();
+    auto trimesh_shape = chrono_types::make_shared<ChVisualShapeTriangleMesh>();
     trimesh_shape->SetMesh(vis_mesh);
     trimesh_shape->SetMutable(false);
 

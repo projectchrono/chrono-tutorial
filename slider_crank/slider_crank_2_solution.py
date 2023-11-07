@@ -58,7 +58,7 @@ ground.SetIdentifier(-1)
 ground.SetName("ground")
 ground.SetBodyFixed(True)
 
-cyl_g = chrono.ChCylinderShape()
+cyl_g = chrono.ChVisualShapeCylinder()
 cyl_g.GetCylinderGeometry().p1 = chrono.ChVectorD(0, 0.2, 0)
 cyl_g.GetCylinderGeometry().p2 = chrono.ChVectorD(0, -0.2, 0)
 cyl_g.GetCylinderGeometry().rad = 0.03
@@ -78,17 +78,17 @@ crank.SetInertiaXX(chrono.ChVectorD(0.005, 0.1, 0.1))
 crank.SetPos(chrono.ChVectorD(-1, 0, 0))
 crank.SetRot(chrono.ChQuaternionD(1, 0, 0, 0))
 
-box_c = chrono.ChBoxShape()
+box_c = chrono.ChVisualShapeBox()
 box_c.GetBoxGeometry().Size = chrono.ChVectorD(0.95, 0.05, 0.05)
 crank.AddAsset(box_c)
 
-cyl_c = chrono.ChCylinderShape()
+cyl_c = chrono.ChVisualShapeCylinder()
 cyl_c.GetCylinderGeometry().p1 = chrono.ChVectorD(1, 0.1, 0)
 cyl_c.GetCylinderGeometry().p2 = chrono.ChVectorD(1, -0.1, 0)
 cyl_c.GetCylinderGeometry().rad = 0.05
 crank.AddAsset(cyl_c)
 
-sph_c = chrono.ChSphereShape()
+sph_c = chrono.ChVisualShapeSphere()
 sph_c.GetSphereGeometry().center = chrono.ChVectorD(-1, 0, 0)
 sph_c.GetSphereGeometry().rad = 0.05
 crank.AddAsset(sph_c)
@@ -107,11 +107,11 @@ slider.SetInertiaXX(chrono.ChVectorD(0.05, 0.05, 0.05))
 slider.SetPos(chrono.ChVectorD(2, 0, 0))
 slider.SetRot(chrono.ChQuaternionD(1, 0, 0, 0))
 
-box_s = chrono.ChBoxShape()
+box_s = chrono.ChVisualShapeBox()
 box_s.GetBoxGeometry().Size = chrono.ChVectorD(0.2, 0.1, 0.1)
 slider.AddAsset(box_s)
 
-cyl_s = chrono.ChCylinderShape()
+cyl_s = chrono.ChVisualShapeCylinder()
 cyl_s.GetCylinderGeometry().p1 = chrono.ChVectorD(0, 0.2, 0)
 cyl_s.GetCylinderGeometry().p2 = chrono.ChVectorD(0, -0.2, 0)
 cyl_s.GetCylinderGeometry().rad = 0.03
@@ -131,11 +131,11 @@ rod.SetInertiaXX(chrono.ChVectorD(0.005, 0.1, 0.1))
 rod.SetPos(chrono.ChVectorD(0, 0, 0))
 rod.SetRot(chrono.ChQuaternionD(1, 0, 0, 0))
 
-box_r = chrono.ChBoxShape()
+box_r = chrono.ChVisualShapeBox()
 box_r.GetBoxGeometry().Size = chrono.ChVectorD(2, 0.05, 0.05)
 rod.AddAsset(box_r)
 
-cyl_r = chrono.ChCylinderShape()
+cyl_r = chrono.ChVisualShapeCylinder()
 cyl_r.GetCylinderGeometry().p1 = chrono.ChVectorD(2, 0, 0.2)
 cyl_r.GetCylinderGeometry().p2 = chrono.ChVectorD(2, 0, -0.2)
 cyl_r.GetCylinderGeometry().rad = 0.03
@@ -157,9 +157,11 @@ slider.SetCollide(True)
 slider_mat = chrono.ChMaterialSurfaceNSC()
 slider_mat.SetFriction(0.4)
 
-slider.GetCollisionModel().ClearModel()
-slider.GetCollisionModel().AddBox(slider_mat, 0.2, 0.1, 0.1, chrono.VNULL, chrono.ChMatrix33D(chrono.QUNIT))
-slider.GetCollisionModel().BuildModel()
+slider_ct_shape = chrono.ChCollisionShapeBox(slider_mat, 0.2, 0.1, 0.1)
+
+slider.GetCollisionModel().Clear()
+slider.GetCollisionModel().AddShape(slider_ct_shape)
+slider.GetCollisionModel().Build()
 
   #### -------------------------------------------------------------------------
   #### EXERCISE 2.2
@@ -180,15 +182,17 @@ ball.SetInertiaXX(chrono.ChVectorD(0.02, 0.02, 0.02))
 ball.SetPos(chrono.ChVectorD(5.5, 0, 0))
 ball.SetRot(chrono.ChQuaternionD(1, 0, 0, 0))
 
-# Contact material for NSC method, default properties
-ball_mat = chrono.ChMaterialSurfaceNSC()
-
 ball.SetCollide(True)
-ball.GetCollisionModel().ClearModel()
-ball.GetCollisionModel().AddSphere(ball_mat, 0.2, chrono.ChVectorD(0, 0, 0))
-ball.GetCollisionModel().BuildModel()
 
-sphere_b = chrono.ChSphereShape()
+# Contact material and collision shape
+ball_mat = chrono.ChMaterialSurfaceNSC()
+ball_ct_shape = chrono.ChCollisionShapeSphere(ball_mat, 0.2)
+
+ball.GetCollisionModel().Clear()
+ball.GetCollisionModel().AddShape(ball_ct_shape)
+ball.GetCollisionModel().Build()
+
+sphere_b = chrono.ChVisualShapeSphere()
 sphere_b.GetSphereGeometry().center = chrono.ChVectorD(0, 0, 0)
 sphere_b.GetSphereGeometry().rad = 0.2
 ball.AddAsset(sphere_b)
@@ -272,7 +276,7 @@ tsda_ground_ball.SetSpringCoefficient(50.0)
 tsda_ground_ball.SetDampingCoefficient(5.0)
 tsda_ground_ball.SetRestLength(1.0)
 
-spring_tsda = chrono.ChPointPointSpring(0.05, 80, 15)
+spring_tsda = chrono.ChVisualShapeSpring(0.05, 80, 15)
 tsda_ground_ball.AddAsset(spring_tsda)
 
 col_tsda = chrono.ChColorAsset()

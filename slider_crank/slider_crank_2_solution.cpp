@@ -34,13 +34,14 @@
 #include <cmath>
 #include <cstdio>
 
-#include "chrono/assets/ChPointPointShape.h"
+#include "chrono/assets/ChVisualShapePointPoint.h"
 #include "chrono/physics/ChLinkMotorRotationSpeed.h"
 #include "chrono/physics/ChSystemNSC.h"
 #include "chrono/core/ChRealtimeStep.h"
 #include "chrono_irrlicht/ChVisualSystemIrrlicht.h"
 
 using namespace chrono;
+using namespace chrono::collision;
 using namespace chrono::irrlicht;
 using namespace irr;
 
@@ -70,7 +71,7 @@ int main(int argc, char* argv[]) {
     ground->SetName("ground");
     ground->SetBodyFixed(true);
 
-    auto cyl_g = chrono_types::make_shared<ChCylinderShape>(0.03, 0.4);
+    auto cyl_g = chrono_types::make_shared<ChVisualShapeCylinder>(0.03, 0.4);
     ground->AddVisualShape(cyl_g, ChFrame<>(VNULL, Q_from_AngX(CH_C_PI_2)));
 
     // Crank
@@ -83,15 +84,15 @@ int main(int argc, char* argv[]) {
     crank->SetPos(ChVector<>(-1, 0, 0));
     crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    auto box_c = chrono_types::make_shared<ChBoxShape>(1.9, 0.1, 0.1);
+    auto box_c = chrono_types::make_shared<ChVisualShapeBox>(1.9, 0.1, 0.1);
     box_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
     crank->AddVisualShape(box_c);
 
-    auto cyl_c = chrono_types::make_shared<ChCylinderShape>(0.05, 0.2);
+    auto cyl_c = chrono_types::make_shared<ChVisualShapeCylinder>(0.05, 0.2);
     cyl_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
     crank->AddVisualShape(cyl_c, ChFrame<>(ChVector<>(1, 0, 0), Q_from_AngX(CH_C_PI_2)));
 
-    auto sph_c = chrono_types::make_shared<ChSphereShape>(0.05);
+    auto sph_c = chrono_types::make_shared<ChVisualShapeSphere>(0.05);
     sph_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
     crank->AddVisualShape(sph_c, ChFrame<>(ChVector<>(-1, 0, 0), QUNIT));
 
@@ -105,10 +106,10 @@ int main(int argc, char* argv[]) {
     slider->SetPos(ChVector<>(2, 0, 0));
     slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    auto box_s = chrono_types::make_shared<ChBoxShape>(0.4, 0.2, 0.2);
+    auto box_s = chrono_types::make_shared<ChVisualShapeBox>(0.4, 0.2, 0.2);
     slider->AddVisualShape(box_s);
 
-    auto cyl_s = chrono_types::make_shared<ChCylinderShape>(0.03, 0.4);
+    auto cyl_s = chrono_types::make_shared<ChVisualShapeCylinder>(0.03, 0.4);
     cyl_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
     slider->AddVisualShape(cyl_s, ChFrame<>(VNULL, Q_from_AngX(CH_C_PI_2)));
 
@@ -122,10 +123,10 @@ int main(int argc, char* argv[]) {
     rod->SetPos(ChVector<>(0, 0, 0));
     rod->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    auto box_r = chrono_types::make_shared<ChBoxShape>(4, 0.1, 0.1);
+    auto box_r = chrono_types::make_shared<ChVisualShapeBox>(4, 0.1, 0.1);
     rod->AddVisualShape(box_r);
 
-    auto cyl_r = chrono_types::make_shared<ChCylinderShape>(0.03, 0.4);
+    auto cyl_r = chrono_types::make_shared<ChVisualShapeCylinder>(0.03, 0.4);
     cyl_r->SetColor(ChColor(0.2f, 0.6f, 0.2f));
     rod->AddVisualShape(cyl_r, ChFrame<>(ChVector<>(2, 0, 0), Q_from_AngX(CH_C_PI_2)));
 
@@ -142,9 +143,10 @@ int main(int argc, char* argv[]) {
     auto slider_mat = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     slider_mat->SetFriction(0.4f);
 
-    slider->GetCollisionModel()->ClearModel();
-    slider->GetCollisionModel()->AddBox(slider_mat, 0.4, 0.2, 0.2, VNULL, QUNIT);
-    slider->GetCollisionModel()->BuildModel();
+    auto slider_ct_shape = chrono_types::make_shared<ChCollisionShapeBox>(slider_mat, 0.4, 0.2, 0.2);
+    slider->GetCollisionModel()->Clear();
+    slider->GetCollisionModel()->AddShape(slider_ct_shape);
+    slider->GetCollisionModel()->Build();
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 2.2
@@ -164,15 +166,17 @@ int main(int argc, char* argv[]) {
     ball->SetPos(ChVector<>(5.5, 0, 0));
     ball->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    // Contact material for NSC method, default properties
-    auto ball_mat = chrono_types::make_shared<ChMaterialSurfaceNSC>();
-
     ball->SetCollide(true);
-    ball->GetCollisionModel()->ClearModel();
-    ball->GetCollisionModel()->AddSphere(ball_mat, 0.2, ChVector<>(0, 0, 0));
-    ball->GetCollisionModel()->BuildModel();
 
-    auto sphere_b = chrono_types::make_shared<ChSphereShape>(0.2);
+    // Contact material and collision shape
+    auto ball_mat = chrono_types::make_shared<ChMaterialSurfaceNSC>();
+    auto ball_ct_shape = chrono_types::make_shared<ChCollisionShapeSphere>(ball_mat, 0.2);
+
+    ball->GetCollisionModel()->Clear();
+    ball->GetCollisionModel()->AddShape(ball_ct_shape);
+    ball->GetCollisionModel()->Build();
+
+    auto sphere_b = chrono_types::make_shared<ChVisualShapeSphere>(0.2);
     sphere_b->SetColor(ChColor(0.6f, 0.6f, 0.6f));
     ball->AddVisualShape(sphere_b);
 
@@ -252,7 +256,7 @@ int main(int argc, char* argv[]) {
     tsda_ground_ball->SetRestLength(1.0);
     system.AddLink(tsda_ground_ball);
 
-    tsda_ground_ball->AddVisualShape(chrono_types::make_shared<ChSpringShape>(0.05, 80, 15));
+    tsda_ground_ball->AddVisualShape(chrono_types::make_shared<ChVisualShapeSpring>(0.05, 80, 15));
 
     // 4. Write the system hierarchy to the console (default log output destination)
     system.ShowHierarchy(GetLog());

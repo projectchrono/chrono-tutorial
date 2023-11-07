@@ -54,7 +54,7 @@ ground.SetIdentifier(-1)
 ground.SetName("ground")
 ground.SetBodyFixed(True)
 
-cyl_g = chrono.ChCylinderShape();
+cyl_g = chrono.ChVisualShapeCylinder();
 cyl_g.GetCylinderGeometry().p1 = chrono.ChVectorD(0, 0.2, 0)
 cyl_g.GetCylinderGeometry().p2 = chrono.ChVectorD(0, -0.2, 0)
 cyl_g.GetCylinderGeometry().rad = 0.03
@@ -74,17 +74,17 @@ crank.SetInertiaXX(chrono.ChVectorD(0.005, 0.1, 0.1))
 crank.SetPos(chrono.ChVectorD(-1, 0, 0))
 crank.SetRot(chrono.ChQuaternionD(1, 0, 0, 0))
 
-box_c = chrono.ChBoxShape()
+box_c = chrono.ChVisualShapeBox()
 box_c.GetBoxGeometry().Size = chrono.ChVectorD(0.95, 0.05, 0.05)
 crank.AddAsset(box_c)
 
-cyl_c = chrono.ChCylinderShape()
+cyl_c = chrono.ChVisualShapeCylinder()
 cyl_c.GetCylinderGeometry().p1 = chrono.ChVectorD(1, 0.1, 0)
 cyl_c.GetCylinderGeometry().p2 = chrono.ChVectorD(1, -0.1, 0)
 cyl_c.GetCylinderGeometry().rad = 0.05
 crank.AddAsset(cyl_c)
 
-sph_c = chrono.ChSphereShape()
+sph_c = chrono.ChVisualShapeSphere()
 sph_c.GetSphereGeometry().center = chrono.ChVectorD(-1, 0, 0)
 sph_c.GetSphereGeometry().rad = 0.05
 crank.AddAsset(sph_c)
@@ -103,7 +103,7 @@ slider.SetInertiaXX(chrono.ChVectorD(0.05, 0.05, 0.05))
 slider.SetPos(chrono.ChVectorD(2, 0, 0))
 slider.SetRot(chrono.ChQuaternionD(1, 0, 0, 0))
 
-box_s = chrono.ChBoxShape()
+box_s = chrono.ChVisualShapeBox()
 box_s.GetBoxGeometry().Size = chrono.ChVectorD(0.2, 0.1, 0.1)
 slider.AddAsset(box_s)
 
