@@ -147,7 +147,7 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     }
 
     // Create the falling ball body
-    auto ball = std::shared_ptr<ChBody>(system->NewBody());
+    auto ball = chrono_types::make_shared<ChBody>();
 
     ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
@@ -159,9 +159,7 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     ball->SetBodyFixed(false);
 
     // Specify spherical contact and visualization shapes
-    ball->GetCollisionModel()->Clear();
     utils::AddSphereGeometry(ball.get(), material_b, R_b);
-    ball->GetCollisionModel()->Build();
 
     system->AddBody(ball);
 
@@ -250,6 +248,9 @@ int main(int argc, char* argv[]) {
             break;
         }
     }
+
+    // Set the associated collision detection system
+    system->SetCollisionSystemType(ChCollisionSystem::Type::MULTICORE);
 
     // Set number of threads.
     int max_threads = omp_get_num_procs();

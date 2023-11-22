@@ -113,6 +113,9 @@ int main(int argc, char* argv[]) {
         vehicle.InitializeTire(tireR, axle->m_wheels[1], vehicle::VisualizationType::MESH);
     }
 
+    // Set collision detection system
+    vehicle.GetSystem()->SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
+
     // Create the Irrlicht vehicle application
     auto vis = chrono_types::make_shared<vehicle::ChWheeledVehicleVisualSystemIrrlicht>();
     vis->SetWindowTitle("Vehicle Demo");

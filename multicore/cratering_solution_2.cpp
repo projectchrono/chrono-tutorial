@@ -116,7 +116,7 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     material_b->SetRestitution(cr_b);
 
     // Create the falling ball body
-    auto ball = chrono_types::make_shared<ChBody>(ChCollisionSystemType::CHRONO);
+    auto ball = chrono_types::make_shared<ChBody>();
 
     ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
@@ -128,9 +128,7 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     ball->SetBodyFixed(false);
 
     // Specify spherical contact and visualization shapes
-    ball->GetCollisionModel()->Clear();
     utils::AddSphereGeometry(ball.get(), material_b, R_b);
-    ball->GetCollisionModel()->Build();
 
     system->AddBody(ball);
 
@@ -178,6 +176,9 @@ int main(int argc, char* argv[]) {
 
     // Create the (multicore) system and set method-specific solver settings.
     ChSystemMulticoreSMC* system = new ChSystemMulticoreSMC;
+
+    system->SetCollisionSystemType(ChCollisionSystem::Type::MULTICORE);
+
     system->GetSettings()->solver.contact_force_model = ChSystemSMC::Hooke;
     system->GetSettings()->solver.tangential_displ_mode = ChSystemSMC::TangentialDisplacementModel::OneStep;
     system->GetSettings()->solver.use_material_properties = true;

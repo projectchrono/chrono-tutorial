@@ -56,6 +56,9 @@ int main(int argc, char* argv[]) {
     ChSystemNSC system;
     system.Set_G_acc(ChVector<>(0, 0, -9.81));
 
+    // Set an associated collision detection system
+    system.SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
+
     // 2. Create the rigid bodies of the slider-crank mechanical system.
     //    For each body, specify:
     //    - a unique identifier
@@ -143,9 +146,7 @@ int main(int argc, char* argv[]) {
     slider_mat->SetFriction(0.4f);
 
     auto slider_ct_shape = chrono_types::make_shared<ChCollisionShapeBox>(slider_mat, 0.4, 0.2, 0.2);
-    slider->GetCollisionModel()->Clear();
-    slider->GetCollisionModel()->AddShape(slider_ct_shape);
-    slider->GetCollisionModel()->Build();
+    slider->AddCollisionShape(slider_ct_shape);
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 2.2
@@ -171,9 +172,7 @@ int main(int argc, char* argv[]) {
     auto ball_mat = chrono_types::make_shared<ChMaterialSurfaceNSC>();
     auto ball_ct_shape = chrono_types::make_shared<ChCollisionShapeSphere>(ball_mat, 0.2);
 
-    ball->GetCollisionModel()->Clear();
-    ball->GetCollisionModel()->AddShape(ball_ct_shape);
-    ball->GetCollisionModel()->Build();
+    ball->AddCollisionShape(ball_ct_shape);
 
     auto sphere_b = chrono_types::make_shared<ChVisualShapeSphere>(0.2);
     sphere_b->SetColor(ChColor(0.6f, 0.6f, 0.6f));
