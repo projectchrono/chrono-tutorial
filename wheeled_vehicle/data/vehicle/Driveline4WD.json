@@ -1,5 +1,5 @@
 {
-  "Name":                       "AWD Driveline",
+  "Name":                       "4WD Driveline",
   "Type":                       "Driveline",
   "Template":                   "ShaftsDriveline4WD",
 
@@ -23,5 +23,8 @@
   {
     "Front Conical Gear":       0.2,
     "Rear Conical Gear":        0.2
-  }
+  },
+
+  "Axle Differential Locking Limit":    100,
+  "Central Differential Locking Limit": 100
 }

@@ -1,12 +1,10 @@
 {
-  "Name": "Shafts Engine",
+  "Name": "Simple Map Engine",
   "Type": "Engine",
-  "Template": "EngineShafts",
+  "Template": "EngineSimpleMap",
 
-  "Motor Block Inertia": 10.5, // connection to chassis
-  "Motorshaft Inertia": 1.1, // connection to transmission
-
-  "Torque Map": [
+  "Maximal Engine Speed RPM": 2600,
+  "Map Full Throttle": [
     [ -100, 300 ],
     [ 800, 382 ],
     [ 900, 490 ],
@@ -28,13 +26,12 @@
     [ 2500, 558 ],
     [ 2700, -400 ]
   ],
-
-  "Losses Map": [
-    [ -50, 30 ],
+  "Map Zero Throttle": [
+    [ -100, 0 ],
     [ 0, 0 ],
-    [ 50, -30 ],
+    [ 100, 0 ],
     [ 1000, -50 ],
     [ 2000, -70 ],
     [ 3000, -90 ]
   ]
-}
+} 

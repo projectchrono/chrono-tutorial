@@ -28,6 +28,7 @@
 #include "chrono/utils/ChUtilsInputOutput.h"
 
 #include "chrono_vehicle/ChVehicleModelData.h"
+#include "chrono_vehicle/utils/ChUtilsJSON.h"
 
 #include "chrono_vehicle/powertrain/EngineSimple.h"
 #include "chrono_vehicle/powertrain/AutomaticTransmissionSimpleMap.h"
@@ -45,8 +46,8 @@ using namespace chrono;
 // =============================================================================
 
 std::string vehicle_file("vehicle/WheeledVehicle_mod.json");
-std::string rigidtire_file("vehicle/RigidTire.json");
-std::string engine_file("vehicle/SimpleEngine.json");
+std::string tire_file("vehicle/RigidTire.json");
+std::string engine_file("vehicle/EngineSimple.json");
 std::string transmission_file("vehicle/AutomaticTransmissionSimpleMap.json");
 
 std::string rigidterrain_file("terrain/RigidPlane.json");
@@ -104,21 +105,22 @@ int main(int argc, char* argv[]) {
 
     // Create the terrain
     vehicle::RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(rigidterrain_file));
+    terrain.Initialize();
     AddFixedObstacles(vehicle.GetSystem());
     AddMovingObstacles(vehicle.GetSystem());
 
     // Create and initialize the powertrain system
-    auto engine = chrono_types::make_shared<vehicle::EngineSimple>(engine_file);
-    auto transmission = chrono_types::make_shared<vehicle::AutomaticTransmissionSimpleMap>(transmission_file);
+    auto engine = vehicle::ReadEngineJSON(vehicle::GetDataFile(engine_file));
+    auto transmission = vehicle::ReadTransmissionJSON(vehicle::GetDataFile(transmission_file));
     auto powertrain = chrono_types::make_shared<vehicle::ChPowertrainAssembly>(engine, transmission);
     vehicle.InitializePowertrain(powertrain);
 
     // Create and initialize the tires
     for (auto& axle : vehicle.GetAxles()) {
-        auto tireL = chrono_types::make_shared<vehicle::RigidTire>(vehicle::GetDataFile(rigidtire_file));
-        auto tireR = chrono_types::make_shared<vehicle::RigidTire>(vehicle::GetDataFile(rigidtire_file));
-        vehicle.InitializeTire(tireL, axle->m_wheels[0], vehicle::VisualizationType::MESH);
-        vehicle.InitializeTire(tireR, axle->m_wheels[1], vehicle::VisualizationType::MESH);
+        auto tireL = vehicle::ReadTireJSON(vehicle::GetDataFile(tire_file));
+        auto tireR = vehicle::ReadTireJSON(vehicle::GetDataFile(tire_file));
+        vehicle.InitializeTire(tireL, axle->m_wheels[0]);
+        vehicle.InitializeTire(tireR, axle->m_wheels[1]);
     }
 
     // Set collision detection system
@@ -136,15 +138,10 @@ int main(int argc, char* argv[]) {
 
     // Create the driver system (interactive)
     vehicle::ChInteractiveDriverIRR driver(*vis);
-
-    // Set the time response for steering and throttle keyboard inputs.
-    // NOTE: this is not exact, since we do not render quite at the specified FPS.
-    double steering_time = 1.0;  // time to go from 0 to +1 (or from 0 to -1)
-    double throttle_time = 1.0;  // time to go from 0 to +1
-    double braking_time = 0.3;   // time to go from 0 to +1
-    driver.SetSteeringDelta(render_step_size / steering_time);
-    driver.SetThrottleDelta(render_step_size / throttle_time);
-    driver.SetBrakingDelta(render_step_size / braking_time);
+    driver.SetSteeringDelta(0.02);
+    driver.SetThrottleDelta(0.02);
+    driver.SetBrakingDelta(0.06);
+    driver.Initialize();
 
     // -----------------
     // Initialize output
@@ -283,7 +280,7 @@ void AddFixedObstacles(ChSystem* system) {
 
     for (int i = 0; i < 8; ++i) {
         auto stoneslab = chrono_types::make_shared<ChBodyEasyBox>(1.0, 5.0, 0.5, 2000, true, true, material);
-        stoneslab->SetPos(ChVector<>(-1.2 * i + 22, -1.5, -0.05));
+        stoneslab->SetPos(ChVector<>(-1.2 * i + 22, -1.5, -0.25));
         stoneslab->SetRot(Q_from_AngAxis(15 * CH_C_DEG_TO_RAD, VECT_Y));
         stoneslab->SetBodyFixed(true);
         system->AddBody(stoneslab);
