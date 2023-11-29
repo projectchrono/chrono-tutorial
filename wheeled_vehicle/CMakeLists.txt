@@ -11,6 +11,7 @@ SET(MODELS
 # Invoke find_package in CONFIG mode
 find_package(Chrono
              COMPONENTS Vehicle Irrlicht
+             OPTIONAL_COMPONENTS VSG
              CONFIG
 )
 
