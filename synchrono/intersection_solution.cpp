@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) {
         double green_time = 5;
 
         std::vector<double> schedule1 = {red_time, yellow_time, green_time};
-        std::vector<ChVector<>> lane1_points = {{lane2_x, approach_start_y, 0.2}, {lane2_x, approach_end_y, 0.2}};
+        std::vector<ChVector3d> lane1_points = {{lane2_x, approach_start_y, 0.2}, {lane2_x, approach_end_y, 0.2}};
         ApproachLane lane_1(lane_width, lane1_points);
 
         agent->AddLane(0, 0, lane_1, LaneColor::RED, schedule1);
@@ -226,7 +226,7 @@ int main(int argc, char* argv[]) {
     auto loc = vehicle.GetPos();
 
     // These two points just define a straight line in the direction the vehicle is oriented
-    auto curve_pts = std::vector<ChVector<>>({loc, loc + ChVector<>(0, 140, 0)});
+    auto curve_pts = std::vector<ChVector3d>({loc, loc + ChVector3d(0, 140, 0)});
     auto path = chrono_types::make_shared<ChBezierCurve>(curve_pts);
 
     // These are all parameters for a ChPathFollowerACCDriver
@@ -251,7 +251,7 @@ int main(int argc, char* argv[]) {
         driver = acc_driver;
     } else {
         // Node 0
-        auto curve_pts2 = std::vector<ChVector<>>({ChVector<>(lane2_x, -70, 0.2), ChVector<>(5.8, 70, 0.2)});
+        auto curve_pts2 = std::vector<ChVector3d>({ChVector3d(lane2_x, -70, 0.2), ChVector3d(5.8, 70, 0.2)});
         auto path2 = chrono_types::make_shared<ChBezierCurve>(curve_pts2);
 
         std::vector<std::shared_ptr<ChBezierCurve>> paths = {path, path2};
@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
     // Create the vehicle Irrlicht interface
     std::shared_ptr<ChWheeledVehicleVisualSystemIrrlicht> vis;
     if (use_irrlicht_vis) {
-        ChVector<> track_point(0.0, 0.0, 1.75);
+        ChVector3d track_point(0.0, 0.0, 1.75);
 
         vis = chrono_types::make_shared<ChWheeledVehicleVisualSystemIrrlicht>();
         vis->SetWindowTitle("SynChrono Vehicle Demo");
@@ -289,7 +289,7 @@ int main(int argc, char* argv[]) {
         sensor_manager.scene->AddPointLight({100, 100, 100}, {2, 2, 2}, 5000);
 
         // Based on Irrlicht chase cam - slightly above and behind the vehicle
-        chrono::ChFrame<double> chase_pose({-6, 0, 1.5}, Q_from_AngAxis(0, {1, 0, 0}));
+        chrono::ChFrame<double> chase_pose({-6, 0, 1.5}, QuatFromAngleAxis(0, {1, 0, 0}));
         auto chase_cam =
             chrono_types::make_shared<ChCameraSensor>(vehicle.GetChassisBody(),  // body camera is attached to
                                                       30.0f,                     // update rate in Hz
@@ -399,8 +399,8 @@ int main(int argc, char* argv[]) {
 }
 
 struct VehInfo InitializeVehicle(int node_id) {
-    ChVector<> init_loc;
-    ChQuaternion<> init_rot = Q_from_AngZ(90 * CH_C_DEG_TO_RAD);
+    ChVector3d init_loc;
+    ChQuaternion<> init_rot = QuatFromAngleZ(90 * CH_C_DEG_TO_RAD);
     double init_z = 0.5;
     struct VehInfo info;
     switch (node_id) {
@@ -411,7 +411,7 @@ struct VehInfo InitializeVehicle(int node_id) {
             info.tire_filename = vehicle::GetDataFile("sedan/tire/Sedan_TMeasyTire.json");
             info.zombie_filename = synchrono::GetDataFile("vehicle/Sedan.json");
 
-            init_loc = ChVector<>(lane1_x, -70, init_z);
+            init_loc = ChVector3d(lane1_x, -70, init_z);
 
             info.init_pose = ChCoordsys<>(init_loc, init_rot);
             break;
@@ -423,7 +423,7 @@ struct VehInfo InitializeVehicle(int node_id) {
             info.tire_filename = vehicle::GetDataFile("citybus/tire/CityBus_TMeasyTire.json");
             info.zombie_filename = synchrono::GetDataFile("vehicle/CityBus.json");
 
-            init_loc = ChVector<>(lane2_x, -70, init_z + 0.5);
+            init_loc = ChVector3d(lane2_x, -70, init_z + 0.5);
 
             info.init_pose = ChCoordsys<>(init_loc, init_rot);
             break;

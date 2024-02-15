@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
 
     // 7. Add a collision mesh to the skin of the finite element mesh
 
-    //    - Create a ChMaterialSurfaceSMC , it must be assigned to FEA
+    //    - Create a ChContactMaterialSMC , it must be assigned to FEA
     //      meshes and rigid bodies. The ChSystemSMC requires it!
     //    - Create a ChContactSurfaceNodeCloud and add to the FEA mesh.
     //      This is the easiest representation of a FEA contact surface: it
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
     //      dense finite elements meshes that collide with large objects.
 
     // Create a surface material to be shared with some objects
-    auto mysurfmaterial = chrono_types::make_shared<ChMaterialSurfaceSMC>();
+    auto mysurfmaterial = chrono_types::make_shared<ChContactMaterialSMC>();
     mysurfmaterial->SetYoungModulus(6e4);
     mysurfmaterial->SetFriction(0.3f);
     mysurfmaterial->SetRestitution(0.2f);
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
     system.Add(floor);
 
     floor->SetBodyFixed(true);
-    floor->SetPos(ChVector<>(0, -0.1, 0));
+    floor->SetPos(ChVector3d(0, -0.1, 0));
 
     // 9. Make the finite elements visible in the 3D view
 
@@ -193,7 +193,7 @@ int main(int argc, char* argv[]) {
     vis->AddLogo();
     vis->AddSkyBox();
     vis->AddTypicalLights();
-    vis->AddCamera(ChVector<>(0.1f, 0.2f, -2.0f));
+    vis->AddCamera(ChVector3d(0.1f, 0.2f, -2.0f));
     vis->EnableContactDrawing(ContactsDrawMode::CONTACT_FORCES);
     vis->SetSymbolScale(0.1);
     vis->AttachSystem(&system);
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
         vis->Render();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(vis.get(), 0.1, 0.1, 20, 20, ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
+        tools::drawGrid(vis.get(), 0.1, 0.1, 20, 20, ChCoordsys<>(ChVector3d(0, 0, 0), QuatFromAngleX(CH_C_PI_2)),
                         ChColor(0.3f, 0.4f, 0.4f), true);
 
         // Finalize the graphical scene.

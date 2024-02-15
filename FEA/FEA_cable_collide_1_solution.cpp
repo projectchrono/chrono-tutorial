@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     //    Specify the gravitational acceleration vector, consistent with the
     //    global reference frame having Y up (ISO system).
     ChSystemNSC system;
-    system.Set_G_acc(ChVector<>(0, -9.81, 0));
+    system.Set_G_acc(ChVector3d(0, -9.81, 0));
 
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
@@ -90,12 +90,12 @@ int main(int argc, char* argv[]) {
     int N_nodes = 16;
     for (int in = 0; in < N_nodes; ++in) {
         // i-th node position
-        ChVector<> position(length * (in / double(N_nodes - 1)),  // node position, x
+        ChVector3d position(length * (in / double(N_nodes - 1)),  // node position, x
                             0.5,                                  // node position, y
                             0);                                   // node position, z
 
         // i-th node direction
-        ChVector<> direction(1.0, 0, 0);
+        ChVector3d direction(1.0, 0, 0);
 
         // create the node
         auto node = chrono_types::make_shared<ChNodeFEAxyzD>(position, direction);
@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) {
                                                                   true);                // do visualize
 
     // move cylinder to end of beam
-    cylinder->SetPos(beam_nodes.back()->GetPos() + ChVector<>(0, -0.05, 0));
+    cylinder->SetPos(beam_nodes.back()->GetPos() + ChVector3d(0, -0.05, 0));
 
     // add it to the system
     system.Add(cylinder);
@@ -244,7 +244,7 @@ int main(int argc, char* argv[]) {
     vis->AddLogo();
     vis->AddSkyBox();
     vis->AddTypicalLights();
-    vis->AddCamera(ChVector<>(0.1f, 0.2f, -2.0f));
+    vis->AddCamera(ChVector3d(0.1f, 0.2f, -2.0f));
     vis->EnableContactDrawing(ContactsDrawMode::CONTACT_FORCES);
     vis->SetSymbolScale(0.1);
     vis->AttachSystem(&system);
@@ -259,7 +259,7 @@ int main(int argc, char* argv[]) {
         vis->Render();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(vis.get(), 0.1, 0.1, 20, 20, ChCoordsys<>(ChVector<>(0, 0, 0), Q_from_AngX(CH_C_PI_2)),
+        tools::drawGrid(vis.get(), 0.1, 0.1, 20, 20, ChCoordsys<>(ChVector3d(0, 0, 0), QuatFromAngleX(CH_C_PI_2)),
                         ChColor(0.3f, 0.4f, 0.4f), true);
 
         // Finalize the graphical scene.

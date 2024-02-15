@@ -57,7 +57,7 @@ using namespace chrono::sensor;
 // =============================================================================
 
 // Initial vehicle location and orientation
-ChVector<> initLoc(0, 0, 0.5);
+ChVector3d initLoc(0, 0, 0.5);
 ChQuaternion<> initRot(1, 0, 0, 0);
 
 // Visualization type for vehicle parts (PRIMITIVES, MESH, or NONE)
@@ -123,7 +123,7 @@ float lidar_vmin = (float)(-CH_C_PI / 6);  // 30 degrees down
 // =============================================================================
 
 int main(int argc, char* argv[]) {
-    GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+    std::cout << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
 
     // Path to Chrono data files (textures, etc.)
     SetChronoDataPath(CHRONO_DATA_DIR);
@@ -189,7 +189,7 @@ int main(int argc, char* argv[]) {
 
     auto vis = chrono_types::make_shared<ChWheeledVehicleVisualSystemIrrlicht>();
     vis->SetWindowTitle("Gator Demo");
-    vis->SetChaseCamera(ChVector<>(0.0, 0.0, 2.0), 5.0, 0.05);
+    vis->SetChaseCamera(ChVector3d(0.0, 0.0, 2.0), 5.0, 0.05);
     vis->Initialize();
     vis->AddTypicalLights();
     vis->AddSkyBox();
@@ -244,13 +244,13 @@ int main(int argc, char* argv[]) {
     // EXERCISE 2   (UNCOMMENT manager-Update() in the simualtion loop below!!!)
     //  Add a third person pov camera
     //          - attach to gator vehicle, gator.GetChassisBody()
-    //          - offset = chrono::ChFrame<double>({-8, 0, 3}, Q_from_AngAxis(.2, {0, 1, 0}))
+    //          - offset = chrono::ChFrame<double>({-8, 0, 3}, QuatFromAngleAxis(.2, {0, 1, 0}))
     //          - updateRate, width, height, hFOV, super_samples are declared in ln103~ln119
     //          - Visualization with cam->PushFilter(.....)
     //          - Add sensor to manager
     //  Add a roof mounted camera
     //          - same steps above except
-    //              -offset = chrono::ChFrame<double>({.1, 0, 1.45}, Q_from_AngAxis(.2, {0, 1, 0}))
+    //              -offset = chrono::ChFrame<double>({.1, 0, 1.45}, QuatFromAngleAxis(.2, {0, 1, 0}))
     //  BONUS
     //          - add noise before visualization
     //              - cam->PushFilter(chrono_types::make_shared<ChFilterCameraNoisePixDep>(0.f, .02f, .03f));
@@ -260,7 +260,7 @@ int main(int argc, char* argv[]) {
     // EXERCISE 3
     //  Add a lidar
     //          - attach to gator vehicle, gator.GetChassisBody()
-    //          - offset = chrono::ChFrame<double>({-.282, 0, 1.82}, Q_from_AngAxis(0, {1, 0, 0}))
+    //          - offset = chrono::ChFrame<double>({-.282, 0, 1.82}, QuatFromAngleAxis(0, {1, 0, 0}))
     //          - lidar parameters declared in ln103~ln119
     //          - add sensor to manager
     //--------------------------------------------------------------------------------------------------------------
@@ -293,7 +293,7 @@ int main(int argc, char* argv[]) {
         //  cam->SetOffsetPose(
         //      chrono::ChFrame<double>({-orbit_radius * cos(time * orbit_rate), -orbit_radius * sin(time * orbit_rate),
         //      3},
-        //                              Q_from_AngAxis(time * orbit_rate, {0, 0, 1})));
+        //                              QuatFromAngleAxis(time * orbit_rate, {0, 0, 1})));
 
         // manager->Update();
 

@@ -139,22 +139,22 @@ int main(int argc, char* argv[]) {
     // if (node_id == traffic_light_node) {
     //     // Do traffic light things
 
-    //     // std::vector<ChVector<>> lane1_points = {{lane2_x, -15, 0.2}, {lane2_x, -40, 0.2}};
+    //     // std::vector<ChVector3d> lane1_points = {{lane2_x, -15, 0.2}, {lane2_x, -40, 0.2}};
     // } else {
     //     // Do vehicle things
     // }
 
-    ChVector<> init_loc;
+    ChVector3d init_loc;
     ChQuaternion<> init_rot;
     double init_z = 0.5;
     switch (node_id) {
         case 0:
-            init_rot = Q_from_AngZ(90 * CH_C_DEG_TO_RAD);
-            init_loc = ChVector<>(lane1_x, -70, init_z);
+            init_rot = QuatFromAngleZ(90 * CH_C_DEG_TO_RAD);
+            init_loc = ChVector3d(lane1_x, -70, init_z);
             break;
         case 1:
-            init_rot = Q_from_AngZ(90 * CH_C_DEG_TO_RAD);
-            init_loc = ChVector<>(lane2_x, -70, init_z + 0.5);
+            init_rot = QuatFromAngleZ(90 * CH_C_DEG_TO_RAD);
+            init_loc = ChVector3d(lane2_x, -70, init_z + 0.5);
             break;
         default:
             std::cerr << "No initial location specificied for this rank. Extra case needed?" << std::endl;
@@ -215,7 +215,7 @@ int main(int argc, char* argv[]) {
     // ----------
 
     // These two points just define a straight line in the direction the vehicle is oriented
-    auto curve_pts = std::vector<ChVector<>>({init_loc, init_loc + ChVector<>(0, 140, 0)});
+    auto curve_pts = std::vector<ChVector3d>({init_loc, init_loc + ChVector3d(0, 140, 0)});
     auto path = chrono_types::make_shared<ChBezierCurve>(curve_pts);
 
     // These are all parameters for a ChPathFollowerACCDriver
@@ -253,7 +253,7 @@ int main(int argc, char* argv[]) {
     // Create the vehicle Irrlicht interface
     std::shared_ptr<ChWheeledVehicleVisualSystemIrrlicht> vis;
     if (use_irrlicht_vis) {
-        ChVector<> track_point(0.0, 0.0, 1.75);
+        ChVector3d track_point(0.0, 0.0, 1.75);
 
         vis = chrono_types::make_shared<ChWheeledVehicleVisualSystemIrrlicht>();
         vis->SetWindowTitle("SynChrono Vehicle Demo");
@@ -272,7 +272,7 @@ int main(int argc, char* argv[]) {
         sensor_manager.scene->AddPointLight({100, 100, 100}, {2, 2, 2}, 5000);
 
         // Based on Irrlicht chase cam - slightly above and behind the vehicle
-        chrono::ChFrame<double> chase_pose({-6, 0, 1.5}, Q_from_AngAxis(0, {1, 0, 0}));
+        chrono::ChFrame<double> chase_pose({-6, 0, 1.5}, QuatFromAngleAxis(0, {1, 0, 0}));
         auto chase_cam =
             chrono_types::make_shared<ChCameraSensor>(my_sedan.GetChassisBody(),  // body camera is attached to
                                                       30.0f,                      // update rate in Hz

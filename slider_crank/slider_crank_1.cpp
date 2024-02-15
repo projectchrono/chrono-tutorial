@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
     //    Specify the gravitational acceleration vector, consistent with the
     //    global reference frame having Z up.
     ChSystemNSC system;
-    system.Set_G_acc(ChVector<>(0, 0, -9.81));
+    system.Set_G_acc(ChVector3d(0, 0, -9.81));
 
     // 2. Create the rigid bodies of the slider-crank mechanical system.
     //    For each body, specify:
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     ground->SetBodyFixed(true);
 
     auto cyl_g = chrono_types::make_shared<ChVisualShapeCylinder>(0.03, 0.4);
-    ground->AddVisualShape(cyl_g, ChFrame<>(VNULL, Q_from_AngX(CH_C_PI_2)));
+    ground->AddVisualShape(cyl_g, ChFrame<>(VNULL, QuatFromAngleX(CH_C_PI_2)));
 
     // Crank
     auto crank = chrono_types::make_shared<ChBody>();
@@ -73,8 +73,8 @@ int main(int argc, char* argv[]) {
     crank->SetIdentifier(1);
     crank->SetName("crank");
     crank->SetMass(1.0);
-    crank->SetInertiaXX(ChVector<>(0.005, 0.1, 0.1));
-    crank->SetPos(ChVector<>(-1, 0, 0));
+    crank->SetInertiaXX(ChVector3d(0.005, 0.1, 0.1));
+    crank->SetPos(ChVector3d(-1, 0, 0));
     crank->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
     auto box_c = chrono_types::make_shared<ChVisualShapeBox>(1.9, 0.1, 0.1);
@@ -83,11 +83,11 @@ int main(int argc, char* argv[]) {
 
     auto cyl_c = chrono_types::make_shared<ChVisualShapeCylinder>(0.05, 0.2);
     cyl_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
-    crank->AddVisualShape(cyl_c, ChFrame<>(ChVector<>(1, 0, 0), Q_from_AngX(CH_C_PI_2)));
+    crank->AddVisualShape(cyl_c, ChFrame<>(ChVector3d(1, 0, 0), QuatFromAngleX(CH_C_PI_2)));
 
     auto sph_c = chrono_types::make_shared<ChVisualShapeSphere>(0.05);
     sph_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
-    crank->AddVisualShape(sph_c, ChFrame<>(ChVector<>(-1, 0, 0)));
+    crank->AddVisualShape(sph_c, ChFrame<>(ChVector3d(-1, 0, 0)));
 
     // Slider
     auto slider = chrono_types::make_shared<ChBody>();
@@ -95,8 +95,8 @@ int main(int argc, char* argv[]) {
     slider->SetIdentifier(2);
     slider->SetName("slider");
     slider->SetMass(1.0);
-    slider->SetInertiaXX(ChVector<>(0.05, 0.05, 0.05));
-    slider->SetPos(ChVector<>(2, 0, 0));
+    slider->SetInertiaXX(ChVector3d(0.05, 0.05, 0.05));
+    slider->SetPos(ChVector3d(2, 0, 0));
     slider->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
     auto box_s = chrono_types::make_shared<ChVisualShapeBox>(0.4, 0.2, 0.2);
@@ -120,8 +120,8 @@ int main(int argc, char* argv[]) {
     // - a rotation of +90 degrees around y (z2x)
     ChQuaternion<> z2y;
     ChQuaternion<> z2x;
-    z2y.Q_from_AngAxis(-CH_C_PI / 2, ChVector<>(1, 0, 0));
-    z2x.Q_from_AngAxis(CH_C_PI / 2, ChVector<>(0, 1, 0));
+    z2y.SetFromAngleAxis(-CH_C_PI / 2, ChVector3d(1, 0, 0));
+    z2x.SetFromAngleAxis(CH_C_PI / 2, ChVector3d(0, 1, 0));
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 1.2
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
     // align it with the X axis of the global reference frame.
     auto prismatic_ground_slider = chrono_types::make_shared<ChLinkLockPrismatic>();
     prismatic_ground_slider->SetName("prismatic_ground_slider");
-    prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector<>(2, 0, 0), z2x));
+    prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector3d(2, 0, 0), z2x));
     system.AddLink(prismatic_ground_slider);
 
     //// -------------------------------------------------------------------------
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
     //// -------------------------------------------------------------------------
 
     // 4. Write the system hierarchy to the console (default log output destination)
-    system.ShowHierarchy(GetLog());
+    system.ShowHierarchy(std::cout);
 
     // 5. Prepare visualization with Irrlicht
     //    Note that Irrlicht uses left-handed frames with Y up.
@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
     vis->Initialize();
     vis->AddLogo();
     vis->AddSkyBox();
-    vis->AddCamera(ChVector<>(2, -5, 0), ChVector<>(2, 0, 0));
+    vis->AddCamera(ChVector3d(2, -5, 0), ChVector3d(2, 0, 0));
     vis->AddTypicalLights();
     vis->AttachSystem(&system);
 
@@ -175,7 +175,7 @@ int main(int argc, char* argv[]) {
         vis->Render();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(vis.get(), 1, 1, 20, 20, ChCoordsys<>(ChVector<>(0.01, 0, 0.01), Q_from_AngX(CH_C_PI_2)),
+        tools::drawGrid(vis.get(), 1, 1, 20, 20, ChCoordsys<>(ChVector3d(0.01, 0, 0.01), QuatFromAngleX(CH_C_PI_2)),
                         ChColor(0.6f, 0.6f, 0.6f), true);
         tools::drawAllCOGs(vis.get(), 1.0);
 

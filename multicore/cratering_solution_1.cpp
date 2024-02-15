@@ -55,7 +55,7 @@ double r_g = 2e-3;
 double rho_g = 2500;
 double vol_g = (4.0 / 3) * CH_C_PI * r_g * r_g * r_g;
 double mass_g = rho_g * vol_g;
-ChVector<> inertia_g = 0.4 * mass_g * r_g * r_g * ChVector<>(1, 1, 1);
+ChVector3d inertia_g = 0.4 * mass_g * r_g * r_g * ChVector3d(1, 1, 1);
 
 float Y_g = 1e7f;
 float mu_g = 0.3f;
@@ -67,7 +67,7 @@ double R_b = 1.5e-2;
 double rho_b = 700;
 double vol_b = (4.0 / 3) * CH_C_PI * R_b * R_b * R_b;
 double mass_b = rho_b * vol_b;
-ChVector<> inertia_b = 0.4 * mass_b * R_b * R_b * ChVector<>(1, 1, 1);
+ChVector3d inertia_b = 0.4 * mass_b * R_b * R_b * ChVector3d(1, 1, 1);
 
 float Y_b = 1e8f;
 float mu_b = 0.3f;
@@ -93,12 +93,12 @@ double initial_velocity = 0;
 // -----------------------------------------------------------------------------
 void CreateContainer(ChSystemMulticore* system) {
     // Create a material for the container
-    auto material_c = chrono_types::make_shared<ChMaterialSurfaceNSC>();
+    auto material_c = chrono_types::make_shared<ChContactMaterialNSC>();
     material_c->SetFriction(mu_c);
 
     // Create the container. This utility function creates the container body (fixed to "ground")
     // and sets both the contact and visualization shapes.
-    utils::CreateBoxContainer(system, binId, material_c, ChVector<>(hDimX, hDimY, hDimZ), hThickness);
+    utils::CreateBoxContainer(system, binId, material_c, ChVector3d(hDimX, hDimY, hDimZ), hThickness);
 }
 
 // -----------------------------------------------------------------------------
@@ -107,7 +107,7 @@ void CreateContainer(ChSystemMulticore* system) {
 // -----------------------------------------------------------------------------
 std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     // Create a contact material for the falling ball
-    auto material_b = chrono_types::make_shared<ChMaterialSurfaceNSC>();
+    auto material_b = chrono_types::make_shared<ChContactMaterialNSC>();
     material_b->SetFriction(mu_b);
 
     // Create the falling ball body
@@ -116,9 +116,9 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
     ball->SetInertiaXX(inertia_b);
-    ball->SetPos(ChVector<>(0, 0, initial_height));
+    ball->SetPos(ChVector3d(0, 0, initial_height));
     ball->SetRot(ChQuaternion<>(1, 0, 0, 0));
-    ball->SetPos_dt(ChVector<>(0, 0, initial_velocity));
+    ball->SetPos_dt(ChVector3d(0, 0, initial_velocity));
     ball->SetCollide(true);
     ball->SetBodyFixed(false);
 
@@ -138,7 +138,7 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
 // -----------------------------------------------------------------------------
 void CreateObjects(ChSystemMulticore* system) {
     // Create a contact material for granular bodies
-    auto material_g = chrono_types::make_shared<ChMaterialSurfaceNSC>();
+    auto material_g = chrono_types::make_shared<ChContactMaterialNSC>();
     material_g->SetFriction(mu_g);
 
     //// ********************************************************************************
@@ -157,7 +157,7 @@ void CreateObjects(ChSystemMulticore* system) {
     gen.setBodyIdentifier(Id_g);
 
     // Generate the granular bodies in a box within the container, using Poisson disk sampling
-    gen.CreateObjectsBox(sampler, ChVector<>(0, 0, hDimZ / 2), ChVector<>(hDimX - r_g, hDimY - r_g, hDimZ / 2 - r_g));
+    gen.CreateObjectsBox(sampler, ChVector3d(0, 0, hDimZ / 2), ChVector3d(hDimX - r_g, hDimY - r_g, hDimZ / 2 - r_g));
 
     std::cout << "Generated " << gen.getTotalNumBodies() << " bodies" << std::endl;
 }
@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Using " << threads << " threads" << std::endl;
 
     // Set gravitational acceleration
-    system->Set_G_acc(ChVector<>(0, 0, -9.81));
+    system->Set_G_acc(ChVector3d(0, 0, -9.81));
 
     // Edit system settings
     system->GetSettings()->solver.use_full_inertia_tensor = false;
@@ -221,7 +221,7 @@ int main(int argc, char* argv[]) {
     vis.SetWindowSize(1280, 720);
     vis.SetRenderMode(opengl::WIREFRAME);
     vis.Initialize();
-    vis.AddCamera(ChVector<>(0, -7 * hDimY, hDimZ), ChVector<>(0, 0, hDimZ));
+    vis.AddCamera(ChVector3d(0, -7 * hDimY, hDimZ), ChVector3d(0, 0, hDimZ));
     vis.SetCameraVertical(CameraVerticalDir::Z);
 
     // Run simulation loop (ESC to terminate)
@@ -234,7 +234,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    const ChVector<>& pos = ball->GetPos();
+    const ChVector3d& pos = ball->GetPos();
     std::cout << system->GetChTime() << "  " << pos.z() << std::endl;
 #else
     // If Chrono::openGL is not available, run simulation to specified end time
@@ -242,7 +242,7 @@ int main(int argc, char* argv[]) {
     int sim_frame = 0;
     while (system->GetChTime() < time_end) {
         if (sim_frame % out_steps == 0) {
-            const ChVector<>& pos = ball->GetPos();
+            const ChVector3d& pos = ball->GetPos();
             std::cout << system->GetChTime() << "  " << pos.z() << std::endl;
         }
         system->DoStepDynamics(time_step);

@@ -21,6 +21,7 @@
 
 #include "chrono/ChConfig.h"
 #include "chrono/core/ChRealtimeStep.h"
+#include "chrono/core/ChRandom.h"
 #include "chrono/physics/ChSystemSMC.h"
 #include "chrono/physics/ChSystem.h"
 #include "chrono/physics/ChBodyEasy.h"
@@ -49,7 +50,7 @@ std::string transmission_file("vehicle/AutomaticTransmissionSimpleMap.json");
 std::string rigidterrain_file("terrain/RigidPlane.json");
 
 // Initial vehicle position and orientation
-ChVector<> initLoc(0, 0, 1.0);
+ChVector3d initLoc(0, 0, 1.0);
 ChQuaternion<> initRot(1, 0, 0, 0);
 
 // Simulation step size
@@ -59,7 +60,7 @@ double step_size = 2e-3;
 double render_step_size = 1.0 / 50;  // FPS = 50
 
 // Point on chassis tracked by the camera
-ChVector<> trackPoint(0.0, 0.0, 1.75);
+ChVector3d trackPoint(0.0, 0.0, 1.75);
 
 // Contact method
 auto NSC_SMC = ChContactMethod::NSC;
@@ -183,16 +184,16 @@ int main(int argc, char* argv[]) {
 
 void AddMovingObstacles(ChSystem* system) {
     // Create contact material, of appropriate type. Use default properties
-    std::shared_ptr<ChMaterialSurface> material;
+    std::shared_ptr<ChContactMaterial> material;
     switch (NSC_SMC) {
         case ChContactMethod::NSC: {
-            auto matNSC = chrono_types::make_shared<ChMaterialSurfaceNSC>();
+            auto matNSC = chrono_types::make_shared<ChContactMaterialNSC>();
             // Change NSC material properties as desired
             material = matNSC;
             break;
         }
         case ChContactMethod::SMC: {
-            auto matSMC = chrono_types::make_shared<ChMaterialSurfaceSMC>();
+            auto matSMC = chrono_types::make_shared<ChContactMaterialSMC>();
             // Change SMC material properties as desired
             material = matSMC;
             break;
@@ -205,17 +206,17 @@ void AddMovingObstacles(ChSystem* system) {
     int numObstacles = 10;
 
     for (int i = 0; i < numObstacles; i++) {
-        double o_sizeX = 1.0 + 6.0 * ChRandom();
-        double o_sizeY = 0.3 + 0.4 * ChRandom();
-        double o_sizeZ = 0.05 + 0.2 * ChRandom();
+        double o_sizeX = 1.0 + 6.0 * ChRandom::Get();
+        double o_sizeY = 0.3 + 0.4 * ChRandom::Get();
+        double o_sizeZ = 0.05 + 0.2 * ChRandom::Get();
         auto obstacle = chrono_types::make_shared<ChBodyEasyBox>(o_sizeX, o_sizeY, o_sizeZ, 2000.0, true, true, material);
 
-        double o_posX = (ChRandom() - 0.5) * 0.4 * sizeX;
-        double o_posY = (ChRandom() - 0.5) * 0.4 * sizeY;
+        double o_posX = (ChRandom::Get() - 0.5) * 0.4 * sizeX;
+        double o_posY = (ChRandom::Get() - 0.5) * 0.4 * sizeY;
         double o_posZ = height + 4;
-        ChQuaternion<> rot(ChRandom(), ChRandom(), ChRandom(), ChRandom());
+        ChQuaternion<> rot(ChRandom::Get(), ChRandom::Get(), ChRandom::Get(), ChRandom::Get());
         rot.Normalize();
-        obstacle->SetPos(ChVector<>(o_posX, o_posY, o_posZ));
+        obstacle->SetPos(ChVector3d(o_posX, o_posY, o_posZ));
         obstacle->SetRot(rot);
 
         system->AddBody(obstacle);
@@ -224,16 +225,16 @@ void AddMovingObstacles(ChSystem* system) {
 
 void AddFixedObstacles(ChSystem* system) {
     // Create contact material, of appropriate type. Use default properties
-    std::shared_ptr<ChMaterialSurface> material;
+    std::shared_ptr<ChContactMaterial> material;
     switch (NSC_SMC) {
         case ChContactMethod::NSC: {
-            auto matNSC = chrono_types::make_shared<ChMaterialSurfaceNSC>();
+            auto matNSC = chrono_types::make_shared<ChContactMaterialNSC>();
             // Change NSC material properties as desired
             material = matNSC;
             break;
         }
         case ChContactMethod::SMC: {
-            auto matSMC = chrono_types::make_shared<ChMaterialSurfaceSMC>();
+            auto matSMC = chrono_types::make_shared<ChContactMaterialSMC>();
             // Change SMC material properties as desired
             material = matSMC;
             break;
@@ -244,15 +245,15 @@ void AddFixedObstacles(ChSystem* system) {
     double length = 20;
     auto obstacle = chrono_types::make_shared<ChBodyEasyCylinder>(geometry::ChAxis::Y, radius, length, 2000, true, true, material);
 
-    obstacle->SetPos(ChVector<>(-20, 0, -2.7));
+    obstacle->SetPos(ChVector3d(-20, 0, -2.7));
     obstacle->SetBodyFixed(true);
 
     system->AddBody(obstacle);
 
     for (int i = 0; i < 8; ++i) {
         auto stoneslab = chrono_types::make_shared<ChBodyEasyBox>(1.0, 5.0, 0.5, 2000, true, true, material);
-        stoneslab->SetPos(ChVector<>(-1.2 * i + 22, -1.5, -0.25));
-        stoneslab->SetRot(Q_from_AngAxis(15 * CH_C_DEG_TO_RAD, VECT_Y));
+        stoneslab->SetPos(ChVector3d(-1.2 * i + 22, -1.5, -0.25));
+        stoneslab->SetRot(QuatFromAngleAxis(15 * CH_C_DEG_TO_RAD, VECT_Y));
         stoneslab->SetBodyFixed(true);
         system->AddBody(stoneslab);
     }

@@ -55,7 +55,7 @@ using namespace chrono::sensor;
 // =============================================================================
 
 // Initial vehicle location and orientation
-ChVector<> initLoc(0, 0, 0.5);
+ChVector3d initLoc(0, 0, 0.5);
 ChQuaternion<> initRot(1, 0, 0, 0);
 
 // Visualization type for vehicle parts (PRIMITIVES, MESH, or NONE)
@@ -128,7 +128,7 @@ float lidar_vmin = (float)(-CH_C_PI / 6);  // 30 degrees down
 // =============================================================================
 
 int main(int argc, char* argv[]) {
-    GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+    std::cout << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
 
     // Path to Chrono data files (textures, etc.)
     SetChronoDataPath(CHRONO_DATA_DIR);
@@ -194,7 +194,7 @@ int main(int argc, char* argv[]) {
 
     auto vis = chrono_types::make_shared<ChWheeledVehicleVisualSystemIrrlicht>();
     vis->SetWindowTitle("Gator Demo");
-    vis->SetChaseCamera(ChVector<>(0.0, 0.0, 2.0), 5.0, 0.05);
+    vis->SetChaseCamera(ChVector3d(0.0, 0.0, 2.0), 5.0, 0.05);
     vis->Initialize();
     vis->AddTypicalLights();
     vis->AddSkyBox();
@@ -242,7 +242,7 @@ int main(int argc, char* argv[]) {
     auto cam = chrono_types::make_shared<ChCameraSensor>(
         gator.GetChassisBody(),                                              // body camera is attached to
         cam_update_rate,                                                     // update rate in Hz
-        chrono::ChFrame<double>({-8, 0, 3}, Q_from_AngAxis(.2, {0, 1, 0})),  // offset pose
+        chrono::ChFrame<double>({-8, 0, 3}, QuatFromAngleAxis(.2, {0, 1, 0})),  // offset pose
         image_width,                                                         // image width
         image_height,                                                        // image height
         cam_fov,
@@ -262,7 +262,7 @@ int main(int argc, char* argv[]) {
     auto cam2 = chrono_types::make_shared<ChCameraSensor>(
         gator.GetChassisBody(),                                                 // body camera is attached to
         cam_update_rate,                                                        // update rate in Hz
-        chrono::ChFrame<double>({.1, 0, 1.45}, Q_from_AngAxis(.2, {0, 1, 0})),  // offset pose
+        chrono::ChFrame<double>({.1, 0, 1.45}, QuatFromAngleAxis(.2, {0, 1, 0})),  // offset pose
         image_width,                                                            // image width
         image_height,                                                           // image height
         cam_fov,
@@ -279,7 +279,7 @@ int main(int argc, char* argv[]) {
     auto lidar = chrono_types::make_shared<ChLidarSensor>(
         gator.GetChassisBody(),                                                   // body to which the IMU is attached
         lidar_update_rate,                                                        // update rate
-        chrono::ChFrame<double>({-.282, 0, 1.82}, Q_from_AngAxis(0, {1, 0, 0})),  // offset pose from body
+        chrono::ChFrame<double>({-.282, 0, 1.82}, QuatFromAngleAxis(0, {1, 0, 0})),  // offset pose from body
         horizontal_samples,                                                       // horizontal samples
         vertical_samples,                                                         // vertical samples/channels
         lidar_hfov,                                                               // horizontal field of view
@@ -328,7 +328,7 @@ int main(int argc, char* argv[]) {
         // Change the camera location so that is orbits vehicle
         cam->SetOffsetPose(
             chrono::ChFrame<double>({-orbit_radius * cos(time * orbit_rate), -orbit_radius * sin(time * orbit_rate), 3},
-                                    Q_from_AngAxis(time * orbit_rate, {0, 0, 1})));
+                                    QuatFromAngleAxis(time * orbit_rate, {0, 0, 1})));
 
         // Update the sensor manager -> this will perform all synchronize, render, augment functions in Chrono::Sensor
         manager->Update();
