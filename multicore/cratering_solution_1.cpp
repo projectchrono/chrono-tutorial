@@ -98,7 +98,7 @@ void CreateContainer(ChSystemMulticore* system) {
 
     // Create the container. This utility function creates the container body (fixed to "ground")
     // and sets both the contact and visualization shapes.
-    utils::CreateBoxContainer(system, binId, material_c, ChVector3d(hDimX, hDimY, hDimZ), hThickness);
+    utils::CreateBoxContainer(system, binId, material_c, ChVector3d(2 * hDimX, 2 * hDimY, 2 * hDimZ), hThickness);
 }
 
 // -----------------------------------------------------------------------------
