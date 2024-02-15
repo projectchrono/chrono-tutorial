@@ -25,6 +25,7 @@
 #include "chrono/physics/ChSystemSMC.h"
 #include "chrono/physics/ChSystem.h"
 #include "chrono/physics/ChBodyEasy.h"
+#include "chrono/core/ChRandom.h"
 
 #include "chrono/utils/ChUtilsInputOutput.h"
 
@@ -46,7 +47,7 @@ using namespace chrono;
 
 // =============================================================================
 
-std::string vehicle_file("vehicle/WheeledVehicle_mod.json");
+std::string vehicle_file("vehicle/WheeledVehicle.json");
 std::string tire_file("vehicle/RigidTire.json");
 std::string engine_file("vehicle/EngineSimple.json");
 std::string transmission_file("vehicle/AutomaticTransmissionSimpleMap.json");

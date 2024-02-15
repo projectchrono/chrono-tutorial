@@ -165,9 +165,10 @@ int main(int argc, char* argv[]) {
                                                                   0.02,                 // radius
                                                                   0.1,                  // height
                                                                   1000,                 // density
-                                                                  true,                 // do collide
-                                                                  true);                // do visualize
-
+                                                                  true,                 // do visualize
+                                                                  false);                // do collide
+    // for now the cylinder it is set to NOT collide; it will be enabled in the next step
+    
     // move cylinder to end of beam
     cylinder->SetPos(beam_nodes.back()->GetPos() + ChVector3d(0, -0.05, 0));
 

@@ -59,6 +59,8 @@ int main(int argc, char* argv[]) {
     //    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC penalty in contacts
     ChSystemSMC system;
     system.Set_G_acc(ChVector3d(0, -9.81, 0));
+    system.SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
+
 
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
@@ -189,8 +191,8 @@ int main(int argc, char* argv[]) {
 
     auto floor = chrono_types::make_shared<ChBodyEasyBox>(4, 0.2, 4,      // x,y,z size
                                                           1000,           // density
+                                                          true,           // visualize
                                                           true,           // collide
-                                                          true,           // visible
                                                           mysurfmaterial  // contact material
     );
 

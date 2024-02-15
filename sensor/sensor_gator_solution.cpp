@@ -29,8 +29,8 @@
 #include "chrono_vehicle/wheeled_vehicle/ChWheeledVehicleVisualSystemIrrlicht.h"
 
 #include "chrono_models/vehicle/gator/Gator.h"
-#include "chrono_models/vehicle/gator/Gator_EngineSimple.h"
 #include "chrono_models/vehicle/gator/Gator_AutomaticTransmissionSimple.h"
+#include "chrono_models/vehicle/gator/Gator_EngineSimple.h"
 
 #include "chrono_thirdparty/filesystem/path.h"
 
@@ -128,7 +128,7 @@ float lidar_vmin = (float)(-CH_C_PI / 6);  // 30 degrees down
 // =============================================================================
 
 int main(int argc, char* argv[]) {
-    std::cout << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+    std::cout << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << std::endl;
 
     // Path to Chrono data files (textures, etc.)
     SetChronoDataPath(CHRONO_DATA_DIR);
@@ -149,6 +149,7 @@ int main(int argc, char* argv[]) {
     gator.SetTireStepSize(tire_step_size);
     gator.SetAerodynamicDrag(0.5, 5.0, 1.2);
     gator.Initialize();
+    gator.GetSystem()->SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
 
     gator.SetChassisVisualizationType(chassis_vis_type);
     gator.SetSuspensionVisualizationType(suspension_vis_type);
@@ -240,11 +241,11 @@ int main(int argc, char* argv[]) {
 
     // third person camera
     auto cam = chrono_types::make_shared<ChCameraSensor>(
-        gator.GetChassisBody(),                                              // body camera is attached to
-        cam_update_rate,                                                     // update rate in Hz
+        gator.GetChassisBody(),                                                 // body camera is attached to
+        cam_update_rate,                                                        // update rate in Hz
         chrono::ChFrame<double>({-8, 0, 3}, QuatFromAngleAxis(.2, {0, 1, 0})),  // offset pose
-        image_width,                                                         // image width
-        image_height,                                                        // image height
+        image_width,                                                            // image width
+        image_height,                                                           // image height
         cam_fov,
         super_samples);  // fov, lag, exposure
     cam->SetName("3rd Person Camera Sensor");
@@ -260,11 +261,11 @@ int main(int argc, char* argv[]) {
 
     // roof mounted camera .1, 0, 1.45
     auto cam2 = chrono_types::make_shared<ChCameraSensor>(
-        gator.GetChassisBody(),                                                 // body camera is attached to
-        cam_update_rate,                                                        // update rate in Hz
+        gator.GetChassisBody(),                                                    // body camera is attached to
+        cam_update_rate,                                                           // update rate in Hz
         chrono::ChFrame<double>({.1, 0, 1.45}, QuatFromAngleAxis(.2, {0, 1, 0})),  // offset pose
-        image_width,                                                            // image width
-        image_height,                                                           // image height
+        image_width,                                                               // image width
+        image_height,                                                              // image height
         cam_fov,
         super_samples);  // fov, lag, exposure
     cam2->SetName("Roof Mounted Camera Sensor");
@@ -277,21 +278,21 @@ int main(int argc, char* argv[]) {
     manager->AddSensor(cam2);
 
     auto lidar = chrono_types::make_shared<ChLidarSensor>(
-        gator.GetChassisBody(),                                                   // body to which the IMU is attached
-        lidar_update_rate,                                                        // update rate
+        gator.GetChassisBody(),  // body to which the IMU is attached
+        lidar_update_rate,       // update rate
         chrono::ChFrame<double>({-.282, 0, 1.82}, QuatFromAngleAxis(0, {1, 0, 0})),  // offset pose from body
-        horizontal_samples,                                                       // horizontal samples
-        vertical_samples,                                                         // vertical samples/channels
-        lidar_hfov,                                                               // horizontal field of view
-        lidar_vmax,                                                               // vertical field of view
-        lidar_vmin,                                                               // vertical field of view
-        100.0f,                                                                   //
-        LidarBeamShape::RECTANGULAR,                                              //
-        1,                                                                        //
-        0.0f,                                                                     //
-        0.0f,                                                                     //
-        LidarReturnMode::STRONGEST_RETURN,                                        //
-        0.1f                                                                      //
+        horizontal_samples,                                                          // horizontal samples
+        vertical_samples,                                                            // vertical samples/channels
+        lidar_hfov,                                                                  // horizontal field of view
+        lidar_vmax,                                                                  // vertical field of view
+        lidar_vmin,                                                                  // vertical field of view
+        100.0f,                                                                      //
+        LidarBeamShape::RECTANGULAR,                                                 //
+        1,                                                                           //
+        0.0f,                                                                        //
+        0.0f,                                                                        //
+        LidarReturnMode::STRONGEST_RETURN,                                           //
+        0.1f                                                                         //
     );
     lidar->SetName("Lidar Sensor");
     lidar->SetLag(1 / lidar_update_rate);

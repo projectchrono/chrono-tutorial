@@ -59,6 +59,8 @@ int main(int argc, char* argv[]) {
     //    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC  penalty in contacts
     ChSystemSMC system;
 
+    system.SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
+
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
     auto mesh = chrono_types::make_shared<ChMesh>();
@@ -126,8 +128,8 @@ int main(int argc, char* argv[]) {
 
     auto floor = chrono_types::make_shared<ChBodyEasyBox>(4, 0.2, 4,      // x,y,z size
                                                           1000,           // density
-                                                          true,           // collide
                                                           true,           // visible
+                                                          true,           // collide
                                                           mysurfmaterial  // contact material
     );
 

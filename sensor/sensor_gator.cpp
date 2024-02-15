@@ -20,8 +20,8 @@
 // =============================================================================
 
 #include "chrono/core/ChRealtimeStep.h"
-#include "chrono/utils/ChUtilsInputOutput.h"
 #include "chrono/physics/ChBodyEasy.h"
+#include "chrono/utils/ChUtilsInputOutput.h"
 
 #include "chrono_vehicle/ChVehicleModelData.h"
 #include "chrono_vehicle/driver/ChInteractiveDriverIRR.h"
@@ -29,25 +29,22 @@
 #include "chrono_vehicle/wheeled_vehicle/ChWheeledVehicleVisualSystemIrrlicht.h"
 
 #include "chrono_models/vehicle/gator/Gator.h"
-#include "chrono_models/vehicle/gator/Gator_EngineSimple.h"
 #include "chrono_models/vehicle/gator/Gator_AutomaticTransmissionSimple.h"
+#include "chrono_models/vehicle/gator/Gator_EngineSimple.h"
 
 #include "chrono_thirdparty/filesystem/path.h"
 
-#include "chrono_sensor/sensors/ChCameraSensor.h"
-#include "chrono_sensor/sensors/ChLidarSensor.h"
 #include "chrono_sensor/ChSensorManager.h"
 #include "chrono_sensor/filters/ChFilterAccess.h"
 #include "chrono_sensor/filters/ChFilterPCfromDepth.h"
-#include "chrono_sensor/filters/ChFilterVisualize.h"
 #include "chrono_sensor/filters/ChFilterSave.h"
 #include "chrono_sensor/filters/ChFilterSavePtCloud.h"
+#include "chrono_sensor/filters/ChFilterVisualize.h"
 #include "chrono_sensor/filters/ChFilterVisualizePointCloud.h"
+#include "chrono_sensor/sensors/ChCameraSensor.h"
 #include "chrono_sensor/sensors/ChGPSSensor.h"
 #include "chrono_sensor/sensors/ChIMUSensor.h"
-#include "chrono_sensor/ChSensorManager.h"
-#include "chrono_sensor/filters/ChFilterAccess.h"
-#include "chrono_sensor/filters/ChFilterVisualize.h"
+#include "chrono_sensor/sensors/ChLidarSensor.h"
 
 using namespace chrono;
 using namespace chrono::vehicle;
@@ -123,7 +120,7 @@ float lidar_vmin = (float)(-CH_C_PI / 6);  // 30 degrees down
 // =============================================================================
 
 int main(int argc, char* argv[]) {
-    std::cout << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+    std::cout << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << std::endl;
 
     // Path to Chrono data files (textures, etc.)
     SetChronoDataPath(CHRONO_DATA_DIR);
@@ -144,6 +141,7 @@ int main(int argc, char* argv[]) {
     gator.SetTireStepSize(tire_step_size);
     gator.SetAerodynamicDrag(0.5, 5.0, 1.2);
     gator.Initialize();
+    gator.GetSystem()->SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
 
     gator.SetChassisVisualizationType(chassis_vis_type);
     gator.SetSuspensionVisualizationType(suspension_vis_type);
@@ -170,8 +168,8 @@ int main(int argc, char* argv[]) {
             patch->SetTexture(vehicle::GetDataFile("terrain/textures/tile4.jpg"), 200, 200);
             break;
         case RigidTerrain::PatchType::HEIGHT_MAP:
-            patch = terrain.AddPatch(patch_mat, CSYSNORM, vehicle::GetDataFile("terrain/height_maps/test64.bmp"),
-                                     128, 128, 0, 4);
+            patch = terrain.AddPatch(patch_mat, CSYSNORM, vehicle::GetDataFile("terrain/height_maps/test64.bmp"), 128,
+                                     128, 0, 4);
             patch->SetTexture(vehicle::GetDataFile("terrain/textures/grass.jpg"), 16, 16);
             break;
         case RigidTerrain::PatchType::MESH:
