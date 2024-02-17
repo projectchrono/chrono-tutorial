@@ -29,10 +29,8 @@ import pychrono as chrono
 import pychrono.fea as fea
 import pychrono.irrlicht as chronoirr
 
-
-
 # 0. Set the path to the Chrono data folder
-CHRONO_DATA_DIR = "C:/codes/Chrono/Chrono_Source/data/"
+CHRONO_DATA_DIR = "E:/Repositories/chrono/data/"
 chrono.SetChronoDataPath(CHRONO_DATA_DIR)
 
 # 1. Create the physical system that will handle all finite elements and constraints.
@@ -40,7 +38,7 @@ chrono.SetChronoDataPath(CHRONO_DATA_DIR)
 #    Specify the gravitational acceleration vector, consistent with the
 #    global reference frame having Y up (ISO system).
 system = chrono.ChSystemNSC()
-system.Set_G_acc(chrono.ChVectorD(0, -9.81, 0))
+system.Set_G_acc(chrono.ChVector3d(0, -9.81, 0))
 
 
 # 2. Create the mesh that will contain the finite elements, and add it to the system
@@ -79,12 +77,12 @@ length = 1.2  # beam length, in meters
 N_nodes = 16
 for i_ni in range(N_nodes)  :
     # i-th node position
-    position = chrono.ChVectorD(length * (i_ni / (N_nodes - 1)),  # node position, x
+    position = chrono.ChVector3d(length * (i_ni / (N_nodes - 1)),  # node position, x
                                 0.5,                                  # node position, y
                                 0)                                   # node position, z
 
     # i-th node direction
-    direction = chrono.ChVectorD(1.0, 0, 0)
+    direction = chrono.ChVector3d(1.0, 0, 0)
 
     # create the node
     node = fea.ChNodeFEAxyzD(position, direction)
@@ -170,7 +168,7 @@ system.Add(constraint_pos)
 # 7. Make the finite elements visible in the 3D view
 
 #   - FEA fisualization can be managed via an easy
-#     ChVisualizationFEAmesh helper class.
+#     ChVisualShapeFEA helper class.
 #     (Alternatively you could bypass this and output .dat
 #     files at each step, ex. for VTK or Matalb postprocessing)
 #   - This will automatically update a triangle mesh (a ChVisualShapeTriangleMesh
@@ -178,22 +176,21 @@ system.Add(constraint_pos)
 #     coordinates and vertex colours as in the FEA elements.
 #   - Such triangle mesh can be rendered by Irrlicht or POVray or whatever
 #     postprocessor that can handle a coloured ChVisualShapeTriangleMesh).
-#   - Do not forget AddAsset() at the end!
 
-mvisualizebeamA = fea.ChVisualizationFEAmesh(mesh)
-mvisualizebeamA.SetFEMdataType(fea.ChVisualizationFEAmesh.E_PLOT_ANCF_BEAM_AX)
+mvisualizebeamA = chrono.ChVisualShapeFEA(mesh)
+mvisualizebeamA.SetFEMdataType(chrono.ChVisualShapeFEA.DataType_ANCF_BEAM_AX)
 mvisualizebeamA.SetColorscaleMinMax(-0.005, 0.005)
 mvisualizebeamA.SetSmoothFaces(True)
 mvisualizebeamA.SetWireframe(False)
-mesh.AddAsset(mvisualizebeamA)
+mesh.AddVisualShapeFEA(mvisualizebeamA)
 
-mvisualizebeamC = fea.ChVisualizationFEAmesh(mesh)
-mvisualizebeamC.SetFEMglyphType(fea.ChVisualizationFEAmesh.E_GLYPH_NODE_DOT_POS)  # E_GLYPH_NODE_CSYS for ChNodeFEAxyzrot
-mvisualizebeamC.SetFEMdataType(fea.ChVisualizationFEAmesh.E_PLOT_NONE)
+mvisualizebeamC = chrono.ChVisualShapeFEA(mesh)
+mvisualizebeamC.SetFEMglyphType(chrono.ChVisualShapeFEA.GlyphType_NODE_DOT_POS)
+mvisualizebeamC.SetFEMdataType(chrono.ChVisualShapeFEA.DataType_NONE)
 mvisualizebeamC.SetSymbolsThickness(0.006)
 mvisualizebeamC.SetSymbolsScale(0.005)
 mvisualizebeamC.SetZbufferHide(False)
-mesh.AddAsset(mvisualizebeamC)
+mesh.AddVisualShapeFEA(mvisualizebeamC)
 
 
 # 8. Configure the solver and timestepper
@@ -218,50 +215,41 @@ system.SetTimestepperType(chrono.ChTimestepper.Type_EULER_IMPLICIT_LINEARIZED)  
 #    Note that Irrlicht uses left-handed frames with Y up.
 
 # Create the Irrlicht application and set-up the camera.
-application = chronoirr.ChIrrApp(system,                             # pointer to the mechanical system
-                                 "FEA cable collide demo",           # title of the Irrlicht window
-                                 chronoirr.dimension2du(1024, 768),  # window dimension (width x height)
-                                 chronoirr.VerticalDir_Y,            # camera vertical direction
-                                 False,                              # use full screen?
-                                 True,                               # enable stencil shadows?
-                                 True)                               # enable antialiasing?
-
-application.AddLogo()
-application.AddSkyBox()
-application.AddTypicalLights()
-application.AddCamera(chronoirr.vector3df(0.1, 0.2, -2.0),  # camera location
-                      chronoirr.vector3df(0.0, 0.0, 0.0))   # "look at" location
-
-# Let the Irrlicht application convert the visualization assets.
-application.AssetBindAll()
-application.AssetUpdateAll()
+vis = chronoirr.ChVisualSystemIrrlicht()
+vis.SetWindowSize(1024, 768)
+vis.SetWindowTitle("FEA cable collide demo")
+vis.Initialize()
+vis.AddLogo()
+vis.AddSkyBox()
+vis.AddTypicalLights()
+vis.AddCamera(chrono.ChVector3d(0.1, 0.2, -2.0))
+vis.SetSymbolScale(0.1)
+vis.AttachSystem(system)
 
 
 # 10. Perform the simulation.
 
 # Specify the step-size.
-application.SetTimestep(0.01)
-application.SetTryRealtime(True)
+step_size = 0.001
+realtime_timer = chrono.ChRealtimeStepTimer()
 
+while vis.Run():
+    vis.BeginScene() 
 
-while application.GetDevice().run() :
-    # Initialize the graphical scene.
-    application.BeginScene()
-
-    # Render all visualization objects.
-    application.DrawAll()
+    # Render Chrono item assets
+    vis.Render()
 
     # Draw an XZ grid at the global origin to add in visualization.
-    chronoirr.drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
-                       chrono.ChCoordsysD(chrono.ChVectorD(0, 0, 0), chrono.Q_from_AngX(chrono.CH_C_PI_2)),
-                       chronoirr.SColor(255, 80, 100, 100), True)
+    chronoirr.drawGrid(
+        vis, 0.1, 0.1, 20, 20,
+        chrono.ChCoordsysd(chrono.ChVector3d(0, 0, 0), chrono.QuatFromAngleX(chrono.CH_C_PI_2)),
+        chrono.ChColor(0.4, 0.7, 0.4), True)
 
-    # Advance simulation by one step.
-    application.DoStep()
+    vis.EndScene()
 
-    # Finalize the graphical scene.
-    application.EndScene()
+    ## Advance simulation by one step
+    system.DoStepDynamics(step_size)
 
-
-
+    # Spin in place for real time to catch up
+    realtime_timer.Spin(step_size)
 

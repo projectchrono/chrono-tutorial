@@ -32,18 +32,20 @@ import pychrono as chrono
 import pychrono.fea as fea
 import pychrono.irrlicht as chronoirr
 
-
-
-
-
 # 0. Set the path to the Chrono data folder
-CHRONO_DATA_DIR = "C:/codes/Chrono/Chrono_Source/data/"
+CHRONO_DATA_DIR = "E:/Repositories/chrono/data/"
 chrono.SetChronoDataPath(CHRONO_DATA_DIR)
 
 # 1. Create the physical system that will handle all finite elements and constraints.
 
 #    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC  penalty in contacts
 system = chrono.ChSystemSMC()
+
+system.Set_G_acc(chrono.ChVector3d(0, -9.81, 0))
+
+# Enable collision
+system.SetCollisionSystemType(chrono.ChCollisionSystem.Type_BULLET)
+
 
 # 2. Create the mesh that will contain the finite elements, and add it to the system
 
@@ -100,12 +102,12 @@ length = 1.2  # beam length, in meters
 N_nodes = 16
 for i_n  in range(N_nodes): 
 	# i-th node position
-	position = chrono.ChVectorD(length * (i_n / (N_nodes - 1)),  # node position, x
+	position = chrono.ChVector3d(length * (i_n / (N_nodes - 1)),  # node position, x
 						0.5,                                  # node position, y
 						0)                                   # node position, z
 
 	# create the node
-	node = fea.ChNodeFEAxyzrot( chrono.ChFrameD(position) )
+	node = fea.ChNodeFEAxyzrot( chrono.ChFramed(position) )
 
 	# add it to mesh
 	mesh.AddNode(node)
@@ -155,7 +157,7 @@ system.Add(constraint_pos)
 
 # 7. Add a collision mesh to the skin of the finite element mesh
 
-#    - Create a ChMaterialSurfaceSMC , it must be assigned to FEA 
+#    - Create a ChContactMaterialSMC , it must be assigned to FEA 
 #      meshes and rigid bodies. The ChSystemSMC requires it!
 #    - Create a ChContactSurfaceNodeCloud and add to the FEA mesh.
 #      This is the easiest representation of a FEA contact surface: it
@@ -164,8 +166,8 @@ system.Add(constraint_pos)
 #      dense finite elements meshes that collide with large objects.
 
 # Create a surface material to be shared with some objects
-mysurfmaterial = chrono.ChMaterialSurfaceSMC()
-mysurfmaterial.SetYoungModulus(6e4)
+mysurfmaterial = chrono.ChContactMaterialSMC()
+mysurfmaterial.SetYoungModulus(2e4)
 mysurfmaterial.SetFriction(0.3)
 mysurfmaterial.SetRestitution(0.2)
 mysurfmaterial.SetAdhesion(0) 
@@ -190,7 +192,7 @@ floor = chrono.ChBodyEasyBox(
 system.Add(floor)
 
 floor.SetBodyFixed(True)
-floor.SetPos( chrono.ChVectorD(0,-0.1,0) )
+floor.SetPos( chrono.ChVector3d(0,-0.1,0) )
 
 # 9. Make the finite elements visible in the 3D view
 
@@ -205,20 +207,20 @@ floor.SetPos( chrono.ChVectorD(0,-0.1,0) )
 #     postprocessor that can handle a coloured ChTriangleMeshShape).
 #   - Do not forget AddAsset() at the end!
 
-mvisualizebeamA = fea.ChVisualizationFEAmesh(mesh)
-mvisualizebeamA.SetFEMdataType(fea.ChVisualizationFEAmesh.E_PLOT_ANCF_BEAM_AX)
+mvisualizebeamA = chrono.ChVisualShapeFEA(mesh)
+mvisualizebeamA.SetFEMdataType(chrono.ChVisualShapeFEA.DataType_ANCF_BEAM_AX)
 mvisualizebeamA.SetColorscaleMinMax(-0.005, 0.005)
 mvisualizebeamA.SetSmoothFaces(True)
 mvisualizebeamA.SetWireframe(False)
-mesh.AddAsset(mvisualizebeamA)
+mesh.AddVisualShapeFEA(mvisualizebeamA)
 
-mvisualizebeamC = fea.ChVisualizationFEAmesh(mesh)
-mvisualizebeamC.SetFEMglyphType(fea.ChVisualizationFEAmesh.E_GLYPH_NODE_CSYS) 
-mvisualizebeamC.SetFEMdataType(fea.ChVisualizationFEAmesh.E_PLOT_NONE)
+mvisualizebeamC = chrono.ChVisualShapeFEA(mesh)
+mvisualizebeamC.SetFEMglyphType(chrono.ChVisualShapeFEA.GlyphType_NODE_DOT_POS)
+mvisualizebeamC.SetFEMdataType(chrono.ChVisualShapeFEA.DataType_NONE)
 mvisualizebeamC.SetSymbolsThickness(0.006)
 mvisualizebeamC.SetSymbolsScale(0.005)
 mvisualizebeamC.SetZbufferHide(False)
-mesh.AddAsset(mvisualizebeamC)
+mesh.AddVisualShapeFEA(mvisualizebeamC)
 
 
 # 10. Configure the solver and timestepper
@@ -244,48 +246,42 @@ system.SetSolver(solver)
 #    Note that Irrlicht uses left-handed frames with Y up.
 
 # Create the Irrlicht application and set-up the camera.
-application = chronoirr.ChIrrApp(system,                             # pointer to the mechanical system
-								 "FEA cable collide demo",           # title of the Irrlicht window
-								 chronoirr.dimension2du(1024, 768),  # window dimension (width x height)
-								 chronoirr.VerticalDir_Y,            # camera vertical direction
-								 False,                              # use full screen?
-								 True,                               # enable stencil shadows?
-								 True)                               # enable antialiasing?
-
-application.AddLogo()
-application.AddSkyBox()
-application.AddTypicalLights()
-application.AddCamera(chronoirr.vector3df(0.1, 0.2, -2.0),  # camera location
-                      chronoirr.vector3df(0.0, 0.0, 0.0))   # "look at" location
-
-# Let the Irrlicht application convert the visualization assets.
-application.AssetBindAll()
-application.AssetUpdateAll()
+vis = chronoirr.ChVisualSystemIrrlicht()
+vis.SetWindowSize(1024, 768)
+vis.SetWindowTitle("FEA cable collide demo")
+vis.Initialize()
+vis.AddLogo()
+vis.AddSkyBox()
+vis.AddTypicalLights()
+vis.AddCamera(chrono.ChVector3d(0.1, 0.2, -2.0))
+vis.SetSymbolScale(0.1)
+vis.AttachSystem(system)
 
 
 # 12. Perform the simulation.
 
 # Specify the step-size.
-application.SetTimestep(0.001)
-application.SetTryRealtime(False)
+step_size = 0.001
+realtime_timer = chrono.ChRealtimeStepTimer()
 
+while vis.Run():
+    vis.BeginScene() 
 
-while application.GetDevice().run() : 
-    # Initialize the graphical scene.
-    application.BeginScene()
-
-    # Render all visualization objects.
-    application.DrawAll()
+    # Render Chrono item assets
+    vis.Render()
 
     # Draw an XZ grid at the global origin to add in visualization.
-    chronoirr.drawGrid(application.GetVideoDriver(), 0.1, 0.1, 20, 20,
-                       chrono.ChCoordsysD(chrono.ChVectorD(0, 0, 0), chrono.Q_from_AngX(chrono.CH_C_PI_2)),
-                       chronoirr.SColor(255, 80, 100, 100), True)
+    chronoirr.drawGrid(
+        vis, 0.1, 0.1, 20, 20,
+        chrono.ChCoordsysd(chrono.ChVector3d(0, 0, 0), chrono.QuatFromAngleX(chrono.CH_C_PI_2)),
+        chrono.ChColor(0.4, 0.7, 0.4), True)
 
-    # Advance simulation by one step.
-    application.DoStep()
+    vis.EndScene()
 
-    # Finalize the graphical scene.
-    application.EndScene()
+    ## Advance simulation by one step
+    system.DoStepDynamics(step_size)
+
+    # Spin in place for real time to catch up
+    realtime_timer.Spin(step_size)
 
 

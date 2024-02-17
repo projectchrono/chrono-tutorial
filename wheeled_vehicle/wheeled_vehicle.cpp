@@ -147,10 +147,10 @@ int main(int argc, char* argv[]) {
     // ---------------
 
     // Initialize simulation frame counter and simulation time
-    int step_number = 0;
     double time = 0;
 
-    ChRealtimeStepTimer realtime_timer;
+    vehicle.EnableRealtime(true);
+
     while (vis->Run()) {
         // Render scene
         vis->BeginScene();
@@ -172,12 +172,6 @@ int main(int argc, char* argv[]) {
         vehicle.Advance(step_size);
         terrain.Advance(step_size);
         vis->Advance(step_size);
-
-        // Increment frame number
-        step_number++;
-
-        // Spin in place for real time to catch up
-        realtime_timer.Spin(step_size);
     }
 
     return 0;
