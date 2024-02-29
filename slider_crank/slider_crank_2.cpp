@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
 
     // Create a ChFunction object that always returns the constant value PI/2.
     auto fun = chrono_types::make_shared<ChFunctionConst>();
-    fun->Set_yconst(CH_C_PI);
+    fun->SetConstant(CH_C_PI);
 
     // Motor between ground and crank.
     // Note that this also acts as a revolute joint (i.e. it enforces the same
@@ -181,13 +181,13 @@ int main(int argc, char* argv[]) {
     // align it with the X axis of the global reference frame.
     auto prismatic_ground_slider = chrono_types::make_shared<ChLinkLockPrismatic>();
     prismatic_ground_slider->SetName("prismatic_ground_slider");
-    prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector3d(2, 0, 0), z2x));
+    prismatic_ground_slider->Initialize(ground, slider, ChFrame<>(ChVector3d(2, 0, 0), z2x));
     system.AddLink(prismatic_ground_slider);
 
     // Spherical joint between crank and rod
     auto spherical_crank_rod = chrono_types::make_shared<ChLinkLockSpherical>();
     spherical_crank_rod->SetName("spherical_crank_rod");
-    spherical_crank_rod->Initialize(crank, rod, ChCoordsys<>(ChVector3d(-2, 0, 0), QUNIT));
+    spherical_crank_rod->Initialize(crank, rod, ChFrame<>(ChVector3d(-2, 0, 0), QUNIT));
     system.AddLink(spherical_crank_rod);
 
     // Universal joint between rod and slider.

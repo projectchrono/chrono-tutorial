@@ -52,7 +52,6 @@ using namespace chrono::sensor;
 #endif
 
 using namespace chrono;
-using namespace chrono::geometry;
 using namespace chrono::synchrono;
 using namespace chrono::vehicle;
 using namespace chrono::vehicle::sedan;

@@ -273,7 +273,7 @@ void AddFixedObstacles(ChSystem* system) {
     double radius = 3;
     double length = 20;
     auto obstacle =
-        chrono_types::make_shared<ChBodyEasyCylinder>(geometry::ChAxis::Y, radius, length, 2000, true, true, material);
+        chrono_types::make_shared<ChBodyEasyCylinder>(ChAxis::Y, radius, length, 2000, true, true, material);
 
     obstacle->SetPos(ChVector3d(-20, 0, -2.7));
     obstacle->SetBodyFixed(true);

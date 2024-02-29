@@ -108,7 +108,7 @@ z2x.SetFromAngleAxis(chrono.CH_C_PI / 2, chrono.ChVector3d(0, 1, 0))
 ## align it with the Y axis of the global reference frame.
 revolute_ground_crank = chrono.ChLinkLockRevolute()
 revolute_ground_crank.SetName("revolute_ground_crank")
-revolute_ground_crank.Initialize(ground, crank, chrono.ChCoordsysd(chrono.ChVector3d(0, 0, 0), z2y))
+revolute_ground_crank.Initialize(ground, crank, chrono.ChFramed(chrono.ChVector3d(0, 0, 0), z2y))
 system.AddLink(revolute_ground_crank)
 
 ## Prismatic joint between ground and slider.
@@ -117,7 +117,7 @@ system.AddLink(revolute_ground_crank)
 ## align it with the X axis of the global reference frame.
 prismatic_ground_slider = chrono.ChLinkLockPrismatic()
 prismatic_ground_slider.SetName("prismatic_ground_slider")
-prismatic_ground_slider.Initialize(ground, slider, chrono.ChCoordsysd(chrono.ChVector3d(2, 0, 0), z2x))
+prismatic_ground_slider.Initialize(ground, slider, chrono.ChFramed(chrono.ChVector3d(2, 0, 0), z2x))
 system.AddLink(prismatic_ground_slider)
 
 ## Distance constraint between crank and slider.

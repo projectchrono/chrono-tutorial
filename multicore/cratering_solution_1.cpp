@@ -118,7 +118,7 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     ball->SetInertiaXX(inertia_b);
     ball->SetPos(ChVector3d(0, 0, initial_height));
     ball->SetRot(ChQuaternion<>(1, 0, 0, 0));
-    ball->SetPos_dt(ChVector3d(0, 0, initial_velocity));
+    ball->SetLinVel(ChVector3d(0, 0, initial_velocity));
     ball->SetCollide(true);
     ball->SetBodyFixed(false);
 

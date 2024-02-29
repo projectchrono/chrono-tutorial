@@ -131,7 +131,7 @@ z2x.SetFromAngleY(chrono.CH_C_PI / 2)
 ## align it with the X axis of the global reference frame.
 prismatic_ground_slider = chrono.ChLinkLockPrismatic()
 prismatic_ground_slider.SetName("prismatic_ground_slider")
-prismatic_ground_slider.Initialize(ground, slider, chrono.ChCoordsysd(chrono.ChVector3d(2, 0, 0), z2x))
+prismatic_ground_slider.Initialize(ground, slider, chrono.ChFramed(chrono.ChVector3d(2, 0, 0), z2x))
 system.AddLink(prismatic_ground_slider)
 
   #### -------------------------------------------------------------------------

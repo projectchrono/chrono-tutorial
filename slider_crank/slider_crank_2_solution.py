@@ -197,13 +197,13 @@ system.AddLink(engine_ground_crank)
 ## align it with the X axis of the global reference frame.
 prismatic_ground_slider = chrono.ChLinkLockPrismatic()
 prismatic_ground_slider.SetName("prismatic_ground_slider")
-prismatic_ground_slider.Initialize(ground, slider, chrono.ChCoordsysd(chrono.ChVector3d(2, 0, 0), z2x))
+prismatic_ground_slider.Initialize(ground, slider, chrono.ChFramed(chrono.ChVector3d(2, 0, 0), z2x))
 system.AddLink(prismatic_ground_slider)
 
 ## Spherical joint between crank and rod
 spherical_crank_rod = chrono.ChLinkLockSpherical()
 spherical_crank_rod.SetName("spherical_crank_rod")
-spherical_crank_rod.Initialize(crank, rod, chrono.ChCoordsysd(chrono.ChVector3d(-2, 0, 0), chrono.QUNIT))
+spherical_crank_rod.Initialize(crank, rod, chrono.ChFramed(chrono.ChVector3d(-2, 0, 0), chrono.QUNIT))
 system.AddLink(spherical_crank_rod)
 
 ## Universal joint between rod and slider.
@@ -223,7 +223,7 @@ system.AddLink(universal_rod_slider)
 
 prismatic_ground_ball = chrono.ChLinkLockPrismatic()
 prismatic_ground_ball.SetName("prismatic_ground_ball")
-prismatic_ground_ball.Initialize(ground, ball, chrono.ChCoordsysd(chrono.ChVector3d(5.5, 0, 0), z2x))
+prismatic_ground_ball.Initialize(ground, ball, chrono.ChFramed(chrono.ChVector3d(5.5, 0, 0), z2x))
 system.AddLink(prismatic_ground_ball)
 
   #### -------------------------------------------------------------------------

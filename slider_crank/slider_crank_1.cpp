@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
     // align it with the X axis of the global reference frame.
     auto prismatic_ground_slider = chrono_types::make_shared<ChLinkLockPrismatic>();
     prismatic_ground_slider->SetName("prismatic_ground_slider");
-    prismatic_ground_slider->Initialize(ground, slider, ChCoordsys<>(ChVector3d(2, 0, 0), z2x));
+    prismatic_ground_slider->Initialize(ground, slider, ChFrame<>(ChVector3d(2, 0, 0), z2x));
     system.AddLink(prismatic_ground_slider);
 
     //// -------------------------------------------------------------------------
