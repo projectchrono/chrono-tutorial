@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
     beam_material->SetAsRectangularSection(0.012, 0.025);
     beam_material->SetYoungModulus(0.01e9);
     beam_material->SetGshearModulus(0.01e9 * 0.3);
-    beam_material->SetBeamRaleyghDamping(0.01);
+    beam_material->SetBeamRayleighDamping(0.01);
 
     // 4. Create the nodes
 

@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
     auto beam_material = chrono_types::make_shared<ChBeamSectionCable>();
     beam_material->SetDiameter(0.01);
     beam_material->SetYoungModulus(0.01e9);
-    beam_material->SetBeamRaleyghDamping(0.01);
+    beam_material->SetBeamRayleighDamping(0.01);
 
     // 4. Create the nodes
 
