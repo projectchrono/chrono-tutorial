@@ -74,7 +74,7 @@ double step_size = 3e-3;
 double render_step_size = 1.0 / 50;  // FPS = 50
 
 // How often SynChrono state messages are interchanged
-float heartbeat = 1e-2f;  // 100[Hz]
+double heartbeat = 1e-2;  // 100[Hz]
 
 struct VehInfo {
     std::string vehicle_filename;
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
     // Normal simulation options
     step_size = cli.GetAsType<double>("step_size");
     end_time = cli.GetAsType<double>("end_time");
-    heartbeat = cli.GetAsType<float>("heartbeat");
+    heartbeat = cli.GetAsType<double>("heartbeat");
 
     const bool use_sensor = cli.HasValueInVector<int>("sens", node_id);
     const bool sensor_vis = cli.GetAsType<bool>("sens_vis");
@@ -157,6 +157,10 @@ int main(int argc, char* argv[]) {
     }
 
     ChSystem* system = vehicle.GetSystem();
+
+
+
+
 
     // Add vehicle as an agent
     syn_manager.AddAgent(chrono_types::make_shared<SynWheeledVehicleAgent>(&vehicle, veh_info.zombie_filename));
