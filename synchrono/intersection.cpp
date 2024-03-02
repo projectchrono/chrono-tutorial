@@ -176,6 +176,8 @@ int main(int argc, char* argv[]) {
     my_sedan.SetWheelVisualizationType(VisualizationType::MESH);
     my_sedan.SetTireVisualizationType(VisualizationType::MESH);
 
+    my_sedan.GetSystem()->SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
+
     // Add vehicle as an agent and initialize SynChronoManager
     std::string zombie_filename = synchrono::GetDataFile("vehicle/Sedan.json");
     syn_manager.AddAgent(chrono_types::make_shared<SynWheeledVehicleAgent>(&my_sedan.GetVehicle(), zombie_filename));

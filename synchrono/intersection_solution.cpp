@@ -157,10 +157,7 @@ int main(int argc, char* argv[]) {
     }
 
     ChSystem* system = vehicle.GetSystem();
-
-
-
-
+    system->SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
 
     // Add vehicle as an agent
     syn_manager.AddAgent(chrono_types::make_shared<SynWheeledVehicleAgent>(&vehicle, veh_info.zombie_filename));
@@ -206,7 +203,7 @@ int main(int argc, char* argv[]) {
     RigidTerrain terrain(system);
 
     // Loading the mesh to be used for collisions
-    auto patch = terrain.AddPatch(patch_mat, CSYSNORM, synchrono::GetDataFile("meshes/Highway_intersection.obj"), true,
+    auto patch = terrain.AddPatch(patch_mat, CSYSNORM, synchrono::GetDataFile("meshes/Highway_col.obj"), true,
                                   0.01, false);
 
     // In this case the visualization mesh is the same, but it doesn't have to be (e.g. a detailed visual mesh of
