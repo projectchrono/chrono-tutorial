@@ -41,7 +41,7 @@ chrono.SetChronoDataPath(CHRONO_DATA_DIR)
 #    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC  penalty in contacts
 system = chrono.ChSystemSMC()
 
-system.Set_G_acc(chrono.ChVector3d(0, -9.81, 0))
+system.SetGravitationalAcceleration(chrono.ChVector3d(0, -9.81, 0))
 
 # Enable collision
 system.SetCollisionSystemType(chrono.ChCollisionSystem.Type_BULLET)
@@ -141,7 +141,7 @@ for ie in range(N_nodes - 1):
 #      of the ChMate class
 
 truss = chrono.ChBody()
-truss.SetBodyFixed(True)
+truss.SetFixed(True)
 system.Add(truss)
 
 # lock an end of the wire to the truss
@@ -191,7 +191,7 @@ floor = chrono.ChBodyEasyBox(
 
 system.Add(floor)
 
-floor.SetBodyFixed(True)
+floor.SetFixed(True)
 floor.SetPos( chrono.ChVector3d(0,-0.1,0) )
 
 # 9. Make the finite elements visible in the 3D view

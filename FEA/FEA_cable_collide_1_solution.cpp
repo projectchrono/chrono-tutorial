@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     //    Specify the gravitational acceleration vector, consistent with the
     //    global reference frame having Y up (ISO system).
     ChSystemNSC system;
-    system.Set_G_acc(ChVector3d(0, -9.81, 0));
+    system.SetGravitationalAcceleration(ChVector3d(0, -9.81, 0));
 
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
     auto beam_material = chrono_types::make_shared<ChBeamSectionCable>();
     beam_material->SetDiameter(0.01);
     beam_material->SetYoungModulus(0.01e9);
-    beam_material->SetBeamRayleighDamping(0.01);
+    beam_material->SetRayleighDamping(0.01);
 
     // 4. Create the nodes
 
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
     //      use: beam_nodes[0]->SetFixed(true);  (but would fix also dir)
 
     auto truss = chrono_types::make_shared<ChBody>();
-    truss->SetBodyFixed(true);
+    truss->SetFixed(true);
     system.Add(truss);
 
     // lock an end of the wire to the truss

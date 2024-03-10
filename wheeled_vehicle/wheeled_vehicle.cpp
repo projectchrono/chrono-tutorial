@@ -241,7 +241,7 @@ void AddFixedObstacles(ChSystem* system) {
     auto obstacle = chrono_types::make_shared<ChBodyEasyCylinder>(ChAxis::Y, radius, length, 2000, true, true, material);
 
     obstacle->SetPos(ChVector3d(-20, 0, -2.7));
-    obstacle->SetBodyFixed(true);
+    obstacle->SetFixed(true);
 
     system->AddBody(obstacle);
 
@@ -249,7 +249,7 @@ void AddFixedObstacles(ChSystem* system) {
         auto stoneslab = chrono_types::make_shared<ChBodyEasyBox>(1.0, 5.0, 0.5, 2000, true, true, material);
         stoneslab->SetPos(ChVector3d(-1.2 * i + 22, -1.5, -0.25));
         stoneslab->SetRot(QuatFromAngleAxis(15 * CH_C_DEG_TO_RAD, VECT_Y));
-        stoneslab->SetBodyFixed(true);
+        stoneslab->SetFixed(true);
         system->AddBody(stoneslab);
     }
 }

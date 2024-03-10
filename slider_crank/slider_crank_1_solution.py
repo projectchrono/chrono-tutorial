@@ -38,7 +38,7 @@ chrono.SetChronoDataPath('E:/Repositories/chrono/data/')
 ##    Specify the gravitational acceleration vector, consistent with the
 ##    global reference frame having Z up.
 system = chrono.ChSystemNSC()
-system.Set_G_acc(chrono.ChVector3d(0, 0, -9.81))
+system.SetGravitationalAcceleration(chrono.ChVector3d(0, 0, -9.81))
 
 ## 2. Create the rigid bodies of the slider-crank mechanical system.
 ##    For each body, specify:
@@ -52,7 +52,7 @@ ground = chrono.ChBody()
 system.AddBody(ground)
 ground.SetIdentifier(-1)
 ground.SetName("ground")
-ground.SetBodyFixed(True)
+ground.SetFixed(True)
 
 cyl_g = chrono.ChVisualShapeCylinder(0.03, 0.4)
 cyl_g.SetColor(chrono.ChColor(0.6, 0.6, 0.2))

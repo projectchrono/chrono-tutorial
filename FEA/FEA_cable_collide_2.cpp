@@ -135,7 +135,7 @@ int main(int argc, char* argv[]) {
 
     system.Add(floor);
 
-    floor->SetBodyFixed(true);
+    floor->SetFixed(true);
     floor->SetPos(ChVector3d(0, -0.1, 0));
 
     // 9. Make the finite elements visible in the 3D view

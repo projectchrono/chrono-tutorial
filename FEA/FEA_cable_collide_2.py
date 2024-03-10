@@ -133,7 +133,7 @@ floor = chrono.ChBodyEasyBox(
 
 system.Add(floor)
 
-floor.SetBodyFixed(True)
+floor.SetFixed(True)
 floor.SetPos( chrono.ChVector3d(0,-0.1,0) )
 
 # 9. Make the finite elements visible in the 3D view

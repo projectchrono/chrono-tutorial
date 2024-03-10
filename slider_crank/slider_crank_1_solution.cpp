@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     //    Specify the gravitational acceleration vector, consistent with the
     //    global reference frame having Z up.
     ChSystemNSC system;
-    system.Set_G_acc(ChVector3d(0, 0, -9.81));
+    system.SetGravitationalAcceleration(ChVector3d(0, 0, -9.81));
 
     // 2. Create the rigid bodies of the slider-crank mechanical system.
     //    For each body, specify:
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
     system.AddBody(ground);
     ground->SetIdentifier(-1);
     ground->SetName("ground");
-    ground->SetBodyFixed(true);
+    ground->SetFixed(true);
 
     auto cyl_g = chrono_types::make_shared<ChVisualShapeCylinder>(0.03, 0.4);
     ground->AddVisualShape(cyl_g, ChFrame<>(VNULL, QuatFromAngleX(CH_C_PI_2)));

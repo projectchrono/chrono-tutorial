@@ -42,7 +42,7 @@ chrono.SetChronoDataPath('E:/Repositories/chrono/data/')
 ##    Specify the gravitational acceleration vector, consistent with the
 ##    global reference frame having Z up.
 system = chrono.ChSystemNSC()
-system.Set_G_acc(chrono.ChVector3d(0, 0, -9.81))
+system.SetGravitationalAcceleration(chrono.ChVector3d(0, 0, -9.81))
 
 ##    Enable collision
 system.SetCollisionSystemType(chrono.ChCollisionSystem.Type_BULLET)
@@ -59,7 +59,7 @@ ground = chrono.ChBody()
 system.AddBody(ground)
 ground.SetIdentifier(-1)
 ground.SetName("ground")
-ground.SetBodyFixed(True)
+ground.SetFixed(True)
 
 cyl_g = chrono.ChVisualShapeCylinder(0.03, 0.4)
 cyl_g.SetColor(chrono.ChColor(0.6, 0.6, 0.2))
@@ -129,7 +129,7 @@ rod.AddVisualShape(cyl_r, chrono.ChFramed(chrono.ChVector3d(2, 0, 0), chrono.Qua
   #### Use a coefficient of friction of 0.4.
   #### -------------------------------------------------------------------------
   
-slider.SetCollide(True)
+slider.EnableCollission(True)
 slider_mat = chrono.ChContactMaterialNSC()
 slider_mat.SetFriction(0.4)
 
@@ -155,7 +155,7 @@ ball.SetInertiaXX(chrono.ChVector3d(0.02, 0.02, 0.02))
 ball.SetPos(chrono.ChVector3d(5.5, 0, 0))
 ball.SetRot(chrono.ChQuaterniond(1, 0, 0, 0))
 
-ball.SetCollide(True)
+ball.EnableCollision(True)
 
 # Contact material and collision shape
 ball_mat = chrono.ChContactMaterialNSC()

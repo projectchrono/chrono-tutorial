@@ -38,7 +38,7 @@ chrono.SetChronoDataPath(CHRONO_DATA_DIR)
 #    Specify the gravitational acceleration vector, consistent with the
 #    global reference frame having Y up (ISO system).
 system = chrono.ChSystemNSC()
-system.Set_G_acc(chrono.ChVector3d(0, -9.81, 0))
+system.SetGravitationalAcceleration(chrono.ChVector3d(0, -9.81, 0))
 
 
 # 2. Create the mesh that will contain the finite elements, and add it to the system
@@ -131,7 +131,7 @@ for ie in range(N_nodes - 1) :
 #      use: beam_nodes[0].SetFixed(True)  (but would fix also dir)
 
 truss = chrono.ChBody()
-truss.SetBodyFixed(True)
+truss.SetFixed(True)
 system.Add(truss)
 
 # lock an end of the wire to the truss

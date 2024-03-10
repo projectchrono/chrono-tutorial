@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     //    Specify the gravitational acceleration vector, consistent with the
     //    global reference frame having Z up.
     ChSystemNSC system;
-    system.Set_G_acc(ChVector3d(0, 0, -9.81));
+    system.SetGravitationalAcceleration(ChVector3d(0, 0, -9.81));
 
     // Set an associated collision detection system
     system.SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
     system.AddBody(ground);
     ground->SetIdentifier(-1);
     ground->SetName("ground");
-    ground->SetBodyFixed(true);
+    ground->SetFixed(true);
 
     auto cyl_g = chrono_types::make_shared<ChVisualShapeCylinder>(0.03, 0.4);
     ground->AddVisualShape(cyl_g, ChFrame<>(VNULL, QuatFromAngleX(CH_C_PI_2)));
@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
     //// Use a coefficient of friction of 0.4.
     //// -------------------------------------------------------------------------
 
-    slider->SetCollide(true);
+    slider->EnableCollision(true);
 
     auto slider_mat = chrono_types::make_shared<ChContactMaterialNSC>();
     slider_mat->SetFriction(0.4f);
@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
     ball->SetPos(ChVector3d(5.5, 0, 0));
     ball->SetRot(ChQuaternion<>(1, 0, 0, 0));
 
-    ball->SetCollide(true);
+    ball->EnableCollision(true);
 
     // Contact material and collision shape
     auto ball_mat = chrono_types::make_shared<ChContactMaterialNSC>();

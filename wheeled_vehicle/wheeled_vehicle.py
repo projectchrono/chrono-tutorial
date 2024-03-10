@@ -56,7 +56,7 @@ def AddFixedObstacles(system) :
     obstacle = chrono.ChBodyEasyCylinder(chrono.ChAxis_Y, radius, length, 2000, True, True, material)
 
     obstacle.SetPos(chrono.ChVector3d(-20, 0, -2.7))
-    obstacle.SetBodyFixed(True)
+    obstacle.SetFixed(True)
 
     system.AddBody(obstacle)
 
@@ -65,7 +65,7 @@ def AddFixedObstacles(system) :
         stoneslab.SetPos(chrono.ChVector3d(-1.2 * i + 22, -1.5, -0.25))
         
         stoneslab.SetRot(chrono.QuatFromAngleAxis(15 * chrono.CH_C_DEG_TO_RAD, chrono.VECT_Y))
-        stoneslab.SetBodyFixed(True);
+        stoneslab.SetFixed(True);
         system.AddBody(stoneslab);
         
 

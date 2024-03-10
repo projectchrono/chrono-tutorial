@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 
     //    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC penalty in contacts
     ChSystemSMC system;
-    system.Set_G_acc(ChVector3d(0, -9.81, 0));
+    system.SetGravitationalAcceleration(ChVector3d(0, -9.81, 0));
     system.SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
 
 
@@ -80,8 +80,8 @@ int main(int argc, char* argv[]) {
     auto beam_material = chrono_types::make_shared<ChBeamSectionEulerAdvanced>();
     beam_material->SetAsRectangularSection(0.012, 0.025);
     beam_material->SetYoungModulus(0.01e9);
-    beam_material->SetGshearModulus(0.01e9 * 0.3);
-    beam_material->SetBeamRayleighDamping(0.01);
+    beam_material->SetShearModulus(0.01e9 * 0.3);
+    beam_material->SetRayleighDamping(0.01);
 
     // 4. Create the nodes
 
@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
     //      of the ChMate class
 
     auto truss = chrono_types::make_shared<ChBody>();
-    truss->SetBodyFixed(true);
+    truss->SetFixed(true);
     system.Add(truss);
 
     // lock an end of the wire to the truss
@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
 
     system.Add(floor);
 
-    floor->SetBodyFixed(true);
+    floor->SetFixed(true);
     floor->SetPos(ChVector3d(0, -0.1, 0));
 
     // 9. Apply some loads to the beam.

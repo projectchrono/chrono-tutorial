@@ -115,8 +115,8 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     ball->SetPos(ChVector3d(0, 0, initial_height));
     ball->SetRot(ChQuaternion<>(1, 0, 0, 0));
     ball->SetLinVel(ChVector3d(0, 0, initial_velocity));
-    ball->SetCollide(true);
-    ball->SetBodyFixed(false);
+    ball->EnableCollision(true);
+    ball->SetFixed(false);
 
     // Specify spherical contact and visualization shapes
     utils::AddSphereGeometry(ball.get(), material_b, R_b);
@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Using " << threads << " threads" << std::endl;
 
     // Set gravitational acceleration
-    system->Set_G_acc(ChVector3d(0, 0, -9.81));
+    system->SetGravitationalAcceleration(ChVector3d(0, 0, -9.81));
 
     // Set method-independent solver settings
     system->GetSettings()->solver.use_full_inertia_tensor = false;
