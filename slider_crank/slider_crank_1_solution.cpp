@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     ground->SetFixed(true);
 
     auto cyl_g = chrono_types::make_shared<ChVisualShapeCylinder>(0.03, 0.4);
-    ground->AddVisualShape(cyl_g, ChFrame<>(VNULL, QuatFromAngleX(CH_C_PI_2)));
+    ground->AddVisualShape(cyl_g, ChFrame<>(VNULL, QuatFromAngleX(CH_PI_2)));
 
     // Crank
     auto crank = chrono_types::make_shared<ChBody>();
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 
     auto cyl_c = chrono_types::make_shared<ChVisualShapeCylinder>(0.05, 0.2);
     cyl_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
-    crank->AddVisualShape(cyl_c, ChFrame<>(ChVector3d(1, 0, 0), QuatFromAngleX(CH_C_PI_2)));
+    crank->AddVisualShape(cyl_c, ChFrame<>(ChVector3d(1, 0, 0), QuatFromAngleX(CH_PI_2)));
 
     auto sph_c = chrono_types::make_shared<ChVisualShapeSphere>(0.05);
     sph_c->SetColor(ChColor(0.6f, 0.2f, 0.2f));
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
 
     auto cyl_s = chrono_types::make_shared<ChVisualShapeCylinder>(0.03, 0.4);
     cyl_s->SetColor(ChColor(0.2f, 0.2f, 0.6f));
-    slider->AddVisualShape(cyl_s, ChFrame<>(VNULL, QuatFromAngleX(CH_C_PI_2)));
+    slider->AddVisualShape(cyl_s, ChFrame<>(VNULL, QuatFromAngleX(CH_PI_2)));
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 1.1
@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
 
     auto cyl_r = chrono_types::make_shared<ChVisualShapeCylinder>(0.03, 0.4);
     cyl_r->SetColor(ChColor(0.2f, 0.6f, 0.2f));
-    rod->AddVisualShape(cyl_r, ChFrame<>(ChVector3d(2, 0, 0), QuatFromAngleX(CH_C_PI_2)));
+    rod->AddVisualShape(cyl_r, ChFrame<>(ChVector3d(2, 0, 0), QuatFromAngleX(CH_PI_2)));
 
     // 3. Create joint constraints.
     //    All joint frames are specified in the global frame.
@@ -143,8 +143,8 @@ int main(int argc, char* argv[]) {
     // - a rotation of +90 degrees around y (z2x)
     ChQuaternion<> z2y;
     ChQuaternion<> z2x;
-    z2y.SetFromAngleAxis(-CH_C_PI / 2, ChVector3d(1, 0, 0));
-    z2x.SetFromAngleAxis(CH_C_PI / 2, ChVector3d(0, 1, 0));
+    z2y.SetFromAngleAxis(-CH_PI / 2, ChVector3d(1, 0, 0));
+    z2x.SetFromAngleAxis(CH_PI / 2, ChVector3d(0, 1, 0));
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 1.2
@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
 
     // Create a ChFunction object that always returns the constant value PI/2.
     auto fun = chrono_types::make_shared<ChFunctionConst>();
-    fun->SetConstant(CH_C_PI);
+    fun->SetConstant(CH_PI);
 
     // Motor between ground and crank.
     // Note that this also acts as a revolute joint (i.e. it enforces the same
@@ -227,7 +227,7 @@ int main(int argc, char* argv[]) {
         vis->Render();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(vis.get(), 1, 1, 20, 20, ChCoordsys<>(ChVector3d(0.01, 0, 0.01), QuatFromAngleX(CH_C_PI_2)),
+        tools::drawGrid(vis.get(), 1, 1, 20, 20, ChCoordsys<>(ChVector3d(0.01, 0, 0.01), QuatFromAngleX(CH_PI_2)),
                         ChColor(0.6f, 0.6f, 0.6f), true);
         tools::drawAllCOGs(vis.get(), 1.0);
 

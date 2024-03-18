@@ -72,7 +72,7 @@ box_c = chrono.ChVisualShapeBox(1.9, 0.1, 0.1)
 crank.AddVisualShape(box_c)
 
 cyl_c = chrono.ChVisualShapeCylinder(0.05, 0.2)
-crank.AddVisualShape(cyl_c, chrono.ChFramed(chrono.ChVector3d(1, 0, 0), chrono.QuatFromAngleX(chrono.CH_C_PI_2)))
+crank.AddVisualShape(cyl_c, chrono.ChFramed(chrono.ChVector3d(1, 0, 0), chrono.QuatFromAngleX(chrono.CH_PI_2)))
 
 sph_c = chrono.ChVisualShapeSphere(0.05)
 sph_c.SetColor(chrono.ChColor(0.6, 0.2, 0.2))
@@ -112,8 +112,8 @@ slider.AddVisualShape(box_s)
 ## - a rotation of +90 degrees around y (z2x)
 z2y = chrono.ChQuaterniond()
 z2x = chrono.ChQuaterniond()
-z2y.SetFromAngleX(-chrono.CH_C_PI / 2)
-z2x.SetFromAngleY(chrono.CH_C_PI / 2)
+z2y.SetFromAngleX(-chrono.CH_PI / 2)
+z2x.SetFromAngleY(chrono.CH_PI / 2)
 
   #### -------------------------------------------------------------------------
   #### EXERCISE 1.2
@@ -178,7 +178,7 @@ while (vis.Run()):
     ## Draw an XZ grid at the global origin to add in visualization
     chronoirr.drawGrid(
         vis, 1, 1, 20, 20,
-        chrono.ChCoordsysd(chrono.ChVector3d(0, 0, 0), chrono.QuatFromAngleX(chrono.CH_C_PI_2)),
+        chrono.ChCoordsysd(chrono.ChVector3d(0, 0, 0), chrono.QuatFromAngleX(chrono.CH_PI_2)),
         chrono.ChColor(0.4, 0.7, 0.4), True)
     chronoirr.drawAllCOGs(vis, 1)
 

@@ -258,7 +258,7 @@ while vis.Run():
     # Draw an XZ grid at the global origin to add in visualization.
     chronoirr.drawGrid(
         vis, 0.1, 0.1, 20, 20,
-        chrono.ChCoordsysd(chrono.ChVector3d(0, 0, 0), chrono.QuatFromAngleX(chrono.CH_C_PI_2)),
+        chrono.ChCoordsysd(chrono.ChVector3d(0, 0, 0), chrono.QuatFromAngleX(chrono.CH_PI_2)),
         chrono.ChColor(0.4, 0.7, 0.4), True)
 
     vis.EndScene()

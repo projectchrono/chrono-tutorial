@@ -148,11 +148,11 @@ int main(int argc, char* argv[]) {
     double init_z = 0.5;
     switch (node_id) {
         case 0:
-            init_rot = QuatFromAngleZ(90 * CH_C_DEG_TO_RAD);
+            init_rot = QuatFromAngleZ(90 * CH_DEG_TO_RAD);
             init_loc = ChVector3d(lane1_x, -70, init_z);
             break;
         case 1:
-            init_rot = QuatFromAngleZ(90 * CH_C_DEG_TO_RAD);
+            init_rot = QuatFromAngleZ(90 * CH_DEG_TO_RAD);
             init_loc = ChVector3d(lane2_x, -70, init_z + 0.5);
             break;
         default:

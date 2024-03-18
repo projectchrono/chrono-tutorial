@@ -54,7 +54,7 @@ int threads = 4;
 int Id_g = 1;
 double r_g = 2e-3;
 double rho_g = 2500;
-double vol_g = (4.0 / 3) * CH_C_PI * r_g * r_g * r_g;
+double vol_g = (4.0 / 3) * CH_PI * r_g * r_g * r_g;
 double mass_g = rho_g * vol_g;
 ChVector3d inertia_g = 0.4 * mass_g * r_g * r_g * ChVector3d(1, 1, 1);
 
@@ -66,7 +66,7 @@ float cr_g = 0.1f;
 int Id_b = 0;
 double R_b = 1.5e-2;
 double rho_b = 700;
-double vol_b = (4.0 / 3) * CH_C_PI * R_b * R_b * R_b;
+double vol_b = (4.0 / 3) * CH_PI * R_b * R_b * R_b;
 double mass_b = rho_b * vol_b;
 ChVector3d inertia_b = 0.4 * mass_b * R_b * R_b * ChVector3d(1, 1, 1);
 

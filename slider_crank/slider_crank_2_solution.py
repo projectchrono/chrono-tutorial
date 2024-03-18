@@ -79,7 +79,7 @@ box_c = chrono.ChVisualShapeBox(1.9, 0.1, 0.1)
 crank.AddVisualShape(box_c)
 
 cyl_c = chrono.ChVisualShapeCylinder(0.05, 0.2)
-crank.AddVisualShape(cyl_c, chrono.ChFramed(chrono.ChVector3d(1, 0, 0), chrono.QuatFromAngleX(chrono.CH_C_PI_2)))
+crank.AddVisualShape(cyl_c, chrono.ChFramed(chrono.ChVector3d(1, 0, 0), chrono.QuatFromAngleX(chrono.CH_PI_2)))
 
 sph_c = chrono.ChVisualShapeSphere(0.05)
 sph_c.SetColor(chrono.ChColor(0.6, 0.2, 0.2))
@@ -101,7 +101,7 @@ slider.AddVisualShape(box_s)
 
 cyl_s = chrono.ChVisualShapeCylinder(0.03, 0.4)
 cyl_s.SetColor(chrono.ChColor(0.2, 0.2, 0.6))
-slider.AddVisualShape(cyl_s, chrono.ChFramed(chrono.VNULL, chrono.QuatFromAngleX(chrono.CH_C_PI_2)))
+slider.AddVisualShape(cyl_s, chrono.ChFramed(chrono.VNULL, chrono.QuatFromAngleX(chrono.CH_PI_2)))
 
 ## Connecting rod
 rod = chrono.ChBody()
@@ -119,7 +119,7 @@ rod.AddVisualShape(box_r)
 
 cyl_r = chrono.ChVisualShapeCylinder(0.03, 0.4)
 cyl_r.SetColor(chrono.ChColor(0.2, 0.6, 0.2))
-rod.AddVisualShape(cyl_r, chrono.ChFramed(chrono.ChVector3d(2, 0, 0), chrono.QuatFromAngleX(chrono.CH_C_PI_2)));
+rod.AddVisualShape(cyl_r, chrono.ChFramed(chrono.ChVector3d(2, 0, 0), chrono.QuatFromAngleX(chrono.CH_PI_2)));
 
   #### -------------------------------------------------------------------------
   #### EXERCISE 2.1
@@ -174,12 +174,12 @@ ball.AddVisualShape(sphere_b)
 ## - a rotation of +90 degrees around y (z2x)
 z2y = chrono.ChQuaterniond()
 z2x = chrono.ChQuaterniond()
-z2y.SetFromAngleX(-chrono.CH_C_PI / 2)
-z2x.SetFromAngleY(chrono.CH_C_PI / 2)
+z2y.SetFromAngleX(-chrono.CH_PI / 2)
+z2x.SetFromAngleY(chrono.CH_PI / 2)
 
 ## Create a ChFunction object that always returns the constant value PI/2.
 fun = chrono.ChFunctionConst()
-fun.Set_yconst(chrono.CH_C_PI)
+fun.Set_yconst(chrono.CH_PI)
 
 ## Motor between ground and crank.
 ## Note that this also acts as a revolute joint (i.e. it enforces the same
@@ -278,7 +278,7 @@ while (vis.Run()):
     ## Draw an XZ grid at the global origin to add in visualization
     chronoirr.drawGrid(
         vis, 1, 1, 20, 20,
-        chrono.ChCoordsysd(chrono.ChVector3d(0, 0, 0), chrono.QuatFromAngleX(chrono.CH_C_PI_2)),
+        chrono.ChCoordsysd(chrono.ChVector3d(0, 0, 0), chrono.QuatFromAngleX(chrono.CH_PI_2)),
         chrono.ChColor(0.4, 0.7, 0.4), True)
     chronoirr.drawAllCOGs(vis, 1)
 

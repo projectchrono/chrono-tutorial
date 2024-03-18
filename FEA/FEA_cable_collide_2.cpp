@@ -210,7 +210,7 @@ int main(int argc, char* argv[]) {
         vis->Render();
 
         // Draw an XZ grid at the global origin to add in visualization.
-        tools::drawGrid(vis.get(), 0.1, 0.1, 20, 20, ChCoordsys<>(ChVector3d(0, 0, 0), QuatFromAngleX(CH_C_PI_2)),
+        tools::drawGrid(vis.get(), 0.1, 0.1, 20, 20, ChCoordsys<>(ChVector3d(0, 0, 0), QuatFromAngleX(CH_PI_2)),
                         ChColor(0.3f, 0.4f, 0.4f), true);
 
         // Finalize the graphical scene.

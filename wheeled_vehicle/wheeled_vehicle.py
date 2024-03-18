@@ -34,7 +34,7 @@ def AddMovingObstacles(system) :
         o_posY = chrono.ChRandom.Get() * 0.2 * sizeY
         o_posZ = height + 4
         obstacle.SetPos(chrono.ChVector3d(o_posX, o_posY, o_posZ))
-        obstacle.SetRot(chrono.QuatFromAngleX(chrono.CH_C_PI / 3) * chrono.QuatFromAngleY(chrono.CH_C_PI / 6))
+        obstacle.SetRot(chrono.QuatFromAngleX(chrono.CH_PI / 3) * chrono.QuatFromAngleY(chrono.CH_PI / 6))
 
         system.AddBody(obstacle)
 
@@ -64,7 +64,7 @@ def AddFixedObstacles(system) :
         stoneslab = chrono.ChBodyEasyBox(1.0, 5.0, 0.5, 2000, True, True, material)
         stoneslab.SetPos(chrono.ChVector3d(-1.2 * i + 22, -1.5, -0.25))
         
-        stoneslab.SetRot(chrono.QuatFromAngleAxis(15 * chrono.CH_C_DEG_TO_RAD, chrono.VECT_Y))
+        stoneslab.SetRot(chrono.QuatFromAngleAxis(15 * chrono.CH_DEG_TO_RAD, chrono.VECT_Y))
         stoneslab.SetFixed(True);
         system.AddBody(stoneslab);
         

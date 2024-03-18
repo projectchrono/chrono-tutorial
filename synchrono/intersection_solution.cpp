@@ -400,7 +400,7 @@ int main(int argc, char* argv[]) {
 
 struct VehInfo InitializeVehicle(int node_id) {
     ChVector3d init_loc;
-    ChQuaternion<> init_rot = QuatFromAngleZ(90 * CH_C_DEG_TO_RAD);
+    ChQuaternion<> init_rot = QuatFromAngleZ(90 * CH_DEG_TO_RAD);
     double init_z = 0.5;
     struct VehInfo info;
     switch (node_id) {
