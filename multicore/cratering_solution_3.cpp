@@ -198,20 +198,20 @@ void CreateObjects(ChSystemMulticore* system) {
     //// Create a granular material generator with a mixture entirely made out of spheres
     //// of equal radius, all sharing the same contact material
     //// ********************************************************************************
-    utils::PDSampler<double> sampler(2.01 * r_g);
-    utils::Generator gen(system);
+    utils::ChPDSampler<double> sampler(2.01 * r_g);
+    utils::ChGenerator gen(system);
 
-    std::shared_ptr<utils::MixtureIngredient> m1 = gen.AddMixtureIngredient(utils::MixtureType::SPHERE, 1.0);
-    m1->setDefaultMaterial(material_g);
-    m1->setDefaultDensity(rho_g);
-    m1->setDefaultSize(r_g);
+    std::shared_ptr<utils::ChMixtureIngredient> m1 = gen.AddMixtureIngredient(utils::MixtureType::SPHERE, 1.0);
+    m1->SetDefaultMaterial(material_g);
+    m1->SetDefaultDensity(rho_g);
+    m1->SetDefaultSize(r_g);
 
-    gen.setBodyIdentifier(Id_g);
+    gen.SetBodyIdentifier(Id_g);
 
     // Generate the granular bodies in a box within the container, using Poisson disk sampling
     gen.CreateObjectsBox(sampler, ChVector3d(0, 0, hDimZ / 2), ChVector3d(hDimX - r_g, hDimY - r_g, hDimZ / 2 - r_g));
 
-    std::cout << "Generated " << gen.getTotalNumBodies() << " bodies" << std::endl;
+    std::cout << "Generated " << gen.GetTotalNumBodies() << " bodies" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
