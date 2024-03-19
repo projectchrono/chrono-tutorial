@@ -123,7 +123,7 @@ for ie in range(N_nodes - 1) :
 #    - Constraints can be applied to FEA nodes
 #    - For the ChNodeFEAxyzD there are specific constraints that
 #      can be used to connect them to a ChBody, namely
-#      ChLinkPointFrame and ChLinkDirFrame
+#      ChLinkNodeFrame and ChLinkNodeSlopeFrame
 #    - To attach one end of the beam to the ground, we need a
 #      'truss' ChBody that is fixed.
 #    - Note. An alternative, only when the node must be fixed 
@@ -135,7 +135,7 @@ truss.SetFixed(True)
 system.Add(truss)
 
 # lock an end of the wire to the truss
-constraint_pos = fea.ChLinkPointFrame()
+constraint_pos = fea.ChLinkNodeFrame()
 constraint_pos.Initialize(beam_nodes[0], truss)
 system.Add(constraint_pos)
 
@@ -169,12 +169,12 @@ system.Add(cylinder)
 ## EXERCISE 1b
 ##
 ## Attach the cylinder to the free end of the cable.
-## Hint: use the ChLinkPointFrame to connect the cylinder and the end node.
+## Hint: use the ChLinkNodeFrame to connect the cylinder and the end node.
 ## 
 ## -------------------------------------------------------------------------
 
 # lock an end of the wire to the cylinder
-constraint_cyl = fea.ChLinkPointFrame()
+constraint_cyl = fea.ChLinkNodeFrame()
 constraint_cyl.Initialize(beam_nodes[-1], cylinder)
 system.Add(constraint_cyl)
 

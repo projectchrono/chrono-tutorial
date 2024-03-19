@@ -35,7 +35,7 @@
 
 #include "chrono/fea/ChBuilderBeam.h"
 #include "chrono/fea/ChElementCableANCF.h"
-#include "chrono/fea/ChLinkPointFrame.h"
+#include "chrono/fea/ChLinkNodeFrame.h"
 #include "chrono/fea/ChMesh.h"
 #include "chrono/assets/ChVisualShapeFEA.h"
 
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
     //    - Constraints can be applied to FEA nodes
     //    - For the ChNodeFEAxyzD there are specific constraints that
     //      can be used to connect them to a ChBody, namely
-    //      ChLinkPointFrame and ChLinkDirFrame
+    //      ChLinkNodeFrame and ChLinkDirFrame
     //    - To attach one end of the beam to the ground, we need a
     //      'truss' ChBody that is fixed.
     //    - Note. An alternative, only when the node must be fixed
@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
     system.Add(truss);
 
     // lock an end of the wire to the truss
-    auto constraint_pos = chrono_types::make_shared<ChLinkPointFrame>();
+    auto constraint_pos = chrono_types::make_shared<ChLinkNodeFrame>();
     constraint_pos->Initialize(beam_nodes[0], truss);
     system.Add(constraint_pos);
 
@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
     //// EXERCISE 1b
     ////
     //// Attach the cylinder to the free end of the cable.
-    //// Hint: use the ChLinkPointFrame to connect the cylinder and the end node.
+    //// Hint: use the ChLinkNodeFrame to connect the cylinder and the end node.
     ////
     //// -------------------------------------------------------------------------
 
