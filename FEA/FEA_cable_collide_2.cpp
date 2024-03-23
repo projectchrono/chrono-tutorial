@@ -111,26 +111,26 @@ int main(int argc, char* argv[]) {
     //      dense finite elements meshes that collide with large objects.
 
     // Create a surface material to be shared with some objects
-    auto mysurfmaterial = chrono_types::make_shared<ChContactMaterialSMC>();
-    mysurfmaterial->SetYoungModulus(6e4);
-    mysurfmaterial->SetFriction(0.3f);
-    mysurfmaterial->SetRestitution(0.2f);
-    mysurfmaterial->SetAdhesion(0);
+    auto surfmaterial = chrono_types::make_shared<ChContactMaterialSMC>();
+    surfmaterial->SetYoungModulus(6e4);
+    surfmaterial->SetFriction(0.3f);
+    surfmaterial->SetRestitution(0.2f);
+    surfmaterial->SetAdhesion(0);
 
     // Create the contact surface and add to the mesh, using our SMC contact material
-    auto mcontactcloud = chrono_types::make_shared<ChContactSurfaceNodeCloud>(mysurfmaterial);
-    mesh->AddContactSurface(mcontactcloud);
+    auto contactcloud = chrono_types::make_shared<ChContactSurfaceNodeCloud>(surfmaterial);
+    mesh->AddContactSurface(contactcloud);
 
     // Must use this to 'populate' the contact surface use larger point size to match beam section radius
-    mcontactcloud->AddAllNodes(0.01);
+    contactcloud->AddAllNodes(0.01);
 
     // 8. Create a collision plane, as a huge box
 
-    auto floor = chrono_types::make_shared<ChBodyEasyBox>(4, 0.2, 4,      // x,y,z size
-                                                          1000,           // density
-                                                          true,           // visible
-                                                          true,           // collide
-                                                          mysurfmaterial  // contact material
+    auto floor = chrono_types::make_shared<ChBodyEasyBox>(4, 0.2, 4,    // x,y,z size
+                                                          1000,         // density
+                                                          true,         // visible
+                                                          true,         // collide
+                                                          surfmaterial  // contact material
     );
 
     system.Add(floor);
@@ -151,20 +151,20 @@ int main(int argc, char* argv[]) {
     //     postprocessor that can handle a coloured ChVisualShapeTriangleMesh).
     //   - Do not forget AddAsset() at the end!
 
-    auto mvisualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
-    mvisualizebeamA->SetFEMdataType(ChVisualShapeFEA::DataType::ANCF_BEAM_AX);
-    mvisualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
-    mvisualizebeamA->SetSmoothFaces(true);
-    mvisualizebeamA->SetWireframe(false);
-    mesh->AddVisualShapeFEA(mvisualizebeamA);
+    auto visualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    visualizebeamA->SetFEMdataType(ChVisualShapeFEA::DataType::ANCF_BEAM_AX);
+    visualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
+    visualizebeamA->SetSmoothFaces(true);
+    visualizebeamA->SetWireframe(false);
+    mesh->AddVisualShapeFEA(visualizebeamA);
 
-    auto mvisualizebeamC = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
-    mvisualizebeamC->SetFEMglyphType(ChVisualShapeFEA::GlyphType::NODE_CSYS);
-    mvisualizebeamC->SetFEMdataType(ChVisualShapeFEA::DataType::NONE);
-    mvisualizebeamC->SetSymbolsThickness(0.006);
-    mvisualizebeamC->SetSymbolsScale(0.005);
-    mvisualizebeamC->SetZbufferHide(false);
-    mesh->AddVisualShapeFEA(mvisualizebeamC);
+    auto visualizebeamB = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    visualizebeamB->SetFEMglyphType(ChVisualShapeFEA::GlyphType::NODE_DOT_POS);
+    visualizebeamB->SetFEMdataType(ChVisualShapeFEA::DataType::NONE);
+    visualizebeamB->SetSymbolsThickness(0.006);
+    visualizebeamB->SetSymbolsScale(0.005);
+    visualizebeamB->SetZbufferHide(false);
+    mesh->AddVisualShapeFEA(visualizebeamB);
 
     // 10. Configure the solver and timestepper
 

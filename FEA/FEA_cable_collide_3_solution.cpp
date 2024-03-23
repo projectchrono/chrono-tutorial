@@ -162,26 +162,26 @@ int main(int argc, char* argv[]) {
     //      dense finite elements meshes that collide with large objects.
 
     // Create a surface material to be shared with some objects
-    auto mysurfmaterial = chrono_types::make_shared<ChContactMaterialSMC>();
-    mysurfmaterial->SetYoungModulus(6e4);
-    mysurfmaterial->SetFriction(0.3f);
-    mysurfmaterial->SetRestitution(0.2f);
-    mysurfmaterial->SetAdhesion(0);
+    auto surfmaterial = chrono_types::make_shared<ChContactMaterialSMC>();
+    surfmaterial->SetYoungModulus(6e4);
+    surfmaterial->SetFriction(0.3f);
+    surfmaterial->SetRestitution(0.2f);
+    surfmaterial->SetAdhesion(0);
 
     // Create the contact surface and add to the mesh, using our SMC contact material
-    auto mcontactcloud = chrono_types::make_shared<ChContactSurfaceNodeCloud>(mysurfmaterial);
-    mesh->AddContactSurface(mcontactcloud);
+    auto contactcloud = chrono_types::make_shared<ChContactSurfaceNodeCloud>(surfmaterial);
+    mesh->AddContactSurface(contactcloud);
 
     // Must use this to 'populate' the contact surface use larger point size to match beam section radius
-    mcontactcloud->AddAllNodes(0.01);
+    contactcloud->AddAllNodes(0.01);
 
     // 8. Create a collision plane, as a huge box
 
-    auto floor = chrono_types::make_shared<ChBodyEasyBox>(4, 0.2, 4,      // x,y,z size
-                                                          1000,           // density
-                                                          true,           // visualize
-                                                          true,           // collide
-                                                          mysurfmaterial  // contact material
+    auto floor = chrono_types::make_shared<ChBodyEasyBox>(4, 0.2, 4,    // x,y,z size
+                                                          1000,         // density
+                                                          true,         // visualize
+                                                          true,         // collide
+                                                          surfmaterial  // contact material
     );
 
     system.Add(floor);
@@ -202,10 +202,10 @@ int main(int argc, char* argv[]) {
     system.Add(loadcontainer);
 
     // Example: Add a vertical load to the end point of the last beam element:
-    auto mwrench = chrono_types::make_shared<ChLoadBeamWrench>(beam_elements.back());
-    mwrench->loader.SetApplication(1.0);  // in -1..+1 range, -1: end A, 0: mid, +1: end B
-    mwrench->loader.SetForce(ChVector3d(0, -0.2, 0));
-    loadcontainer->Add(mwrench);  // do not forget to add the load to the load container.
+    auto wrench = chrono_types::make_shared<ChLoadBeamWrench>(beam_elements.back());
+    wrench->GetLoader()->SetApplication(1.0);  // in -1..+1 range, -1: end A, 0: mid, +1: end B
+    wrench->GetLoader()->SetForce(ChVector3d(0, -0.2, 0));
+    loadcontainer->Add(wrench);  // do not forget to add the load to the load container.
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 1
@@ -218,9 +218,9 @@ int main(int argc, char* argv[]) {
     //// -------------------------------------------------------------------------
 
     //// Add a distributed load along the beam element:
-    auto mwrenchdis = chrono_types::make_shared<ChLoadBeamWrenchDistributed>(beam_elements.back());
-    mwrenchdis->loader.SetForcePerUnit(ChVector3d(0, -0.1, 0));  // load per unit length
-    loadcontainer->Add(mwrenchdis);
+    auto wrenchdis = chrono_types::make_shared<ChLoadBeamWrenchDistributed>(beam_elements.back());
+    wrenchdis->GetLoader()->SetForcePerUnit(ChVector3d(0, -0.1, 0));  // load per unit length
+    loadcontainer->Add(wrenchdis);
 
     //// -------------------------------------------------------------------------
     //// EXERCISE 2
@@ -243,7 +243,8 @@ int main(int argc, char* argv[]) {
     class MyLoaderHorizontalSquarewave : public ChLoaderUatomic {
       public:
         // Useful: a constructor that also sets ChLoadable
-        MyLoaderHorizontalSquarewave(std::shared_ptr<ChLoadableU> mloadable) : ChLoaderUatomic(mloadable) {}
+        MyLoaderHorizontalSquarewave(std::shared_ptr<ChLoadableU> mloadable)
+            : ChLoaderUatomic(mloadable), auxsystem(nullptr) {}
 
         // Compute F=F(u)
         // This is the function that YOU MUST implement. It should return the
@@ -270,7 +271,6 @@ int main(int argc, char* argv[]) {
             F.segment(3, 3) = ChVector3d(0, 0, 0).eigen();   // load, torque part
         }
 
-      public:
         // add auxiliary data to the class, if you need to access it during ComputeF().
         ChSystem* auxsystem;
     };
@@ -279,11 +279,10 @@ int main(int argc, char* argv[]) {
     // The ChLoad is a 'manager' for your ChLoader.
     // It is created using templates, that is instancing a ChLoad<my_loader_class>()
 
-    std::shared_ptr<ChLoad<MyLoaderHorizontalSquarewave> > mloadsine(
-        new ChLoad<MyLoaderHorizontalSquarewave>(beam_elements.back()));
-    mloadsine->loader.auxsystem = &system;  // initialize auxiliary data of the loader, if needed
-    mloadsine->loader.SetApplication(0.0);  // specify application point
-    loadcontainer->Add(mloadsine);          // do not forget to add the load to the load container.
+    auto square_loader = chrono_types::make_shared<MyLoaderHorizontalSquarewave>(beam_elements.back());
+    square_loader->auxsystem = &system;  // initialize auxiliary data of the loader, if needed
+    auto square_load = chrono_types::make_shared<ChLoad>(square_loader);
+    loadcontainer->Add(square_load);
 
     // 10. Make the finite elements visible in the 3D view
 
@@ -298,20 +297,20 @@ int main(int argc, char* argv[]) {
     //     postprocessor that can handle a coloured ChVisualShapeTriangleMesh).
     //   - Do not forget AddAsset() at the end!
 
-    auto mvisualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
-    mvisualizebeamA->SetFEMdataType(ChVisualShapeFEA::DataType::ANCF_BEAM_AX);
-    mvisualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
-    mvisualizebeamA->SetSmoothFaces(true);
-    mvisualizebeamA->SetWireframe(false);
-    mesh->AddVisualShapeFEA(mvisualizebeamA);
+    auto visualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    visualizebeamA->SetFEMdataType(ChVisualShapeFEA::DataType::ANCF_BEAM_AX);
+    visualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
+    visualizebeamA->SetSmoothFaces(true);
+    visualizebeamA->SetWireframe(false);
+    mesh->AddVisualShapeFEA(visualizebeamA);
 
-    auto mvisualizebeamC = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
-    mvisualizebeamC->SetFEMglyphType(ChVisualShapeFEA::GlyphType::NODE_CSYS);
-    mvisualizebeamC->SetFEMdataType(ChVisualShapeFEA::DataType::NONE);
-    mvisualizebeamC->SetSymbolsThickness(0.006);
-    mvisualizebeamC->SetSymbolsScale(0.005);
-    mvisualizebeamC->SetZbufferHide(false);
-    mesh->AddVisualShapeFEA(mvisualizebeamC);
+    auto visualizebeamB = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    visualizebeamB->SetFEMglyphType(ChVisualShapeFEA::GlyphType::NODE_CSYS);
+    visualizebeamB->SetFEMdataType(ChVisualShapeFEA::DataType::NONE);
+    visualizebeamB->SetSymbolsThickness(0.006);
+    visualizebeamB->SetSymbolsScale(0.005);
+    visualizebeamB->SetZbufferHide(false);
+    mesh->AddVisualShapeFEA(visualizebeamB);
 
     // 10. Configure the solver and timestepper
 

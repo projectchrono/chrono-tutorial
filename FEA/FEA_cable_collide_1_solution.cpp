@@ -201,20 +201,20 @@ int main(int argc, char* argv[]) {
     //     postprocessor that can handle a coloured ChVisualShapeTriangleMesh).
     //   - Do not forget AddAsset() at the end!
 
-    auto mvisualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
-    mvisualizebeamA->SetFEMdataType(ChVisualShapeFEA::DataType::ANCF_BEAM_AX);
-    mvisualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
-    mvisualizebeamA->SetSmoothFaces(true);
-    mvisualizebeamA->SetWireframe(false);
-    mesh->AddVisualShapeFEA(mvisualizebeamA);
+    auto visualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    visualizebeamA->SetFEMdataType(ChVisualShapeFEA::DataType::ANCF_BEAM_AX);
+    visualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
+    visualizebeamA->SetSmoothFaces(true);
+    visualizebeamA->SetWireframe(false);
+    mesh->AddVisualShapeFEA(visualizebeamA);
 
-    auto mvisualizebeamC = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
-    mvisualizebeamC->SetFEMglyphType(ChVisualShapeFEA::GlyphType::NODE_DOT_POS);
-    mvisualizebeamC->SetFEMdataType(ChVisualShapeFEA::DataType::NONE);
-    mvisualizebeamC->SetSymbolsThickness(0.006);
-    mvisualizebeamC->SetSymbolsScale(0.005);
-    mvisualizebeamC->SetZbufferHide(false);
-    mesh->AddVisualShapeFEA(mvisualizebeamC);
+    auto visualizebeamB = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    visualizebeamB->SetFEMglyphType(ChVisualShapeFEA::GlyphType::NODE_DOT_POS);
+    visualizebeamB->SetFEMdataType(ChVisualShapeFEA::DataType::NONE);
+    visualizebeamB->SetSymbolsThickness(0.006);
+    visualizebeamB->SetSymbolsScale(0.005);
+    visualizebeamB->SetZbufferHide(false);
+    mesh->AddVisualShapeFEA(visualizebeamB);
 
     // 8. Configure the solver and timestepper
 
