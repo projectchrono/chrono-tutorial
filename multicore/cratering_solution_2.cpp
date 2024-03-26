@@ -51,7 +51,7 @@ using namespace chrono;
 int threads = 4;
 
 // Parameters for the granular material
-int Id_g = 1;
+int tag_particles = 0;  // all particles wilkl have tag at least this value
 double r_g = 2e-3;
 double rho_g = 2500;
 double vol_g = (4.0 / 3) * CH_PI * r_g * r_g * r_g;
@@ -63,7 +63,6 @@ float mu_g = 0.3f;
 float cr_g = 0.1f;
 
 // Parameters for the falling ball
-int Id_b = 0;
 double R_b = 1.5e-2;
 double rho_b = 700;
 double vol_b = (4.0 / 3) * CH_PI * R_b * R_b * R_b;
@@ -75,7 +74,6 @@ float mu_b = 0.3f;
 float cr_b = 0.1f;
 
 // Parameters for the containing bin
-int binId = -1;
 double hDimX = 4e-2;         // length in x direction
 double hDimY = 4e-2;         // depth in y direction
 double hDimZ = 4e-2;         // height in z direction
@@ -101,7 +99,7 @@ void CreateContainer(ChSystemMulticore* system) {
 
     // Create the container. This utility function creates the container body (fixed to "ground")
     // and sets both the contact and visualization shapes.
-    utils::CreateBoxContainer(system, binId, material_c, ChVector3d(2 * hDimX, 2 * hDimY, 2 * hDimZ), hThickness);
+    utils::CreateBoxContainer(system, material_c, ChVector3d(2 * hDimX, 2 * hDimY, 2 * hDimZ), hThickness);
 }
 
 // -----------------------------------------------------------------------------
@@ -118,7 +116,6 @@ std::shared_ptr<ChBody> CreateFallingBall(ChSystemMulticore* system) {
     // Create the falling ball body
     auto ball = chrono_types::make_shared<ChBody>();
 
-    ball->SetIdentifier(Id_b);
     ball->SetMass(mass_b);
     ball->SetInertiaXX(inertia_b);
     ball->SetPos(ChVector3d(0, 0, initial_height));
@@ -161,7 +158,7 @@ void CreateObjects(ChSystemMulticore* system) {
     m1->SetDefaultDensity(rho_g);
     m1->SetDefaultSize(r_g);
 
-    gen.SetBodyIdentifier(Id_g);
+    gen.SetStartTag(tag_particles);
 
     // Generate the granular bodies in a box within the container, using Poisson disk sampling
     gen.CreateObjectsBox(sampler, ChVector3d(0, 0, hDimZ / 2), ChVector3d(hDimX - r_g, hDimY - r_g, hDimZ / 2 - r_g));

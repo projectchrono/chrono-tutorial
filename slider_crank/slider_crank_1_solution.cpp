@@ -61,7 +61,6 @@ int main(int argc, char* argv[]) {
     // Ground
     auto ground = chrono_types::make_shared<ChBody>();
     system.AddBody(ground);
-    ground->SetIdentifier(-1);
     ground->SetName("ground");
     ground->SetFixed(true);
 
@@ -71,7 +70,6 @@ int main(int argc, char* argv[]) {
     // Crank
     auto crank = chrono_types::make_shared<ChBody>();
     system.AddBody(crank);
-    crank->SetIdentifier(1);
     crank->SetName("crank");
     crank->SetMass(1.0);
     crank->SetInertiaXX(ChVector3d(0.005, 0.1, 0.1));
@@ -93,7 +91,6 @@ int main(int argc, char* argv[]) {
     // Slider
     auto slider = chrono_types::make_shared<ChBody>();
     system.AddBody(slider);
-    slider->SetIdentifier(2);
     slider->SetName("slider");
     slider->SetMass(1.0);
     slider->SetInertiaXX(ChVector3d(0.05, 0.05, 0.05));
@@ -120,7 +117,6 @@ int main(int argc, char* argv[]) {
     // Connecting rod
     auto rod = chrono_types::make_shared<ChBody>();
     system.AddBody(rod);
-    rod->SetIdentifier(3);
     rod->SetName("rod");
     rod->SetMass(0.5);
     rod->SetInertiaXX(ChVector3d(0.005, 0.1, 0.1));
