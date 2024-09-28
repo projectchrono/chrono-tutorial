@@ -93,9 +93,9 @@ int main(int argc, char* argv[]) {
 
     vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
 
-    vehicle.SetSuspensionVisualizationType(vehicle::VisualizationType::PRIMITIVES);
-    vehicle.SetSteeringVisualizationType(vehicle::VisualizationType::PRIMITIVES);
-    vehicle.SetWheelVisualizationType(vehicle::VisualizationType::NONE);
+    vehicle.SetSuspensionVisualizationType(VisualizationType::PRIMITIVES);
+    vehicle.SetSteeringVisualizationType(VisualizationType::PRIMITIVES);
+    vehicle.SetWheelVisualizationType(VisualizationType::NONE);
 
     // Create the terrain
     vehicle::RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(rigidterrain_file));
