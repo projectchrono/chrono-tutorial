@@ -217,8 +217,8 @@ int main(int argc, char* argv[]) {
     SetChronoDataPath(CHRONO_DATA_DIR);
 
     // Create the (multicore) system and set method-specific solver settings.
-    ChSystemMulticore* system;
-    double time_step;
+    ChSystemMulticore* system = nullptr;
+    double time_step = 0;
     switch (method) {
         case ChContactMethod::NSC: {
             std::cout << "Create NSC (non-smooth, complementarity) system" << std::endl;
@@ -278,7 +278,6 @@ int main(int argc, char* argv[]) {
     CreateObjects(system);
 
     // Simulation loop
-    double time_end = 5;
 
 #ifdef CHRONO_OPENGL
     // If Chrono::openGL is available, create the visualization window
@@ -305,6 +304,7 @@ int main(int argc, char* argv[]) {
     std::cout << system->GetChTime() << "  " << pos.z() << std::endl;
 #else
     // If Chrono::openGL is not available, run simulation to specified end time
+    double time_end = 5;
     int out_steps = static_cast<int>(std::ceil(1.0 / time_step) / 100);
     int sim_frame = 0;
     while (system->GetChTime() < time_end) {

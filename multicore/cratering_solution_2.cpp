@@ -211,7 +211,6 @@ int main(int argc, char* argv[]) {
     CreateObjects(system);
 
     // Simulation loop
-    double time_end = 5;
 
 #ifdef CHRONO_OPENGL
     // If Chrono::openGL is available, create the visualization window
@@ -238,6 +237,7 @@ int main(int argc, char* argv[]) {
     std::cout << system->GetChTime() << "  " << pos.z() << std::endl;
 #else
     // If Chrono::openGL is not available, run simulation to specified end time
+    double time_end = 5;
     int out_steps = static_cast<int>(std::ceil(1.0 / time_step) / 100);
     int sim_frame = 0;
     while (system->GetChTime() < time_end) {

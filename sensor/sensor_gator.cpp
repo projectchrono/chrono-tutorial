@@ -277,9 +277,6 @@ int main(int argc, char* argv[]) {
     int step_number = 0;
     int render_frame = 0;
 
-    float orbit_radius = 15.f;
-    float orbit_rate = 1;
-
     ChRealtimeStepTimer realtime_timer;
     while (vis->Run()) {
         double time = gator.GetSystem()->GetChTime();
@@ -288,6 +285,9 @@ int main(int argc, char* argv[]) {
         // BONUS
         //  Change the camera location so that is orbits vehicle
         // --------------------------------------------------------
+        //  float orbit_radius = 15.f;
+        //  float orbit_rate = 1;
+        // 
         //  cam->SetOffsetPose(
         //      chrono::ChFrame<double>({-orbit_radius * cos(time * orbit_rate), -orbit_radius * sin(time * orbit_rate),
         //      3},

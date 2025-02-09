@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
     mesh->AddContactSurface(contactcloud);
 
     // Must use this to 'populate' the contact surface use larger point size to match beam section radius
-    contactcloud->AddAllNodes(0.01);
+    contactcloud->AddAllNodes(*mesh, 0.01);
 
     // 8. Create a collision plane, as a huge box
 
@@ -151,14 +151,14 @@ int main(int argc, char* argv[]) {
     //     postprocessor that can handle a coloured ChVisualShapeTriangleMesh).
     //   - Do not forget AddAsset() at the end!
 
-    auto visualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    auto visualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>();
     visualizebeamA->SetFEMdataType(ChVisualShapeFEA::DataType::ANCF_BEAM_AX);
     visualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
     visualizebeamA->SetSmoothFaces(true);
     visualizebeamA->SetWireframe(false);
     mesh->AddVisualShapeFEA(visualizebeamA);
 
-    auto visualizebeamB = chrono_types::make_shared<ChVisualShapeFEA>(mesh);
+    auto visualizebeamB = chrono_types::make_shared<ChVisualShapeFEA>();
     visualizebeamB->SetFEMglyphType(ChVisualShapeFEA::GlyphType::NODE_DOT_POS);
     visualizebeamB->SetFEMdataType(ChVisualShapeFEA::DataType::NONE);
     visualizebeamB->SetSymbolsThickness(0.006);
