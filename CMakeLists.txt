@@ -116,7 +116,6 @@ endif()
 # Copy DLLs
 #--------------------------------------------------------------
 
-# Add custom command for copying DLLs to the appropriate binary
-# output folder (on Windows only).
-
+# Add custom command for copying DLLs to the appropriate binary output folder
+# (no-op if not Windows)
 add_DLL_copy_command("${ALL_DLL_NAMES}" "${ALL_DEPENDENCY_DLLS}")
