@@ -84,7 +84,6 @@ option(ENABLE_SYNCHRONO_PROGRAMS "Build the SynChrono tutorial programs" OFF)
 
 # Keep track of all DLLs. Each submodule should append to these list.
 list(APPEND ALL_DLL_NAMES "")
-list(APPEND ALL_DEPENDENCY_DLLS "")
 
 # Propagate configuration to submodules.
 if(ENABLE_CHRONO_PROGRAMS)
@@ -118,4 +117,4 @@ endif()
 
 # Add custom command for copying DLLs to the appropriate binary output folder
 # (no-op if not Windows)
-add_DLL_copy_command("${ALL_DLL_NAMES}" "${ALL_DEPENDENCY_DLLS}")
+add_DLL_copy_command("${ALL_DLL_NAMES}")
