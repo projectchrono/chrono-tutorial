@@ -299,7 +299,7 @@ int main(int argc, char* argv[]) {
 
     auto visualizebeamA = chrono_types::make_shared<ChVisualShapeFEA>();
     visualizebeamA->SetFEMdataType(ChVisualShapeFEA::DataType::ANCF_BEAM_AX);
-    visualizebeamA->SetColorscaleMinMax(-0.005, 0.005);
+    visualizebeamA->SetColormapRange(-0.005, 0.005);
     visualizebeamA->SetSmoothFaces(true);
     visualizebeamA->SetWireframe(false);
     mesh->AddVisualShapeFEA(visualizebeamA);

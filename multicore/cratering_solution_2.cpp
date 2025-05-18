@@ -37,11 +37,16 @@
 
 #include "chrono_multicore/physics/ChSystemMulticore.h"
 
-#ifdef CHRONO_OPENGL
-#include "chrono_opengl/ChVisualSystemOpenGL.h"
+#ifdef CHRONO_VSG
+#include "chrono_vsg/ChVisualSystemVSG.h"
+using namespace chrono::vsg3d;
 #endif
 
 using namespace chrono;
+
+using std::cout;
+using std::endl;
+using std::flush;
 
 // -----------------------------------------------------------------------------
 // Problem definitions
@@ -212,43 +217,58 @@ int main(int argc, char* argv[]) {
 
     // Simulation loop
 
-#ifdef CHRONO_OPENGL
-    // If Chrono::openGL is available, create the visualization window
-    opengl::ChVisualSystemOpenGL vis;
-    vis.AttachSystem(system);
-    vis.SetWindowTitle("Crater Test");
-    vis.SetWindowSize(1280, 720);
-    vis.SetRenderMode(opengl::WIREFRAME);
-    vis.Initialize();
-    vis.AddCamera(ChVector3d(0, -7 * hDimY, hDimZ), ChVector3d(0, 0, hDimZ));
-    vis.SetCameraVertical(CameraVerticalDir::Z);
-
-    // Run simulation loop (ESC to terminate)
-    while (true) {
-        if (vis.Run()) {
-            system->DoStepDynamics(time_step);
-            vis.Render();
-        } else {
-            break;
-        }
-    }
-
-    const ChVector3d& pos = ball->GetPos();
-    std::cout << system->GetChTime() << "  " << pos.z() << std::endl;
-#else
-    // If Chrono::openGL is not available, run simulation to specified end time
-    double time_end = 5;
-    int out_steps = static_cast<int>(std::ceil(1.0 / time_step) / 100);
-    int sim_frame = 0;
-    while (system->GetChTime() < time_end) {
-        if (sim_frame % out_steps == 0) {
-            const ChVector3d& pos = ball->GetPos();
-            std::cout << system->GetChTime() << "  " << pos.z() << std::endl;
-        }
-        system->DoStepDynamics(time_step);
-        sim_frame++;
-    }
+#ifdef CHRONO_VSG
+    auto vis = chrono_types::make_shared<ChVisualSystemVSG>();
+    vis->AttachSystem(system);
+    vis->SetWindowTitle("Crater Test");
+    vis->SetWindowSize(1280, 720);
+    vis->SetCameraVertical(CameraVerticalDir::Z);
+    vis->AddCamera(ChVector3d(0, -7 * hDimY, hDimZ), ChVector3d(0, 0, hDimZ));
+    vis->SetCameraAngleDeg(40.0);
+    vis->SetBackgroundColor(ChColor(0.8f, 0.85f, 0.9f));
+    vis->EnableSkyBox();
+    vis->SetLightIntensity(1.0f);
+    vis->SetLightDirection(1.5 * CH_PI_2, CH_PI_4);
+    vis->EnableShadows();
+    vis->Initialize();
 #endif
+
+    double out_fps = 120;
+
+    double time_end = 5;
+    double time = 0;
+    int sim_frame = 0;
+    int out_frame = 0;
+    double exec_time = 0;
+    int num_contacts = 0;
+
+    while (time < time_end) {
+        if (time >= out_frame / out_fps) {
+            cout << endl;
+            cout << "---- Frame:          " << out_frame << endl;
+            cout << "     Sim frame:      " << sim_frame << endl;
+            cout << "     Time:           " << time << endl;
+            cout << "     Num. contacts:  " << num_contacts << endl;
+
+            out_frame++;
+            num_contacts = 0;
+        }
+
+        // Advance simulation by one step
+#ifdef CHRONO_VSG
+        if (vis->Run()) {
+            system->DoStepDynamics(time_step);
+            vis->Render();
+        } else
+            break;
+#else
+        system->DoStepDynamics(time_step);
+#endif
+
+        time += time_step;
+        sim_frame++;
+        num_contacts += system->GetNumContacts();
+    }
 
     delete system;
     return 0;

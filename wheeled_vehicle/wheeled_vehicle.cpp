@@ -33,7 +33,7 @@
 #include "chrono_vehicle/powertrain/EngineSimple.h"
 #include "chrono_vehicle/powertrain/AutomaticTransmissionSimpleMap.h"
 #include "chrono_vehicle/terrain/RigidTerrain.h"
-#include "chrono_vehicle/driver/ChInteractiveDriverIRR.h"
+#include "chrono_vehicle/driver/ChInteractiveDriver.h"
 
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
 #include "chrono_vehicle/wheeled_vehicle/tire/RigidTire.h"
@@ -120,6 +120,13 @@ int main(int argc, char* argv[]) {
     // Set collision detection system
     vehicle.GetSystem()->SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
 
+    // Create the driver system (interactive)
+    vehicle::ChInteractiveDriver driver(vehicle);
+    driver.SetSteeringDelta(0.02);
+    driver.SetThrottleDelta(0.02);
+    driver.SetBrakingDelta(0.06);
+    driver.Initialize();
+
     // Create the Irrlicht vehicle application
     auto vis = chrono_types::make_shared<vehicle::ChWheeledVehicleVisualSystemIrrlicht>();
     vis->SetWindowTitle("Vehicle Demo");
@@ -129,18 +136,7 @@ int main(int argc, char* argv[]) {
     vis->AddSkyBox();
     vis->AddLogo();
     vis->AttachVehicle(&vehicle);
-
-    // Create the driver system (interactive)
-    vehicle::ChInteractiveDriverIRR driver(*vis);
-
-    // Set the time response for steering and throttle keyboard inputs.
-    // NOTE: this is not exact, since we do not render quite at the specified FPS.
-    double steering_time = 1.0;  // time to go from 0 to +1 (or from 0 to -1)
-    double throttle_time = 1.0;  // time to go from 0 to +1
-    double braking_time = 0.3;   // time to go from 0 to +1
-    driver.SetSteeringDelta(render_step_size / steering_time);
-    driver.SetThrottleDelta(render_step_size / throttle_time);
-    driver.SetBrakingDelta(render_step_size / braking_time);
+    vis->AttachDriver(&driver);
 
     // ---------------
     // Simulation loop

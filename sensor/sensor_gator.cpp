@@ -24,7 +24,7 @@
 #include "chrono/utils/ChUtilsInputOutput.h"
 
 #include "chrono_vehicle/ChVehicleModelData.h"
-#include "chrono_vehicle/driver/ChInteractiveDriverIRR.h"
+#include "chrono_vehicle/driver/ChInteractiveDriver.h"
 #include "chrono_vehicle/terrain/RigidTerrain.h"
 #include "chrono_vehicle/wheeled_vehicle/ChWheeledVehicleVisualSystemIrrlicht.h"
 
@@ -181,6 +181,23 @@ int main(int argc, char* argv[]) {
 
     terrain.Initialize();
 
+    // ------------------------
+    // Create the driver system
+    // ------------------------
+
+    // Create the interactive driver system
+    ChInteractiveDriver driver(gator.GetVehicle());
+
+    // Set the time response for steering and throttle keyboard inputs.
+    double steering_time = 1.0;  // time to go from 0 to +1 (or from 0 to -1)
+    double throttle_time = 1.0;  // time to go from 0 to +1
+    double braking_time = 0.3;   // time to go from 0 to +1
+    driver.SetSteeringDelta(render_step_size / steering_time);
+    driver.SetThrottleDelta(render_step_size / throttle_time);
+    driver.SetBrakingDelta(render_step_size / braking_time);
+
+    driver.Initialize();
+
     // -------------------------------------
     // Create the vehicle Irrlicht interface
     // -------------------------------------
@@ -193,6 +210,7 @@ int main(int argc, char* argv[]) {
     vis->AddSkyBox();
     vis->AddLogo();
     vis->AttachVehicle(&gator.GetVehicle());
+    vis->AttachDriver(&driver);
 
     // -----------------
     // Initialize output
@@ -209,23 +227,6 @@ int main(int argc, char* argv[]) {
         }
         terrain.ExportMeshPovray(out_dir);
     }
-
-    // ------------------------
-    // Create the driver system
-    // ------------------------
-
-    // Create the interactive driver system
-    ChInteractiveDriverIRR driver(*vis);
-
-    // Set the time response for steering and throttle keyboard inputs.
-    double steering_time = 1.0;  // time to go from 0 to +1 (or from 0 to -1)
-    double throttle_time = 1.0;  // time to go from 0 to +1
-    double braking_time = 0.3;   // time to go from 0 to +1
-    driver.SetSteeringDelta(render_step_size / steering_time);
-    driver.SetThrottleDelta(render_step_size / throttle_time);
-    driver.SetBrakingDelta(render_step_size / braking_time);
-
-    driver.Initialize();
 
     // ------------------------------------------------------------------------------------------------------------
     // EXERCISE 1
