@@ -1,0 +1,47 @@
+{
+  "Name":     "Test vehicle - Double Wishbone",
+  "Type":     "Vehicle",
+  "Template": "WheeledVehicle",
+
+  "Chassis":
+  {
+    "Input File":                "vehicle/Chassis.json"
+  },
+  
+  "Axles":
+  [
+    {
+      "Suspension Input File":   "vehicle/DoubleWishboneReduced.json",
+      "Suspension Location":     [1.25, 0, -0.21],
+      "Steering Index":          0,
+      "Left Wheel Input File":   "vehicle/Wheel.json",
+      "Right Wheel Input File":  "vehicle/Wheel.json",
+      "Left Brake Input File":   "vehicle/Brake.json",
+      "Right Brake Input File":  "vehicle/Brake.json"
+    },
+
+    {
+      "Suspension Input File":   "vehicle/SolidAxle.json",
+      "Suspension Location":     [-1.25, 0, -0.21],
+      "Left Wheel Input File":   "vehicle/Wheel.json",
+      "Right Wheel Input File":  "vehicle/Wheel.json",
+      "Left Brake Input File":   "vehicle/Brake.json",
+      "Right Brake Input File":  "vehicle/Brake.json"
+    }
+  ],
+
+  "Steering Subsystems":
+  [
+    {
+      "Input File":           "vehicle/PitmanArm.json",
+      "Location":             [1.1, 0, -0.4],
+      "Orientation":          [0.98699637, 0, 0.16074256, 0]
+    }
+  ],
+
+  "Driveline":
+  {
+    "Input File":           "vehicle/Driveline4WD.json",
+    "Suspension Indexes":   [0, 1]
+  }
+}

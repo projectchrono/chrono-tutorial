@@ -1,0 +1,47 @@
+{
+  "Name": "Test vehicle",
+  "Type": "Vehicle",
+  "Template": "WheeledVehicle",
+
+  "Chassis": {
+    "Input File": "vehicle/Chassis.json"
+  },
+
+  "Axles": [
+    {
+      "Suspension Input File": "vehicle/DoubleWishbone.json",
+      "Suspension Location": [ 1.688965, 0, 0 ],
+      "Steering Index": 0,
+      "Left Wheel Input File": "vehicle/Wheel.json",
+      "Right Wheel Input File": "vehicle/Wheel.json",
+      "Left Brake Input File": "vehicle/BrakeSimple.json",
+      "Right Brake Input File": "vehicle/BrakeSimple.json"
+    },
+
+    {
+      "Suspension Input File": "vehicle/DoubleWishbone.json",
+      "Suspension Location": [ -1.688965, 0, 0 ],
+      "Left Wheel Input File": "vehicle/Wheel.json",
+      "Right Wheel Input File": "vehicle/Wheel.json",
+      "Left Brake Input File": "vehicle/BrakeSimple.json",
+      "Right Brake Input File": "vehicle/BrakeSimple.json"
+    }
+  ],
+
+  "Steering Subsystems": [
+    {
+      "Input File": "vehicle/PitmanArm.json",
+      "Location": [ 1.24498, 0, 0.101322 ],
+      "Orientation": [ 0.98699637, 0, 0.16074256, 0 ]
+    }
+  ],
+
+  "Wheelbase": 3.378,
+  "Minimum Turning Radius": 7.62,
+  "Maximum Steering Angle (deg)": 30.23,
+
+  "Driveline": {
+    "Input File": "vehicle/Driveline4WD.json",
+    "Suspension Indexes": [ 0, 1 ]
+  }
+}
