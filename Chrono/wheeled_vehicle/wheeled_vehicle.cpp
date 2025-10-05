@@ -27,7 +27,7 @@
 #include "chrono/physics/ChBodyEasy.h"
 #include "chrono/core/ChRandom.h"
 
-#include "chrono_vehicle/ChVehicleModelData.h"
+#include "chrono_vehicle/ChVehicleDataPath.h"
 #include "chrono_vehicle/utils/ChUtilsJSON.h"
 
 #include "chrono_vehicle/powertrain/EngineSimple.h"
@@ -40,6 +40,7 @@
 #include "chrono_vehicle/wheeled_vehicle/ChWheeledVehicleVisualSystemIrrlicht.h"
 
 using namespace chrono;
+using namespace chrono::vehicle;
 
 // =============================================================================
 
@@ -82,14 +83,14 @@ int main(int argc, char* argv[]) {
     SetChronoDataPath(CHRONO_DATA_DIR);
 
     // Path to the data files for this vehicle (JSON specification files)
-    vehicle::SetDataPath(std::string(SOURCE_DIR) + "/data/");
+    SetVehicleDataPath(std::string(SOURCE_DIR) + "/data/");
 
     // --------------------------
     // Create the various modules
     // --------------------------
     
     // Create and initialize the vehicle system
-    vehicle::WheeledVehicle vehicle(vehicle::GetDataFile(vehicle_file), NSC_SMC);
+    WheeledVehicle vehicle(GetVehicleDataFile(vehicle_file), NSC_SMC);
 
     vehicle.Initialize(ChCoordsys<>(initLoc, initRot));
 
@@ -98,21 +99,21 @@ int main(int argc, char* argv[]) {
     vehicle.SetWheelVisualizationType(VisualizationType::NONE);
 
     // Create the terrain
-    vehicle::RigidTerrain terrain(vehicle.GetSystem(), vehicle::GetDataFile(rigidterrain_file));
+    RigidTerrain terrain(vehicle.GetSystem(), GetVehicleDataFile(rigidterrain_file));
     terrain.Initialize();
     AddFixedObstacles(vehicle.GetSystem());
     AddMovingObstacles(vehicle.GetSystem());
 
     // Create and initialize the powertrain system
-    auto engine = vehicle::ReadEngineJSON(vehicle::GetDataFile(engine_file));
-    auto transmission = vehicle::ReadTransmissionJSON(vehicle::GetDataFile(transmission_file));
-    auto powertrain = chrono_types::make_shared<vehicle::ChPowertrainAssembly>(engine, transmission);
+    auto engine = ReadEngineJSON(GetVehicleDataFile(engine_file));
+    auto transmission = ReadTransmissionJSON(GetVehicleDataFile(transmission_file));
+    auto powertrain = chrono_types::make_shared<ChPowertrainAssembly>(engine, transmission);
     vehicle.InitializePowertrain(powertrain);
 
     // Create and initialize the tires
     for (auto& axle : vehicle.GetAxles()) {
-        auto tireL = vehicle::ReadTireJSON(vehicle::GetDataFile(tire_file));
-        auto tireR = vehicle::ReadTireJSON(vehicle::GetDataFile(tire_file));
+        auto tireL = ReadTireJSON(GetVehicleDataFile(tire_file));
+        auto tireR = ReadTireJSON(GetVehicleDataFile(tire_file));
         vehicle.InitializeTire(tireL, axle->m_wheels[0]);
         vehicle.InitializeTire(tireR, axle->m_wheels[1]);
     }
@@ -121,14 +122,14 @@ int main(int argc, char* argv[]) {
     vehicle.GetSystem()->SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
 
     // Create the driver system (interactive)
-    vehicle::ChInteractiveDriver driver(vehicle);
+    ChInteractiveDriver driver(vehicle);
     driver.SetSteeringDelta(0.02);
     driver.SetThrottleDelta(0.02);
     driver.SetBrakingDelta(0.06);
     driver.Initialize();
 
     // Create the Irrlicht vehicle application
-    auto vis = chrono_types::make_shared<vehicle::ChWheeledVehicleVisualSystemIrrlicht>();
+    auto vis = chrono_types::make_shared<ChWheeledVehicleVisualSystemIrrlicht>();
     vis->SetWindowTitle("Vehicle Demo");
     vis->SetChaseCamera(trackPoint, 5.0, 0.5);
     vis->Initialize();
@@ -154,7 +155,7 @@ int main(int argc, char* argv[]) {
         vis->EndScene();
 
         // Get driver inputs
-        vehicle::DriverInputs driver_inputs = driver.GetInputs();
+        DriverInputs driver_inputs = driver.GetInputs();
 
         // Update modules (process inputs from other modules)
         time = vehicle.GetSystem()->GetChTime();

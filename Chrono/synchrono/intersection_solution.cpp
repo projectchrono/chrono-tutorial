@@ -26,14 +26,14 @@
 #include "chrono_synchrono/agent/SynEnvironmentAgent.h"
 #include "chrono_synchrono/controller/driver/SynMultiPathDriver.h"
 #include "chrono_synchrono/communication/mpi/SynMPICommunicator.h"
-#include "chrono_synchrono/utils/SynDataLoader.h"
+#include "chrono_synchrono/utils/SynDataPath.h"
 #include "chrono_synchrono/utils/SynLog.h"
 
 #include "chrono_thirdparty/cxxopts/ChCLI.h"
 
 #include "chrono_vehicle/wheeled_vehicle/vehicle/WheeledVehicle.h"
 #include "chrono_vehicle/terrain/RigidTerrain.h"
-#include "chrono_vehicle/ChVehicleModelData.h"
+#include "chrono_vehicle/ChVehicleDataPath.h"
 #include "chrono_vehicle/driver/ChPathFollowerACCDriver.h"
 #include "chrono_vehicle/utils/ChUtilsJSON.h"
 
@@ -108,8 +108,8 @@ int main(int argc, char* argv[]) {
     SetChronoDataPath(CHRONO_DATA_DIR);
 
     // Path to the data files for this demo (JSON specification files)
-    vehicle::SetDataPath(std::string(CHRONO_DATA_DIR) + "vehicle/");
-    synchrono::SetDataPath(std::string(CHRONO_DATA_DIR) + "synchrono/");
+    SetVehicleDataPath(std::string(CHRONO_DATA_DIR) + "vehicle/");
+    GetSynchronoDataFile(std::string(CHRONO_DATA_DIR) + "synchrono/");
 
     // CLI tools for default synchrono demos
     // Setting things like step_size, simulation run-time, etc...
@@ -203,13 +203,13 @@ int main(int argc, char* argv[]) {
     RigidTerrain terrain(system);
 
     // Loading the mesh to be used for collisions
-    auto patch = terrain.AddPatch(patch_mat, CSYSNORM, synchrono::GetDataFile("meshes/Highway_col.obj"), true,
+    auto patch = terrain.AddPatch(patch_mat, CSYSNORM, GetSynchronoDataFile("meshes/Highway_col.obj"), true,
                                   0.01, false);
 
     // In this case the visualization mesh is the same, but it doesn't have to be (e.g. a detailed visual mesh of
     // buildings, but the collision mesh is just the driveable surface of the road)
     auto vis_mesh = chrono_types::make_shared<ChTriangleMeshConnected>();
-    vis_mesh->LoadWavefrontMesh(synchrono::GetDataFile("meshes/Highway_intersection.obj"), true, true);
+    vis_mesh->LoadWavefrontMesh(GetSynchronoDataFile("meshes/Highway_intersection.obj"), true, true);
 
     auto trimesh_shape = chrono_types::make_shared<ChVisualShapeTriangleMesh>();
     trimesh_shape->SetMesh(vis_mesh);
@@ -405,23 +405,24 @@ struct VehInfo InitializeVehicle(int node_id) {
     struct VehInfo info;
     switch (node_id) {
         case 0:
-            info.vehicle_filename = vehicle::GetDataFile("sedan/vehicle/Sedan_Vehicle.json");
-            info.engine_filename = vehicle::GetDataFile("sedan/powertrain/Sedan_EngineSimpleMap.json");
-            info.transmission_filename = vehicle::GetDataFile("sedan/powertrain/Sedan_AutomaticTransmissionSimpleMap.json");
-            info.tire_filename = vehicle::GetDataFile("sedan/tire/Sedan_TMeasyTire.json");
-            info.zombie_filename = synchrono::GetDataFile("vehicle/Sedan.json");
+            info.vehicle_filename = GetVehicleDataFile("sedan/vehicle/Sedan_Vehicle.json");
+            info.engine_filename = GetVehicleDataFile("sedan/powertrain/Sedan_EngineSimpleMap.json");
+            info.transmission_filename =
+                GetVehicleDataFile("sedan/powertrain/Sedan_AutomaticTransmissionSimpleMap.json");
+            info.tire_filename = GetVehicleDataFile("sedan/tire/Sedan_TMeasyTire.json");
+            info.zombie_filename = GetSynchronoDataFile("vehicle/Sedan.json");
 
             init_loc = ChVector3d(lane1_x, -70, init_z);
 
             info.init_pose = ChCoordsys<>(init_loc, init_rot);
             break;
         case 1:
-            info.vehicle_filename = vehicle::GetDataFile("citybus/vehicle/CityBus_Vehicle.json");
-            info.engine_filename = vehicle::GetDataFile("citybus/powertrain/CityBus_EngineSimpleMap.json");
+            info.vehicle_filename = GetVehicleDataFile("citybus/vehicle/CityBus_Vehicle.json");
+            info.engine_filename = GetVehicleDataFile("citybus/powertrain/CityBus_EngineSimpleMap.json");
             info.transmission_filename =
-                vehicle::GetDataFile("citybus/powertrain/CityBus_AutomaticTransmissionSimpleMap.json");
-            info.tire_filename = vehicle::GetDataFile("citybus/tire/CityBus_TMeasyTire.json");
-            info.zombie_filename = synchrono::GetDataFile("vehicle/CityBus.json");
+                GetVehicleDataFile("citybus/powertrain/CityBus_AutomaticTransmissionSimpleMap.json");
+            info.tire_filename = GetVehicleDataFile("citybus/tire/CityBus_TMeasyTire.json");
+            info.zombie_filename = GetSynchronoDataFile("vehicle/CityBus.json");
 
             init_loc = ChVector3d(lane2_x, -70, init_z + 0.5);
 

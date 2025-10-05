@@ -21,13 +21,13 @@
 #include "chrono_synchrono/SynChronoManager.h"
 #include "chrono_synchrono/agent/SynWheeledVehicleAgent.h"
 #include "chrono_synchrono/communication/mpi/SynMPICommunicator.h"
-#include "chrono_synchrono/utils/SynDataLoader.h"
+#include "chrono_synchrono/utils/SynDataPath.h"
 #include "chrono_synchrono/utils/SynLog.h"
 
 #include "chrono_thirdparty/cxxopts/ChCLI.h"
 
 #include "chrono_vehicle/terrain/RigidTerrain.h"
-#include "chrono_vehicle/ChVehicleModelData.h"
+#include "chrono_vehicle/ChVehicleDataPath.h"
 #include "chrono_vehicle/driver/ChPathFollowerACCDriver.h"
 
 #ifdef CHRONO_IRRLICHT
@@ -89,8 +89,8 @@ int main(int argc, char* argv[]) {
     SetChronoDataPath(CHRONO_DATA_DIR);
 
     // Path to the data files for this demo (JSON specification files)
-    vehicle::SetDataPath(std::string(CHRONO_DATA_DIR) + "vehicle/");
-    synchrono::SetDataPath(std::string(CHRONO_DATA_DIR) + "synchrono/");
+    GetVehicleDataFile(std::string(CHRONO_DATA_DIR) + "vehicle/");
+    GetSynchronoDataFile(std::string(CHRONO_DATA_DIR) + "synchrono/");
 
     // CLI tools for default synchrono demos
     // Setting things like step_size, simulation run-time, etc...
@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
     my_sedan.GetSystem()->SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
 
     // Add vehicle as an agent and initialize SynChronoManager
-    std::string zombie_filename = synchrono::GetDataFile("vehicle/Sedan.json");
+    std::string zombie_filename = GetSynchronoDataFile("vehicle/Sedan.json");
     syn_manager.AddAgent(chrono_types::make_shared<SynWheeledVehicleAgent>(&my_sedan.GetVehicle(), zombie_filename));
     syn_manager.Initialize(my_sedan.GetSystem());
 
@@ -195,13 +195,13 @@ int main(int argc, char* argv[]) {
     RigidTerrain terrain(my_sedan.GetSystem());
 
     // Loading the mesh to be used for collisions
-    auto patch = terrain.AddPatch(patch_mat, CSYSNORM, synchrono::GetDataFile("meshes/Highway_intersection.obj"), true,
+    auto patch = terrain.AddPatch(patch_mat, CSYSNORM, GetSynchronoDataFile("meshes/Highway_intersection.obj"), true,
                                   0.01, false);
 
     // In this case the visualization mesh is the same, but it doesn't have to be (e.g. a detailed visual mesh of
     // buildings, but the collision mesh is just the driveable surface of the road)
     auto vis_mesh = chrono_types::make_shared<ChTriangleMeshConnected>();
-    vis_mesh->LoadWavefrontMesh(synchrono::GetDataFile("meshes/Highway_intersection.obj"), true, true);
+    vis_mesh->LoadWavefrontMesh(GetSynchronoDataFile("meshes/Highway_intersection.obj"), true, true);
 
     auto trimesh_shape = chrono_types::make_shared<ChVisualShapeTriangleMesh>();
     trimesh_shape->SetMesh(vis_mesh);
