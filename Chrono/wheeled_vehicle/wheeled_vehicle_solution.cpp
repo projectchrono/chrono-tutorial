@@ -25,9 +25,9 @@
 #include "chrono/physics/ChSystemSMC.h"
 #include "chrono/physics/ChSystem.h"
 #include "chrono/physics/ChBodyEasy.h"
-#include "chrono/core/ChRandom.h"
 
-#include "chrono/utils/ChUtilsInputOutput.h"
+#include "chrono/input_output/ChUtilsInputOutput.h"
+#include "chrono/input_output/ChWriterCSV.h"
 
 #include "chrono_vehicle/ChVehicleDataPath.h"
 #include "chrono_vehicle/utils/ChUtilsJSON.h"
