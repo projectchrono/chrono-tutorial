@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     //    Specify the gravitational acceleration vector, consistent with the
     //    global reference frame having Y up (ISO system).
     ChSystemNSC system;
-    system.SetGravitationalAcceleration(ChVector3d(0, -9.81, 0));
+    system.SetGravityY();
 
     // 2. Create the mesh that will contain the finite elements, and add it to the system
 

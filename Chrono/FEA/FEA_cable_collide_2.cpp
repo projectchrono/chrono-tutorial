@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 
     //    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC  penalty in contacts
     ChSystemSMC system;
-
+    system.SetGravityY();
     system.SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
 
     // 2. Create the mesh that will contain the finite elements, and add it to the system

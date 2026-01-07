@@ -38,6 +38,7 @@ chrono.SetChronoDataPath(CHRONO_DATA_DIR)
 #    Specify the gravitational acceleration vector, consistent with the
 #    global reference frame having Y up (ISO system).
 system = chrono.ChSystemNSC()
+system.SetGravityY()
 system.SetGravitationalAcceleration(chrono.ChVector3d(0, -9.81, 0))
 
 

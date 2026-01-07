@@ -40,8 +40,7 @@ chrono.SetChronoDataPath(CHRONO_DATA_DIR)
 
 #    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC  penalty in contacts
 system = chrono.ChSystemSMC()
-
-system.SetGravitationalAcceleration(chrono.ChVector3d(0, -9.81, 0))
+system.SetGravityY()
 
 # Enable collision
 system.SetCollisionSystemType(chrono.ChCollisionSystem.Type_BULLET)

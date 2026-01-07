@@ -40,6 +40,7 @@ chrono.SetChronoDataPath(CHRONO_DATA_DIR)
 
 #    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC  penalty in contacts
 system = chrono.ChSystemSMC()
+system.SetGravityY()
 
 # 2. Create the mesh that will contain the finite elements, and add it to the system
 

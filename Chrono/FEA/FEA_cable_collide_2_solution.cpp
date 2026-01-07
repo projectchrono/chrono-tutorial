@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 
     //    NOTE that we need contact in FEA, so we use the ChSystemSMC, that uses SMC penalty in contacts
     ChSystemSMC system;
-    system.SetGravitationalAcceleration(ChVector3d(0, -9.81, 0));
+    system.SetGravityY();
     system.SetCollisionSystemType(ChCollisionSystem::Type::BULLET);
 
 
